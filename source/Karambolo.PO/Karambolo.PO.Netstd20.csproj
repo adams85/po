@@ -1,0 +1,46 @@
+<Project>
+  <PropertyGroup>
+    <AssemblyName>Karambolo.PO</AssemblyName>
+    <RootNamespace>Karambolo.PO</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Karambolo.Public.snk</AssemblyOriginatorKeyFile>
+    <BaseIntermediateOutputPath>obj\netstd20\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Properties\AssemblyInfo.props" />
+
+  <!-- https://stackoverflow.com/questions/45750068/setting-of-baseintermediateoutputpath-prevents-running-targets-from-nuget -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Compatibility.Net40.cs" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
+    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Hime.Redist" Version="3.2.0" />
+    <PackageReference Include="Karambolo.Common" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
