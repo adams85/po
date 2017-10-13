@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0" DefaultTargets="Make">
   <PropertyGroup>
     <Git>git.exe</Git>
-    <VsTest>vstest.console.exe</VsTest>
+    <DotNet>dotnet.exe</DotNet>
     <NuGet>$(MSBuildProjectDirectory)\nuget.exe</NuGet>
     <TestSolutionPath>$(MSBuildProjectDirectory)\..\test</TestSolutionPath>
     <TestSolution>$(TestSolutionPath)\Karambolo.PO.Test.sln</TestSolution>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <TestProject Include="$(TestSolutionPath)\Karambolo.PO.Test\bin\Release\Karambolo.PO.Test.dll" />
+    <TestProject Include="$(TestSolutionPath)\Karambolo.PO.Test\Karambolo.PO.Test.csproj" />
   </ItemGroup>
   
   <Target Name="GetVersion" Condition="$(TagVersion) == '' Or $(Revision) == ''">
@@ -48,11 +48,7 @@
   </Target>
 
   <Target Name="RunTests">
-    <!-- build -->
-    <MSBuild Projects="$(TestSolution)" Properties="Configuration=Release;Platform=Any CPU" />
-
-    <!-- run tests -->
-    <Exec Command="&quot;$(VsTest)&quot; &quot;%(TestProject.Identity)&quot;" />
+    <Exec Command="&quot;$(DotNet)&quot; test &quot;%(TestProject.Identity)&quot;" />
   </Target>
 
   <Target Name="Make" DependsOnTargets="RunTests;GetVersion">
