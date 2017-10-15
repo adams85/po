@@ -28,16 +28,13 @@ namespace Karambolo.PO
         public const string ContentTransferEncodingHeaderName = "Content-Transfer-Encoding";
         public const string PluralFormsHeaderName = "Plural-Forms";
 
-        const string defaultPluralFormSelector = "0";
-        static readonly Func<int, int> defaultCompiledPluralFormSelector = n => 0;
+        static readonly Func<int, int> defaultPluralFormSelector = n => 0;
 
         Func<int, int> _compiledPluralFormSelector;
 
         public POCatalog()
         {
-            PluralFormCount = 1;
-            PluralFormSelector = defaultPluralFormSelector;
-            _compiledPluralFormSelector = defaultCompiledPluralFormSelector;
+            _compiledPluralFormSelector = defaultPluralFormSelector;
         }
 
         public POCatalog(POCatalog catalog) : this()
@@ -58,9 +55,9 @@ namespace Karambolo.PO
                 Add(item);
         }
 
-        IEnumerable<POKey> IReadOnlyDictionary<POKey, IPOEntry>.Keys => Dictionary.Keys;
+        public IEnumerable<POKey> Keys => Values.Select(GetKeyForItem);
 
-        IEnumerable<IPOEntry> IReadOnlyDictionary<POKey, IPOEntry>.Values => this;
+        public IEnumerable<IPOEntry> Values => this;
 
         public IDictionary<string, string> Headers { get; set; }
         public IList<POComment> HeaderComments { get; set; }
@@ -75,7 +72,7 @@ namespace Karambolo.PO
             get { return _pluralFormCount; }
             set
             {
-                if (value < 1)
+                if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _pluralFormCount = value;
@@ -99,7 +96,11 @@ namespace Karambolo.PO
         public bool TrySetPluralFormSelector(string expression)
         {
             if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
+            {
+                _pluralFormSelector = null;
+                _compiledPluralFormSelector = defaultPluralFormSelector;
+                return true;
+            }
 
             var lexer = new PluralExpressionLexer(expression);
             var parser = new PluralExpressionParser(lexer);
@@ -114,7 +115,6 @@ namespace Karambolo.PO
 
             _pluralFormSelector = expression;
             _compiledPluralFormSelector = @delegate;
-
             return true;
         }
 
@@ -124,7 +124,7 @@ namespace Karambolo.PO
             return
                 --count > 0 ?
                 Math.Max(Math.Min(count, _compiledPluralFormSelector(n)), 0) :
-                0;
+                count;
         }
 
         public string GetTranslation(POKey key)
@@ -132,8 +132,8 @@ namespace Karambolo.PO
             if (!TryGetValue(key, out IPOEntry entry))
                 return null;
 
-            return
-                entry.Count > 0 ?
+            return 
+                entry.Count > 0 ? 
                 entry[0] :
                 null;
         }
@@ -144,13 +144,10 @@ namespace Karambolo.PO
                 return null;
 
             var count = entry.Count;
-            if (count == 0)
-                return null;
-
             return
-                --count > 0 ?
-                entry[Math.Max(Math.Min(count, _compiledPluralFormSelector(n)), 0)] :
-                entry[0];
+                count > 0 ?
+                (entry[--count > 0 ? Math.Max(Math.Min(count, _compiledPluralFormSelector(n)), 0) : 0]) :
+                null;
         }
 
         protected override POKey GetKeyForItem(IPOEntry item)
@@ -160,7 +157,20 @@ namespace Karambolo.PO
 
         public bool TryGetValue(POKey key, out IPOEntry value)
         {
-            return Dictionary.TryGetValue(key, out value);
+            if (Dictionary != null)
+                return Dictionary.TryGetValue(key, out value);
+
+            IPOEntry item;
+            var n = Count;
+            for (var i = 0; i < n; i++)
+                if (GetKeyForItem(item = this[i]) == key)
+                {
+                    value = item;
+                    return true;
+                }
+
+            value = null;
+            return false;
         }
 
         bool IReadOnlyDictionary<POKey, IPOEntry>.ContainsKey(POKey key)
@@ -170,7 +180,8 @@ namespace Karambolo.PO
 
         IEnumerator<KeyValuePair<POKey, IPOEntry>> IEnumerable<KeyValuePair<POKey, IPOEntry>>.GetEnumerator()
         {
-            return Dictionary.GetEnumerator();
+            foreach (var item in Values)
+                yield return new KeyValuePair<POKey, IPOEntry>(GetKeyForItem(item), item);
         }
     }
 }
