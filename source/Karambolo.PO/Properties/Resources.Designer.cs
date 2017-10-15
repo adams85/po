@@ -11,8 +11,8 @@
 namespace Karambolo.PO.Properties {
     using System;
     using System.Reflection;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -80,7 +80,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Encoding of writer and catalog should match. (You may bypass this check by setting POEmitterSettings.IgnoreEncoding to true.).
+        ///   Looks up a localized string similar to Encoding of writer and catalog should match. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.).
         /// </summary>
         internal static string EncodingMismatch {
             get {
@@ -89,7 +89,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PO specification allows only single-byte encodings. (You may bypass this check by setting POEmitterSettings.IgnoreEncoding to true.).
+        ///   Looks up a localized string similar to PO specification allows only single-byte encodings. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.).
         /// </summary>
         internal static string EncodingNotSingleByte {
             get {

@@ -8,9 +8,9 @@ using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
 {
-    public class POEmitterSettings
+    public class POGeneratorSettings
     {
-        public static readonly POEmitterSettings Default = new POEmitterSettings();
+        public static readonly POGeneratorSettings Default = new POGeneratorSettings();
 
         public bool IgnoreEncoding { get; set; }
         public bool SkipInfoHeaders { get; set; }
@@ -19,7 +19,7 @@ namespace Karambolo.PO
         public bool IgnoreLongLines { get; set; }
     }
 
-    public class POEmitter
+    public class POGenerator
     {
         [Flags]
         enum Flags
@@ -43,9 +43,9 @@ namespace Karambolo.PO
         TextWriter _writer;
         POCatalog _catalog;
 
-        public POEmitter() : this(POEmitterSettings.Default) { }
+        public POGenerator() : this(POGeneratorSettings.Default) { }
 
-        public POEmitter(POEmitterSettings settings)
+        public POGenerator(POGeneratorSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
@@ -229,7 +229,12 @@ namespace Karambolo.PO
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (_catalog.Encoding != null)
+            {
                 headers["Content-Type"] = $"text/plain; charset={_catalog.Encoding}";
+
+                if (!headers.ContainsKey("Content-Transfer-Encoding"))
+                    headers["Content-Transfer-Encoding"] = "8bit";
+            }
 
             if (_catalog.Language != null)
                 headers["Language"] = _catalog.Language;
@@ -237,21 +242,19 @@ namespace Karambolo.PO
             if (_catalog.PluralFormCount > 0 && _catalog.PluralFormSelector != null)
                 headers["Plural-Forms"] = $"nplurals={_catalog.PluralFormCount}; plural={_catalog.PluralFormSelector};";
 
-            if (headers.Count == 0)
-                return null;
-
-            if (!headers.ContainsKey("Content-Transfer-Encoding"))
-                headers["Content-Transfer-Encoding"] = "8bit";
-
-            var value = string.Join("\n", headers.OrderBy(kvp => kvp.Key).Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty));
+            var value =
+                headers.Count > 0 ?
+                string.Join("\n", headers.OrderBy(kvp => kvp.Key).Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty)) :
+                string.Empty;
 
             return new POSingularEntry(new POKey(string.Empty))
             {
-                Translation = value
+                Translation = value,
+                Comments = _catalog.HeaderComments
             };
         }
 
-        public void Emit(TextWriter writer, POCatalog catalog)
+        public void Generate(TextWriter writer, POCatalog catalog)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));

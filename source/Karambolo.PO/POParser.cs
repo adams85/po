@@ -585,7 +585,7 @@ namespace Karambolo.PO
             return true;
         }
 
-        bool IsHeader(IPOEntry entry)
+        bool CheckHeader(IPOEntry entry)
         {
             if (entry == null || entry.Key.Id != string.Empty)
                 return false;
@@ -599,7 +599,7 @@ namespace Karambolo.PO
             if (entry.Key.PluralId != null || entry.Key.ContextId != null)
                 AddWarning(DiagnosticCodes.InvalidHeaderEntryKey);
 
-            if (entry.Comments != null && entry.Comments.Any(c => c.Kind != POCommentKind.Translator))
+            if (entry.Comments != null && entry.Comments.Any(c => c.Kind == POCommentKind.PreviousValue || c.Kind == POCommentKind.Reference))
                 AddWarning(DiagnosticCodes.InvalidHeaderComment);
 
             return true;
@@ -640,6 +640,8 @@ namespace Karambolo.PO
         {
             if (!_flags.HasFlag(Flags.SkipInfoHeaders))
                 _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            _catalog.HeaderComments = entry.Comments;
 
             if (string.IsNullOrEmpty(entry.Translation))
                 return;
@@ -706,7 +708,7 @@ namespace Karambolo.PO
                 if (!TryReadEntry(allowEmptyId: true, result: out IPOEntry entry))
                     return new POParseResult(_catalog, _diagnostics);
 
-                var isHeader = IsHeader(entry);
+                var isHeader = CheckHeader(entry);
                 if (isHeader)
                     ParseHeader((POSingularEntry)entry);
 

@@ -63,6 +63,7 @@ namespace Karambolo.PO
         IEnumerable<IPOEntry> IReadOnlyDictionary<POKey, IPOEntry>.Values => this;
 
         public IDictionary<string, string> Headers { get; set; }
+        public IList<POComment> HeaderComments { get; set; }
 
         public string Encoding { get; set; }
 

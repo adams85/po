@@ -1,28 +1,32 @@
 <?xml version="1.0"?>
 <package>
-    <metadata>
-        <id>Karambolo.PO</id>
-        <version>1.0.0</version>
-        <title>Karambolo.PO</title>
-        <authors>Adam Simon</authors>
-        <owners>adams85</owners>
-        <licenseUrl>https://github.com/adams85/po/blob/master/LICENSE</licenseUrl>
-        <projectUrl>https://github.com/adams85/po</projectUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A library for reading and writing Gettext PO files.</description>
-        <summary />
-        <tags>
-            gettext po
-        </tags>
-    </metadata>
-    <files>
-      <file src="..\source\Karambolo.PO\bin\Release\net40\Karambolo.PO.dll" target="lib\net40" />
-      <file src="..\source\Karambolo.PO\bin\Release\net40\Karambolo.PO.pdb" target="lib\net40" />
-      <file src="..\source\Karambolo.PO\bin\Release\net45\Karambolo.PO.dll" target="lib\net45" />
-      <file src="..\source\Karambolo.PO\bin\Release\net45\Karambolo.PO.pdb" target="lib\net45" />
-      <file src="..\source\Karambolo.PO\bin\Release\netstandard1.0\Karambolo.PO.dll" target="lib\netstandard1.0" />
-      <file src="..\source\Karambolo.PO\bin\Release\netstandard1.0\Karambolo.PO.pdb" target="lib\netstandard1.0" />
-      <file src="..\source\Karambolo.PO\bin\Release\netstandard2.0\Karambolo.PO.dll" target="lib\netstandard2.0" />
-      <file src="..\source\Karambolo.PO\bin\Release\netstandard2.0\Karambolo.PO.pdb" target="lib\netstandard2.0" />
-    </files>
+  <metadata>
+    <id>Karambolo.PO</id>
+    <version>1.0.0</version>
+    <title>Karambolo.PO</title>
+    <authors>Adam Simon</authors>
+    <owners>adams85</owners>
+    <licenseUrl>https://github.com/adams85/po/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/adams85/po</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library for reading and writing Gettext PO files.</description>
+    <summary />
+    <tags>
+      gettext po
+    </tags>
+    <dependencies>
+      <dependency id="Karambolo.Common" version="2.0" />
+      <dependency id="Hime.Redist" version="3.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\source\Karambolo.PO\bin\Release\net40\Karambolo.PO.dll" target="lib\net40" />
+    <file src="..\source\Karambolo.PO\bin\Release\net40\Karambolo.PO.pdb" target="lib\net40" />
+    <file src="..\source\Karambolo.PO\bin\Release\net45\Karambolo.PO.dll" target="lib\net45" />
+    <file src="..\source\Karambolo.PO\bin\Release\net45\Karambolo.PO.pdb" target="lib\net45" />
+    <file src="..\source\Karambolo.PO\bin\Release\netstandard1.0\Karambolo.PO.dll" target="lib\netstandard1.0" />
+    <file src="..\source\Karambolo.PO\bin\Release\netstandard1.0\Karambolo.PO.pdb" target="lib\netstandard1.0" />
+    <file src="..\source\Karambolo.PO\bin\Release\netstandard2.0\Karambolo.PO.dll" target="lib\netstandard2.0" />
+    <file src="..\source\Karambolo.PO\bin\Release\netstandard2.0\Karambolo.PO.pdb" target="lib\netstandard2.0" />
+  </files>
 </package>
