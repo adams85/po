@@ -67,6 +67,7 @@
     <Compile Include="POCatalog.cs" />
     <Compile Include="POComment.cs" />
     <Compile Include="POEntry.cs" />
+    <Compile Include="POGenerator.cs" />
     <Compile Include="POKey.cs" />
     <Compile Include="POParser.cs" />
     <Compile Include="POString.cs" />
