@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+using Karambolo.Common.Properties;
 using Karambolo.PO.PluralExpression;
 
 namespace Karambolo.PO
@@ -32,7 +29,7 @@ namespace Karambolo.PO
 
         Func<int, int> _compiledPluralFormSelector;
 
-        public POCatalog()
+        public POCatalog() : base(null, Constants.RecommendedKeyedCollectionThreshold)
         {
             _compiledPluralFormSelector = defaultPluralFormSelector;
         }
