@@ -44,8 +44,8 @@
     <AssemblyOriginatorKeyFile>Karambolo.Public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Hime.Redist, Version=3.2.0.0, Culture=neutral, PublicKeyToken=984dd3a5d55ca89c, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hime.Redist.3.2.0\lib\net20\Hime.Redist.dll</HintPath>
+    <Reference Include="Hime.Redist, Version=3.2.2.0, Culture=neutral, PublicKeyToken=984dd3a5d55ca89c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hime.Redist.3.2.2\lib\net20\Hime.Redist.dll</HintPath>
     </Reference>
     <Reference Include="Karambolo.Common, Version=2.0.0.0, Culture=neutral, PublicKeyToken=496b38436bb9edeb, processorArchitecture=MSIL">
       <HintPath>..\packages\Karambolo.Common.2.0.0\lib\net45\Karambolo.Common.dll</HintPath>
