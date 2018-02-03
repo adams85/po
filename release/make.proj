@@ -117,14 +117,14 @@
 <![CDATA[
 // building version
 
-var match = Regex.Match(TagVersion, @"^(\d+)\.(\d+).(\d+)-(\d+)-\w+$");
+var match = Regex.Match(TagVersion, @"^(\d+)\.(\d+).(\d+)(-\w+)?-(\d+)-\w+$");
 if (!match.Success)
 {
     Log.LogError("Tag name must match the pattern '{major-version}.{minor-version}.{patch-number}'.");
     return false;
 }
 
-if (int.Parse(match.Groups[4].Value) != 0)
+if (int.Parse(match.Groups[5].Value) != 0)
 {
     Log.LogError("Tag must not contain changes.");
     return false;
@@ -133,11 +133,12 @@ if (int.Parse(match.Groups[4].Value) != 0)
 var major = int.Parse(match.Groups[1].Value);
 var minor = int.Parse(match.Groups[2].Value);
 var patch = int.Parse(match.Groups[3].Value);
+var prerelease = match.Groups[4].Value;
 var revision = int.Parse(Revision);
 
-var assemblyVersion = string.Format("{0}.0", major);
-var assemblyFileVersion = string.Format("{0}.{1}.{2}.{3}", major, minor, patch, revision);
-var nugetVersion = string.Format("{0}.{1}.{2}", major, minor, patch);
+var assemblyVersion = string.Format("{0}.{1}", major, minor);
+var fileVersion = string.Format("{0}.{1}.{2}.{3}", major, minor, patch, revision);
+var nugetVersion = string.Format("{0}.{1}.{2}{3}", major, minor, patch, prerelease);
 
 // updating files
 Action<string, string, MatchEvaluator> update = (path, regex, replacer) =>
@@ -155,11 +156,11 @@ Action<string, string, MatchEvaluator> update = (path, regex, replacer) =>
 
 update(AssemblyInfoPath,
   @"^(?<start>\s*\[\s*assembly\s*:\s*(?<attr>AssemblyVersion|AssemblyFileVersion)\(\s*"").+(?<end>""\s*\)\s*\]\s*)$",
-    m => m.Groups["start"] + (m.Groups["attr"].Value == "AssemblyVersion" ? assemblyVersion : assemblyFileVersion) + m.Groups["end"]);
+    m => m.Groups["start"] + (m.Groups["attr"].Value == "AssemblyVersion" ? assemblyVersion : fileVersion) + m.Groups["end"]);
 
 update(NetstdProjPath,
   @"^(?<start>\s*<(?<tag>Version|FileVersion)>).+(?<end></\k<tag>>\s*)$",
-    m => m.Groups["start"] + (m.Groups["tag"].Value == "Version" ? assemblyVersion : assemblyFileVersion) + m.Groups["end"]);
+    m => m.Groups["start"] + (m.Groups["tag"].Value == "Version" ? assemblyVersion : fileVersion) + m.Groups["end"]);
 
 update(NuspecPath,
   @"^(?<start>\s*<(?<tag>version)>).+(?<end></\k<tag>>\s*)$",
