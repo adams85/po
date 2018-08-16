@@ -1,12 +1,16 @@
 <Project>
   <PropertyGroup>
     <PackageId>Karambolo.PO</PackageId>
-    <Version>1.0</Version>
-    <Authors />
+    <Version>1.0.0</Version>
+    <Authors>Adam Simon</Authors>
     <Company>Karambolo</Company>
     <Product>Karambolo.PO</Product>
-    <Description />
-    <Copyright>© 2017 Adam Simon</Copyright>
+    <Description>A library for reading and writing Gettext PO files.</Description>
+    <Copyright>© 2018 Adam Simon</Copyright>
+    <AssemblyVersion>1.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
+    <PackageLicenseUrl>https://github.com/adams85/po/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/adams85/po</PackageProjectUrl>
+    <PackageTags>gettext po</PackageTags>
   </PropertyGroup>
 </Project>

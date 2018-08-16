@@ -1,35 +1,19 @@
-<Project>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Karambolo.PO</AssemblyName>
     <RootNamespace>Karambolo.PO</RootNamespace>
-    <TargetFramework>netstandard1.0</TargetFramework>
+    <TargetFrameworks>net40;net45;netstandard1.0;netstandard2.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Karambolo.Public.snk</AssemblyOriginatorKeyFile>
-    <BaseIntermediateOutputPath>obj\netstd10\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <Import Project="Properties\AssemblyInfo.props" />
 
-  <!-- https://stackoverflow.com/questions/45750068/setting-of-baseintermediateoutputpath-prevents-running-targets-from-nuget -->
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <ItemGroup>
-    <Compile Remove="obj\**" />
-    <EmbeddedResource Remove="obj\**" />
-    <None Remove="obj\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Compatibility.Net40.cs" />
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
-    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Hime.Redist" Version="3.2.2" />
     <PackageReference Include="Karambolo.Common" Version="2.0.0" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -42,5 +26,22 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
+    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Compile Remove="Compatibility.Net40.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <Compile Remove="Compatibility.Net40.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Remove="Compatibility.Net40.cs" />
   </ItemGroup>
 </Project>

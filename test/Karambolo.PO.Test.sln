@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO.Test", "Karambolo.PO.Test\Karambolo.PO.Test.csproj", "{149738B2-008D-4C1B-81E2-110881FC1387}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO.Netstd20", "..\source\Karambolo.PO\Karambolo.PO.Netstd20.csproj", "{455EC8D6-AA24-4A8E-9551-16F8CC6BA764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO", "..\source\Karambolo.PO\Karambolo.PO.csproj", "{455EC8D6-AA24-4A8E-9551-16F8CC6BA764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

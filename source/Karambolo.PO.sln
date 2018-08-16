@@ -3,13 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karambolo.PO.Net40", "Karambolo.PO\Karambolo.PO.Net40.csproj", "{BFA3AE0E-4AB1-4765-82FB-6E949B0AE9CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karambolo.PO.Net45", "Karambolo.PO\Karambolo.PO.Net45.csproj", "{A9794534-BBA3-4908-B101-EDFC1DE5F336}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO.Netstd10", "Karambolo.PO\Karambolo.PO.Netstd10.csproj", "{15C045EA-7E8F-4DF6-9662-7A989B67AAFC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO.Netstd20", "Karambolo.PO\Karambolo.PO.Netstd20.csproj", "{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO", "Karambolo.PO\Karambolo.PO.csproj", "{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,18 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BFA3AE0E-4AB1-4765-82FB-6E949B0AE9CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFA3AE0E-4AB1-4765-82FB-6E949B0AE9CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFA3AE0E-4AB1-4765-82FB-6E949B0AE9CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFA3AE0E-4AB1-4765-82FB-6E949B0AE9CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9794534-BBA3-4908-B101-EDFC1DE5F336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9794534-BBA3-4908-B101-EDFC1DE5F336}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9794534-BBA3-4908-B101-EDFC1DE5F336}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9794534-BBA3-4908-B101-EDFC1DE5F336}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15C045EA-7E8F-4DF6-9662-7A989B67AAFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15C045EA-7E8F-4DF6-9662-7A989B67AAFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15C045EA-7E8F-4DF6-9662-7A989B67AAFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15C045EA-7E8F-4DF6-9662-7A989B67AAFC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
