@@ -178,6 +178,7 @@ namespace Karambolo.PO
             return index;
         }
 
+        // resets _commentBuffer and _columnIndex
         void SeekNextToken()
         {
             if (_line != null && (_columnIndex = FindNextTokenInLine()) >= 0)
@@ -425,7 +426,7 @@ namespace Karambolo.PO
 
             var entryLocation = new TextLocation(_lineIndex, _columnIndex);
 
-            List<POComment> comments = null;
+            var comments = _commentBuffer != null ? ParseComments() : null;
             Dictionary<int, string> translations = null;
             string id = null, pluralId = null, contextId = null;
             IPOEntry entry = null;
@@ -449,9 +450,6 @@ namespace Karambolo.PO
                 switch (token)
                 {
                     case EntryTokens.Id:
-                        if (_commentBuffer != null)
-                            comments = ParseComments();
-
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
                         if (_columnIndex < 0 || !TryReadString(out id))
                         {
@@ -637,7 +635,7 @@ namespace Karambolo.PO
 
         void ParseHeader(POSingularEntry entry)
         {
-            if (!_flags.HasFlag(Flags.SkipInfoHeaders))
+            if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
                 _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             _catalog.HeaderComments = entry.Comments;
@@ -659,7 +657,7 @@ namespace Karambolo.PO
                 var key = line.Substring(0, index).TrimEnd();
                 var value = line.Remove(0, index + 1).TrimStart();
 
-                if (_flags.HasFlag(Flags.ReadContentTypeHeaderOnly) &&
+                if ((_flags & Flags.ReadContentTypeHeaderOnly) != Flags.None &&
                     !string.Equals(key, "content-type", StringComparison.OrdinalIgnoreCase))
                     continue;
 
@@ -676,7 +674,7 @@ namespace Karambolo.PO
                         break;
                 }
 
-                if (!_flags.HasFlag(Flags.SkipInfoHeaders))
+                if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
                 {
                     if (_catalog.Headers.TryGetValue(key, out string existingValue))
                         AddWarning(DiagnosticCodes.DuplicateHeaderKey, key);
@@ -699,7 +697,6 @@ namespace Karambolo.PO
             _line = null;
             _lineIndex = -1;
 
-            // resets _commentBuffer and _columnIndex
             SeekNextToken();
 
             try
@@ -711,7 +708,7 @@ namespace Karambolo.PO
                 if (isHeader)
                     ParseHeader((POSingularEntry)entry);
 
-                if (!_flags.HasFlag(Flags.ReadHeaderOnly))
+                if ((_flags & Flags.ReadHeaderOnly) == Flags.None)
                 {
                     if (!isHeader)
                         _catalog.Add(entry);

@@ -87,7 +87,7 @@ namespace Karambolo.PO
             var endIndex = _builder.Length;
             int index;
 
-            if (!_flags.HasFlag(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > maxLineLength)
+            if ((_flags & Flags.IgnoreLongLines) == Flags.None && endIndex - _lineStartIndex > maxLineLength)
             {
                 result = _lineStartIndex + maxLineLength - 1;
 
@@ -104,7 +104,7 @@ namespace Karambolo.PO
                     result--;
             }
 
-            if (!_flags.HasFlag(Flags.IgnoreLineBreaks) && (index = IndexOfNewLine(_lineStartIndex + 1, endIndex - 1)) >= 0 &&
+            if ((_flags & Flags.IgnoreLineBreaks) == Flags.None && (index = IndexOfNewLine(_lineStartIndex + 1, endIndex - 1)) >= 0 &&
                 (result < 0 || index < result))
                 result = index;
 
@@ -125,8 +125,8 @@ namespace Karambolo.PO
             _builder.Append('"');
             var endIndex = _builder.Length;
 
-            if (!(!_flags.HasFlag(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > maxLineLength ||
-                 (!_flags.HasFlag(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0)))
+            if (!((_flags & Flags.IgnoreLongLines) == Flags.None && endIndex - _lineStartIndex > maxLineLength ||
+                 ((_flags & Flags.IgnoreLineBreaks) == Flags.None && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0)))
                 return;
 
             startIndex++;
@@ -166,7 +166,7 @@ namespace Karambolo.PO
 
         void WriteEntry(IPOEntry entry)
         {
-            if (!_flags.HasFlag(Flags.SkipComments) && entry.Comments != null)
+            if ((_flags & Flags.SkipComments) == Flags.None && entry.Comments != null)
                 WriteComments(entry.Comments);
 
             if (entry.Key.ContextId != null)
@@ -224,7 +224,7 @@ namespace Karambolo.PO
         IPOEntry CreateHeaderEntry()
         {
             var headers =
-                !_flags.HasFlag(Flags.SkipInfoHeaders) && _catalog.Headers != null ?
+                (_flags & Flags.SkipInfoHeaders) == Flags.None && _catalog.Headers != null ?
                 new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase) :
                 new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -262,7 +262,7 @@ namespace Karambolo.PO
             if (catalog == null)
                 throw new ArgumentNullException(nameof(catalog));
 
-            if (!_flags.HasFlag(Flags.IgnoreEncoding))
+            if ((_flags & Flags.IgnoreEncoding) == Flags.None)
             {
                 if (writer.Encoding.GetByteCount(" ") > 1)
                     throw new InvalidOperationException(Resources.EncodingNotSingleByte);
