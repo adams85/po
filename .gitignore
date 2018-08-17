@@ -300,3 +300,4 @@ __pycache__/
 
 # Other
 NuGet.exe
+.axoCover/
