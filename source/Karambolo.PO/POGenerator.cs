@@ -297,4 +297,26 @@ namespace Karambolo.PO
             }
         }
     }
+
+    public static class POGeneratorExtensions
+    {
+        public static void Generate(this POGenerator @this, StringBuilder output, POCatalog catalog)
+        {
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+
+            using (var writer = new StringWriter(output))
+                @this.Generate(writer, catalog);
+        }
+
+        public static void Generate(this POGenerator @this, Stream output, POCatalog catalog)
+        {
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+
+            var writer = new StreamWriter(output);
+            @this.Generate(writer, catalog);
+            writer.Flush();
+        }
+    }
 }

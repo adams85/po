@@ -727,4 +727,25 @@ namespace Karambolo.PO
             }
         }
     }
+
+    public static class POParserExtensions
+    {
+        public static POParseResult Parse(this POParser @this, string input)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            using (var reader = new StringReader(input))
+                return @this.Parse(reader);
+        }
+
+        public static POParseResult Parse(this POParser @this, Stream input)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            var reader = new StreamReader(input);
+            return @this.Parse(reader);
+        }
+    }
 }
