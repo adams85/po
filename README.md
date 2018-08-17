@@ -11,7 +11,7 @@ The implementation is based on the PO file format specification of the [GNU gett
  - metadata comments,
  - proper formatting of long texts.
 
-Where the documentation was not specific enough, compatibility with Poedit took precedence.
+Where the documentation was not specific enough, compatibility with [Poedit](https://poedit.net/) took precedence.
 
 Only synchronous API is available, async I/O is not supported for the moment.
 
@@ -156,14 +156,14 @@ In my [sample ASP.NET project](https://github.com/adams85/aspnetskeleton) I show
 The toolset consists of the following components:
  - **A localization API** which provides the translations for the application.
    -  In .NET Core this infrastructure is available out-of-the-box. The key interfaces are *IStringLocalizer*, *IHtmlLocalizer*, *IViewLocalizer*. Due to the modular design of .NET Core it's easy to provide a custom implementation which uses PO files as its source. A sample implementation can be found [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Web/UI/Infrastructure/Localization).
-   - .NET Framework doesn't have such an API but it's not difficult to define something similar to what .NET Core provides. My approach to this is [available](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Web/UI/Infrastructure/Localization) in my utility library. The key interface here is *ITextLocalizer*. A sample implementation is [available](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Web/UI/Infrastructure/Localization), as well.
- - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate. With [Roslyn](https://github.com/dotnet/roslyn) on board implementing such a tool is not a tough job again **if** a naming convention is used consistently in the application source code. E.g. I always access the localizer object through a property named *T* (sample [here](https://github.com/adams85/aspnetskeleton/blob/NetCore/source/Web/UI/Controllers/AccountController.cs#L281)) what provides a terse syntax and what's more important, makes text extracting possible.
-My sample ASP.NET project also includes a ready-to-use implementation of a tool of this kind: .NET Core version is available [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Tools/POTools) and .NET Framework version [here](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Tools/POTools). (This is a command-line tool which can be built independently of the web application using the *Tools.sln* solution.) Its usage as simple as follows:
+   - .NET Framework doesn't have such an API but it's not difficult to define something similar to what .NET Core provides. My approach to this is [available](https://github.com/adams85/common/tree/master/source/Karambolo.Common/Localization) in my utility library. The key interface here is *ITextLocalizer*. A sample implementation is [available](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Web/UI/Infrastructure/Localization), as well.
+ - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate. With [Roslyn](https://github.com/dotnet/roslyn) on board implementing such a tool is not a tough job again **if** a naming convention is used consistently in the application source code. E.g. I always access the localizer object through a property named *T* (sample [here](https://github.com/adams85/aspnetskeleton/blob/NetCore/source/Web/UI/Controllers/AccountController.cs#L281)) what provides a terse syntax and what's more important, makes text extracting possible.  
+My sample ASP.NET project also includes a ready-to-use implementation of a tool of this kind: .NET Core version is available [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Tools/POTools) and .NET Framework version is [here](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Tools/POTools). (This is a command-line tool which can be built independently of the web application using the *Tools.sln* solution.) Its usage as simple as follows:
    ```
-     dotnet potools.dll scan | dotnet potools.dll extract /o=project.pot
+   dotnet potools.dll scan | dotnet potools.dll extract /o=project.pot
    ```
-   (On .NET Framework use `potools.exe` instead of `dotnet potools.dll`.)
-   It's important to change the working directory to your project's directory before you issue the command to get correct source reference paths. Alternatively, you can use the */p* optional arguments to set a base path other then the current directory.
+   (On .NET Framework use `potools.exe` instead of `dotnet potools.dll`.)     
+   It's important to change the working directory to the project's base directory before issuing the command to get correct source reference paths. Alternatively, you can use the */p* optional arguments to set a base path other then the current directory.
  - **An editor tool** which enables editing the extracted PO templates. As the PO file format is easy for humans to read, it's even possible to use a simple text editor. However, there are much more productive tools. I recommend [Poedit](https://poedit.net/), which is available on multiple platforms, moreover, it has some essential features like merging different versions of a PO file.
 
 ### If you have questions or suggestions
