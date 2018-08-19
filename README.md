@@ -3,6 +3,7 @@
 This class library enables parsing, building and generating GetText PO files on the .NET platform. (Target frameworks: .NET Framework 4 & 4.5, .NET Standard 1.0 & 2.0).
 
 [![NuGet Release](https://img.shields.io/nuget/v/Karambolo.PO.svg)](https://www.nuget.org/packages/Karambolo.PO/)
+[![Gitter](https://badges.gitter.im/Karambolo-PO/Lobby.svg)](https://gitter.im/Karambolo-PO/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The implementation is based on the PO file format specification of the [GNU gettext utilities documentation](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html). All the parts relevant to .NET programming is covered including full support for
 
