@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\source\Karambolo.PO\Karambolo.PO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\sample.po" />
+    <EmbeddedResource Include="Resources\sample.po" />
+  </ItemGroup>
 </Project>

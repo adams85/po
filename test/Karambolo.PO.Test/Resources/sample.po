@@ -1,0 +1,34 @@
+﻿#  header comment
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en_US\n"
+"Language-Team: \n"
+"Last-Translator: \n"
+"MIME-Version: 1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: 2018-06-22 07:01+0200\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"X-Generator: Poedit 2.0.8\n"
+
+#  some translator comment
+#. some extracted comment
+#: /Views/Home/Index.cshtml:8
+#, csharp-format, fuzzy
+#| msgid "{0} hour to midnite"
+#| msgid_plural "{0} hours to midnite"
+msgctxt "Home"
+# should be skipped
+msgid "{0} hour to midnight"
+msgid_plural "{0} hours to midnight"
+msgstr[0] "Translation of {0} hour to midnight"
+# should be skipped too
+msgstr[1] "Translation of {0} hours to midnight"
+
+msgid ""
+"Here is an example of how one might continue a very long string\n"
+"for the common case the string represents multi-line output.\n"
+msgstr "Some translation of long text"
