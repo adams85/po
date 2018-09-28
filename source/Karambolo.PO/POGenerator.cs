@@ -338,5 +338,15 @@ namespace Karambolo.PO
             @this.Generate(writer, catalog);
             writer.Flush();
         }
+
+        public static void Generate(this POGenerator @this, Stream output, POCatalog catalog, Encoding encoding)
+        {
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+
+            var writer = new StreamWriter(output, encoding);
+            @this.Generate(writer, catalog);
+            writer.Flush();
+        }
     }
 }

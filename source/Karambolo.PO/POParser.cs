@@ -761,5 +761,14 @@ namespace Karambolo.PO
             var reader = new StreamReader(input);
             return @this.Parse(reader);
         }
+
+        public static POParseResult Parse(this POParser @this, Stream input, Encoding encoding)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            var reader = new StreamReader(input, encoding);
+            return @this.Parse(reader);
+        }
     }
 }
