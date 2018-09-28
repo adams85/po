@@ -153,6 +153,11 @@ namespace Karambolo.PO
             _builder = new StringBuilder();
         }
 
+        bool HasFlags(Flags flags)
+        {
+            return (_flags & flags) == flags;
+        }
+
         void AddDiagnostic(DiagnosticSeverity severity, string code, params object[] args)
         {
             _diagnostics.Add(new ParserDiagnostic(severity, code, args));
@@ -641,9 +646,9 @@ namespace Karambolo.PO
 
         void ParseHeader(POSingularEntry entry)
         {
-            if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
+            if (!HasFlags(Flags.SkipInfoHeaders))
                 _catalog.Headers =
-                    (_flags & Flags.PreserveHeadersOrder) != Flags.None ?
+                    HasFlags(Flags.PreserveHeadersOrder) ?
                     new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase) :
                     (IDictionary<string, string>)new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -666,7 +671,7 @@ namespace Karambolo.PO
                 var key = line.Substring(0, index).TrimEnd();
                 var value = line.Remove(0, index + 1).TrimStart();
 
-                if ((_flags & Flags.ReadContentTypeHeaderOnly) != Flags.None &&
+                if (HasFlags(Flags.ReadContentTypeHeaderOnly) &&
                     !string.Equals(key, "content-type", StringComparison.OrdinalIgnoreCase))
                     continue;
 
@@ -683,7 +688,7 @@ namespace Karambolo.PO
                         break;
                 }
 
-                if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
+                if (!HasFlags(Flags.SkipInfoHeaders))
                 {
                     if (_catalog.Headers.TryGetValue(key, out string existingValue))
                         AddWarning(DiagnosticCodes.DuplicateHeaderKey, key);
@@ -717,7 +722,7 @@ namespace Karambolo.PO
                 if (isHeader)
                     ParseHeader((POSingularEntry)entry);
 
-                if ((_flags & Flags.ReadHeaderOnly) == Flags.None)
+                if (!HasFlags(Flags.ReadHeaderOnly))
                 {
                     if (!isHeader)
                         _catalog.Add(entry);
