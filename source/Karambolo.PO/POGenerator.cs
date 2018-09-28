@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Karambolo.Common;
+using Karambolo.Common.Collections;
 using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
@@ -225,8 +226,8 @@ namespace Karambolo.PO
         {
             var headers =
                 (_flags & Flags.SkipInfoHeaders) == Flags.None && _catalog.Headers != null ?
-                new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase) :
-                new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase) :
+                new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (_catalog.Encoding != null)
             {
@@ -244,7 +245,7 @@ namespace Karambolo.PO
 
             var value =
                 headers.Count > 0 ?
-                string.Join("\n", headers.OrderBy(kvp => kvp.Key).Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty)) :
+                string.Join("\n", headers.Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty)) :
                 string.Empty;
 
             return new POSingularEntry(new POKey(string.Empty))

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Karambolo.Common;
+using Karambolo.Common.Collections;
 using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
@@ -636,7 +637,7 @@ namespace Karambolo.PO
         void ParseHeader(POSingularEntry entry)
         {
             if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
-                _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             _catalog.HeaderComments = entry.Comments;
 
