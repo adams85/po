@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using Karambolo.Common.Collections;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -9,7 +11,7 @@ namespace Karambolo.PO.Test
 {
     public class POParserTest
     {
-        void CheckHeader(POCatalog catalog, bool expectComments, bool expectInfoHeaders)
+        void CheckHeader(POCatalog catalog, bool expectComments, bool expectInfoHeaders, bool expectOrderedHeaders)
         {
             if (expectInfoHeaders)
             {
@@ -30,6 +32,15 @@ namespace Karambolo.PO.Test
             }
             else
                 Assert.Null(catalog.Headers);
+
+            if (expectOrderedHeaders)
+            {
+                Assert.IsAssignableFrom<IOrderedDictionary<string, string>>(catalog.Headers);
+
+                Assert.Equal(new[] { "Content-Transfer-Encoding", "Content-Type", "Language", "Language-Team", "Last-Translator", "MIME-Version",
+                    "Plural-Forms", "PO-Revision-Date", "POT-Creation-Date", "Project-Id-Version", "Report-Msgid-Bugs-To", "X-Generator" },
+                    catalog.Headers.Keys);
+            }
 
             Assert.Equal("UTF-8", catalog.Encoding);
             Assert.Equal("en_US", catalog.Language);
@@ -122,7 +133,7 @@ namespace Karambolo.PO.Test
             Assert.True(result.Success);
 
             var catalog = result.Catalog;
-            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true);
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
         }
 
@@ -141,8 +152,27 @@ namespace Karambolo.PO.Test
             Assert.True(result.Success);
 
             var catalog = result.Catalog;
-            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true);
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
             Assert.Empty(catalog);
+        }
+
+        [Fact]
+        public void ParsePreserveHeadersOrder()
+        {
+            var parser = new POParser(new POParserSettings
+            {
+                PreserveHeadersOrder = true
+            });
+
+            POParseResult result;
+            using (var ms = new MemoryStream(Resources.SamplePO))
+                result = parser.Parse(ms);
+
+            Assert.True(result.Success);
+
+            var catalog = result.Catalog;
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: true);
+            CheckItems(catalog, expectComments: true);
         }
 
         [Fact]
@@ -160,7 +190,7 @@ namespace Karambolo.PO.Test
             Assert.True(result.Success);
 
             var catalog = result.Catalog;
-            CheckHeader(catalog, expectComments: false, expectInfoHeaders: true);
+            CheckHeader(catalog, expectComments: false, expectInfoHeaders: true, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: false);
         }
 
@@ -178,7 +208,7 @@ namespace Karambolo.PO.Test
             Assert.True(result.Success);
 
             var catalog = result.Catalog;
-            CheckHeader(catalog, expectComments: true, expectInfoHeaders: false);
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: false, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
         }
     }

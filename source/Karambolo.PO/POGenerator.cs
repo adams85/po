@@ -14,6 +14,7 @@ namespace Karambolo.PO
         public static readonly POGeneratorSettings Default = new POGeneratorSettings();
 
         public bool IgnoreEncoding { get; set; }
+        public bool PreserveHeadersOrder { get; set; }
         public bool SkipInfoHeaders { get; set; }
         public bool SkipComments { get; set; }
         public bool IgnoreLineBreaks { get; set; }
@@ -27,10 +28,11 @@ namespace Karambolo.PO
         {
             None = 0,
             IgnoreEncoding = 0x1,
-            SkipInfoHeaders = 0x2,
-            SkipComments = 0x4,
-            IgnoreLineBreaks = 0x8,
-            IgnoreLongLines = 0x10,
+            PreserveHeadersOrder = 0x2,
+            SkipInfoHeaders = 0x4,
+            SkipComments = 0x8,
+            IgnoreLineBreaks = 0x10,
+            IgnoreLongLines = 0x20,
         }
 
         const int maxLineLength = 80;
@@ -53,6 +55,9 @@ namespace Karambolo.PO
 
             if (settings.IgnoreEncoding)
                 _flags |= Flags.IgnoreEncoding;
+
+            if (settings.PreserveHeadersOrder)
+                _flags |= Flags.PreserveHeadersOrder;
 
             if (settings.SkipInfoHeaders)
                 _flags |= Flags.SkipInfoHeaders;
@@ -224,17 +229,21 @@ namespace Karambolo.PO
 
         IPOEntry CreateHeaderEntry()
         {
-            var headers =
-                (_flags & Flags.SkipInfoHeaders) == Flags.None && _catalog.Headers != null ?
-                new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase) :
-                new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            IDictionary<string, string> headers;
+            if ((_flags & Flags.SkipInfoHeaders) == Flags.None && _catalog.Headers != null)
+                headers =
+                    (_flags & Flags.PreserveHeadersOrder) != Flags.None ?
+                    new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase) :
+                    (IDictionary<string, string>)new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
+            else
+                headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (_catalog.Encoding != null)
             {
-                headers["Content-Type"] = $"text/plain; charset={_catalog.Encoding}";
-
                 if (!headers.ContainsKey("Content-Transfer-Encoding"))
                     headers["Content-Transfer-Encoding"] = "8bit";
+
+                headers["Content-Type"] = $"text/plain; charset={_catalog.Encoding}";
             }
 
             if (_catalog.Language != null)
@@ -243,9 +252,14 @@ namespace Karambolo.PO
             if (_catalog.PluralFormCount > 0 && _catalog.PluralFormSelector != null)
                 headers["Plural-Forms"] = $"nplurals={_catalog.PluralFormCount}; plural={_catalog.PluralFormSelector};";
 
+            var orderedHeaders =
+                headers is IOrderedDictionary<string, string> ?
+                headers.AsEnumerable() :
+                headers.OrderBy(kvp => kvp.Key);
+
             var value =
                 headers.Count > 0 ?
-                string.Join("\n", headers.Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty)) :
+                string.Join("\n", orderedHeaders.Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).WithTail(string.Empty)) :
                 string.Empty;
 
             return new POSingularEntry(new POKey(string.Empty))

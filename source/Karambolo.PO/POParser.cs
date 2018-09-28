@@ -16,6 +16,7 @@ namespace Karambolo.PO
 
         internal bool ReadContentTypeHeaderOnly { get; set; }
         public bool ReadHeaderOnly { get; set; }
+        public bool PreserveHeadersOrder { get; set; }
         public bool SkipInfoHeaders { get; set; }
         public bool SkipComments { get; set; }
     }
@@ -78,8 +79,9 @@ namespace Karambolo.PO
             None = 0,
             ReadContentTypeHeaderOnly = 0x1,
             ReadHeaderOnly = 0x2,
-            SkipInfoHeaders = 0x4,
-            SkipComments = 0x8,
+            PreserveHeadersOrder = 0x4,
+            SkipInfoHeaders = 0x8,
+            SkipComments = 0x10,
         }
 
         [Flags]
@@ -93,7 +95,7 @@ namespace Karambolo.PO
         }
 
         // caching delegate
-        static Func<char, bool> matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
+        static readonly Func<char, bool> matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
 
         public static Encoding DetectEncoding(Stream stream)
         {
@@ -131,11 +133,14 @@ namespace Karambolo.PO
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
 
+            if (settings.ReadContentTypeHeaderOnly)
+                _flags |= Flags.ReadContentTypeHeaderOnly;
+
             if (settings.ReadHeaderOnly)
                 _flags |= Flags.ReadHeaderOnly;
 
-            if (settings.ReadContentTypeHeaderOnly)
-                _flags |= Flags.ReadContentTypeHeaderOnly;
+            if (settings.PreserveHeadersOrder)
+                _flags |= Flags.PreserveHeadersOrder;
 
             if (settings.SkipInfoHeaders)
                 _flags |= Flags.SkipInfoHeaders;
@@ -637,7 +642,10 @@ namespace Karambolo.PO
         void ParseHeader(POSingularEntry entry)
         {
             if ((_flags & Flags.SkipInfoHeaders) == Flags.None)
-                _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                _catalog.Headers =
+                    (_flags & Flags.PreserveHeadersOrder) != Flags.None ?
+                    new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase) :
+                    (IDictionary<string, string>)new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             _catalog.HeaderComments = entry.Comments;
 

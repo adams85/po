@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Karambolo.Common;
 using Karambolo.Common.Collections;
 using Karambolo.PO.Test.Properties;
 using Xunit;
@@ -78,6 +79,38 @@ namespace Karambolo.PO.Test
                 generator.Generate(ms, catalog);
                 result = Encoding.UTF8.GetString(ms.ToArray());
             }
+
+            // Encoding.GetString keeps BOM
+            var expected = new StreamReader(new MemoryStream(Resources.SamplePO)).ReadToEnd()
+                .Replace("# should be skipped\r\n", "")
+                .Replace("# should be skipped too\r\n", "");
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void GeneratePreserveHeadersOrder()
+        {
+            var generator = new POGenerator(new POGeneratorSettings { PreserveHeadersOrder = true, IgnoreEncoding = true });
+
+            var sb = new StringBuilder();
+            using (var writer = new StringWriter(sb))
+                generator.Generate(writer, catalog);
+
+            var lines = sb.ToString().Split(Environment.NewLine);
+            
+            // sorting lines manually to match expected
+            GeneralUtils.Swap(ref lines[11], ref lines[3]);
+            GeneralUtils.Swap(ref lines[12], ref lines[4]);
+            GeneralUtils.Swap(ref lines[13], ref lines[5]);
+            GeneralUtils.Swap(ref lines[11], ref lines[6]);
+            GeneralUtils.Swap(ref lines[10], ref lines[7]);
+            GeneralUtils.Swap(ref lines[14], ref lines[9]);
+            GeneralUtils.Swap(ref lines[12], ref lines[10]);
+            GeneralUtils.Swap(ref lines[13], ref lines[11]);
+            GeneralUtils.Swap(ref lines[13], ref lines[12]);
+
+            var result = string.Join(Environment.NewLine, lines);
 
             // Encoding.GetString keeps BOM
             var expected = new StreamReader(new MemoryStream(Resources.SamplePO)).ReadToEnd()
