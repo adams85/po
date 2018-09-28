@@ -19,6 +19,7 @@ Only synchronous API is available, async I/O is not supported for the moment.
 ### Code samples
 
 #### Parsing PO content
+
 ```
 var parser = new POParser(new POParserSettings
 {
@@ -47,11 +48,15 @@ else
 
 ##### Options:
 
- - **ReadHeaderOnly**: parse only the metadata header item.
- - **SkipInfoHeaders**: parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.
- - **SkipComments**: parse no comments at all, not even the ones containing metadata.
+|  | **Description** | **Default value** |
+|---|---|---|
+| **PreserveHeadersOrder** | Retain the order of metadata headers. *POCatalog.Headers* property will be set to a dictionary instance which preserves insertion order. (Available as of version 1.2.) | false |
+| **ReadHeaderOnly** | Parse only the metadata header item.  | false |
+| **SkipInfoHeaders** | Parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.  | false |
+| **SkipComments** | Parse no comments at all, not even the ones containing metadata.  | false |
 
 #### Generating PO file content
+
 ```
 POCatalog catalog = ...;
 
@@ -71,13 +76,17 @@ generator.Generate(writer, catalog);
 
 ##### Options:
 
- - **IgnoreEncoding**: don't check whether the text encoding of the writer and the text encoding set for the catalog match.
- - **IgnoreLineBreaks**: don't respect line breaks ("\n") when wrapping texts.
- - **IgnoreLongLines**: don't wrap long lines (lines longer than 80 characters).
- - **SkipInfoHeaders**: generate only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.
- - **SkipComments**: generate no comments
+|  | **Description** | **Default value** |
+|---|---|---|
+| **IgnoreEncoding** | Don't check whether the text encoding of the writer and the text encoding set for the catalog match. | false |
+| **IgnoreLineBreaks** |  Don't respect line breaks ("\n") when wrapping texts. | false |
+| **IgnoreLongLines** |  Don't wrap long lines (lines longer than 80 characters). | false |
+| **PreserveHeadersOrder** | Don't sort but retain the order of metadata headers. *POCatalog.Headers* property should be set to a dictionary instance which preserves insertion order. (Available as of version 1.2.) | false |
+| **SkipInfoHeaders** | Generate only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest. | false |
+| **SkipComments** | Generate no comments. | false |
 
 #### Building PO catalogs by code
+
 ```
 var catalog = new POCatalog();
 
@@ -129,6 +138,7 @@ catalog.Add(entry);
 ```
 
 #### Retrieving translations from PO catalogs
+
 ```
 // querying translation
 var key = new POKey($"Multi-line{Environment.NewLine}text.");
@@ -158,14 +168,15 @@ The toolset consists of the following components:
  - **A localization API** which provides the translations for the application.
    -  In .NET Core this infrastructure is available out-of-the-box. The key interfaces are *IStringLocalizer*, *IHtmlLocalizer*, *IViewLocalizer*. Due to the modular design of .NET Core it's easy to provide a custom implementation which uses PO files as its source. A sample implementation can be found [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Web/UI/Infrastructure/Localization).
    - .NET Framework doesn't have such an API but it's not difficult to define something similar to what .NET Core provides. My approach to this is [available](https://github.com/adams85/common/tree/master/source/Karambolo.Common/Localization) in my utility library. The key interface here is *ITextLocalizer*. A sample implementation is [available](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Web/UI/Infrastructure/Localization), as well.
- - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate. With [Roslyn](https://github.com/dotnet/roslyn) on board implementing such a tool is not a tough job again **if** a naming convention is used consistently in the application source code. E.g. I always access the localizer object through a property named *T* (sample [here](https://github.com/adams85/aspnetskeleton/blob/NetCore/source/Web/UI/Controllers/AccountController.cs#L281)) what provides a terse syntax and what's more important, makes text extracting possible.  
+ - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate. With [Roslyn](https://github.com/dotnet/roslyn) on board implementing such a tool is not a tough job again **if** a naming convention is used consistently in the application source code. E.g. I always access the localizer object through a property named *T* (sample [here](https://github.com/adams85/aspnetskeleton/blob/NetCore/source/Web/UI/Controllers/AccountController.cs#L281)) what provides a terse syntax and what's more important, makes text extracting possible.
 My sample ASP.NET project also includes a ready-to-use implementation of a tool of this kind: .NET Core version is available [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Tools/POTools) and .NET Framework version is [here](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Tools/POTools). (This is a command-line tool which can be built independently of the web application using the *Tools.sln* solution.) Its usage as simple as follows:
    ```
    dotnet potools.dll scan | dotnet potools.dll extract /o=project.pot
    ```
-   (On .NET Framework use `potools.exe` instead of `dotnet potools.dll`.)     
+   (On .NET Framework use `potools.exe` instead of `dotnet potools.dll`.)
    It's important to change the working directory to the project's base directory before issuing the command to get correct source reference paths. Alternatively, you can use the */p* optional arguments to set a base path other then the current directory.
  - **An editor tool** which enables editing the extracted PO templates. As the PO file format is easy for humans to read, it's even possible to use a simple text editor. However, there are much more productive tools. I recommend [Poedit](https://poedit.net/), which is available on multiple platforms, moreover, it has some essential features like merging different versions of a PO file.
 
 ### If you have questions or suggestions
+
 Feel free to contact me at [Gitter](https://gitter.im/Karambolo-PO/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
