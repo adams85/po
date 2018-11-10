@@ -97,7 +97,7 @@ namespace Karambolo.PO.Test
             using (var writer = new StringWriter(sb))
                 generator.Generate(writer, catalog);
 
-            var lines = sb.ToString().Split(Environment.NewLine);
+            var lines = sb.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
             
             // sorting lines manually to match expected
             GeneralUtils.Swap(ref lines[11], ref lines[3]);
