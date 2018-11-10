@@ -320,32 +320,41 @@ namespace Karambolo.PO
 
     public static class POGeneratorExtensions
     {
-        public static void Generate(this POGenerator @this, StringBuilder output, POCatalog catalog)
+        public static void Generate(this POGenerator generator, StringBuilder output, POCatalog catalog)
         {
+            if (generator == null)
+                throw new ArgumentNullException(nameof(generator));
+
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
             using (var writer = new StringWriter(output))
-                @this.Generate(writer, catalog);
+                generator.Generate(writer, catalog);
         }
 
-        public static void Generate(this POGenerator @this, Stream output, POCatalog catalog)
+        public static void Generate(this POGenerator generator, Stream output, POCatalog catalog)
         {
+            if (generator == null)
+                throw new ArgumentNullException(nameof(generator));
+
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
             var writer = new StreamWriter(output);
-            @this.Generate(writer, catalog);
+            generator.Generate(writer, catalog);
             writer.Flush();
         }
 
-        public static void Generate(this POGenerator @this, Stream output, POCatalog catalog, Encoding encoding)
+        public static void Generate(this POGenerator generator, Stream output, POCatalog catalog, Encoding encoding)
         {
+            if (generator == null)
+                throw new ArgumentNullException(nameof(generator));
+
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
             var writer = new StreamWriter(output, encoding);
-            @this.Generate(writer, catalog);
+            generator.Generate(writer, catalog);
             writer.Flush();
         }
     }

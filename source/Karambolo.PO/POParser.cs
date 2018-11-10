@@ -744,31 +744,40 @@ namespace Karambolo.PO
 
     public static class POParserExtensions
     {
-        public static POParseResult Parse(this POParser @this, string input)
+        public static POParseResult Parse(this POParser parser, string input)
         {
+            if (parser == null)
+                throw new ArgumentNullException(nameof(parser));
+
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             using (var reader = new StringReader(input))
-                return @this.Parse(reader);
+                return parser.Parse(reader);
         }
 
-        public static POParseResult Parse(this POParser @this, Stream input)
+        public static POParseResult Parse(this POParser parser, Stream input)
         {
+            if (parser == null)
+                throw new ArgumentNullException(nameof(parser));
+
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             var reader = new StreamReader(input);
-            return @this.Parse(reader);
+            return parser.Parse(reader);
         }
 
-        public static POParseResult Parse(this POParser @this, Stream input, Encoding encoding)
+        public static POParseResult Parse(this POParser parser, Stream input, Encoding encoding)
         {
+            if (parser == null)
+                throw new ArgumentNullException(nameof(parser));
+
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             var reader = new StreamReader(input, encoding);
-            return @this.Parse(reader);
+            return parser.Parse(reader);
         }
     }
 }

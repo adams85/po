@@ -11,9 +11,9 @@ namespace Karambolo.PO
 
     static partial class ReflectionExtensions
     {
-        public static TypeInfo GetTypeInfo(this Type @this)
+        public static TypeInfo GetTypeInfo(this Type type)
         {
-            return new TypeInfo { Assembly = @this.Assembly };
+            return new TypeInfo { Assembly = type.Assembly };
         }
     }
 }
