@@ -146,7 +146,7 @@ namespace Karambolo.PO.PluralExpression
         void VisitLogicalOr(VisitData data)
         {
             var left = FromCBool(data.Children[0].Expression);
-            var right = FromCBool(data.Children[2].Expression);
+            var right = FromCBool(data.Children[1].Expression);
 
             data.Expression = ToCBool(Expression.OrElse(left, right));
         }
