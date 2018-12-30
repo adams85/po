@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using Hime.Redist;
 
@@ -7,18 +6,6 @@ namespace Karambolo.PO.PluralExpression
 {
     class PluralExpressionCompiler
     {
-        class VisitData
-        {
-            public static VisitData From(ASTNode node)
-            {
-                return new VisitData { Node = node };
-            }
-
-            public ASTNode Node;
-            public Expression Expression;
-            public VisitData[] Children;
-        }
-
         static Expression FromCBool(Expression expression)
         {
             return
@@ -44,153 +31,135 @@ namespace Karambolo.PO.PluralExpression
             _syntaxTree = syntaxTree;
         }
 
-        void VisitVariable(VisitData data)
+        Expression VisitVariable(ASTNode node)
         {
-            data.Expression = _param;
+            return _param;
         }
 
-        void VisitInteger(VisitData data)
+        Expression VisitInteger(ASTNode node)
         {
-            data.Expression = Expression.Constant(int.Parse(data.Node.Value));
+            return Expression.Constant(int.Parse(node.Value));
         }
 
-        void VisitMultiplication(VisitData data)
+        Expression VisitMultiplication(ASTNode node)
         {
-            var left = data.Children[0].Expression;
-            var right = data.Children[2].Expression;
+            var left = Visit(node.Children[0]);
+            var right = Visit(node.Children[2]);
 
-            switch (data.Children[1].Node.Symbol.Name)
+            switch (node.Children[1].Symbol.Name)
             {
                 case "*":
-                    data.Expression = Expression.Multiply(left, right);
-                    return;
+                    return Expression.Multiply(left, right);
                 case "/":
-                    data.Expression = Expression.Divide(left, right);
-                    return;
+                    return Expression.Divide(left, right);
                 case "%":
-                    data.Expression = Expression.Modulo(left, right);
-                    return;
+                    return Expression.Modulo(left, right);
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        void VisitAddition(VisitData data)
+        Expression VisitAddition(ASTNode node)
         {
-            var left = data.Children[0].Expression;
-            var right = data.Children[2].Expression;
+            var left = Visit(node.Children[0]);
+            var right = Visit(node.Children[2]);
 
-            switch (data.Children[1].Node.Symbol.Name)
+            switch (node.Children[1].Symbol.Name)
             {
                 case "+":
-                    data.Expression = Expression.Add(left, right);
-                    return;
+                    return Expression.Add(left, right);
                 case "-":
-                    data.Expression = Expression.Subtract(left, right);
-                    return;
+                    return Expression.Subtract(left, right);
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        void VisitRelation(VisitData data)
+        Expression VisitRelation(ASTNode node)
         {
-            var left = data.Children[0].Expression;
-            var right = data.Children[2].Expression;
+            var left = Visit(node.Children[0]);
+            var right = Visit(node.Children[2]);
 
-            switch (data.Children[1].Node.Symbol.Name)
+            switch (node.Children[1].Symbol.Name)
             {
                 case "<":
-                    data.Expression = ToCBool(Expression.LessThan(left, right));
-                    return;
+                    return ToCBool(Expression.LessThan(left, right));
                 case ">":
-                    data.Expression = ToCBool(Expression.GreaterThan(left, right));
-                    return;
+                    return ToCBool(Expression.GreaterThan(left, right));
                 case "<=":
-                    data.Expression = ToCBool(Expression.LessThanOrEqual(left, right));
-                    return;
+                    return ToCBool(Expression.LessThanOrEqual(left, right));
                 case ">=":
-                    data.Expression = ToCBool(Expression.GreaterThanOrEqual(left, right));
-                    return;
+                    return ToCBool(Expression.GreaterThanOrEqual(left, right));
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        void VisitEquality(VisitData data)
+        Expression VisitEquality(ASTNode node)
         {
-            var left = data.Children[0].Expression;
-            var right = data.Children[2].Expression;
+            var left = Visit(node.Children[0]);
+            var right = Visit(node.Children[2]);
 
-            switch (data.Children[1].Node.Symbol.Name)
+            switch (node.Children[1].Symbol.Name)
             {
                 case "==":
-                    data.Expression = ToCBool(Expression.Equal(left, right));
-                    return;
+                    return ToCBool(Expression.Equal(left, right));
                 case "!=":
-                    data.Expression = ToCBool(Expression.NotEqual(left, right));
-                    return;
+                    return ToCBool(Expression.NotEqual(left, right));
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        void VisitLogicalAnd(VisitData data)
+        Expression VisitLogicalAnd(ASTNode node)
         {
-            var left = FromCBool(data.Children[0].Expression);
-            var right = FromCBool(data.Children[1].Expression);
+            var left = FromCBool(Visit(node.Children[0]));
+            var right = FromCBool(Visit(node.Children[1]));
 
-            data.Expression = ToCBool(Expression.AndAlso(left, right));
+            return ToCBool(Expression.AndAlso(left, right));
         }
 
-        void VisitLogicalOr(VisitData data)
+        Expression VisitLogicalOr(ASTNode node)
         {
-            var left = FromCBool(data.Children[0].Expression);
-            var right = FromCBool(data.Children[1].Expression);
+            var left = FromCBool(Visit(node.Children[0]));
+            var right = FromCBool(Visit(node.Children[1]));
 
-            data.Expression = ToCBool(Expression.OrElse(left, right));
+            return ToCBool(Expression.OrElse(left, right));
         }
 
-        void VisitCondition(VisitData data)
+        Expression VisitCondition(ASTNode node)
         {
-            var test = FromCBool(data.Children[0].Expression);
-            var ifTrue = data.Children[1].Expression;
-            var ifFalse = data.Children[2].Expression;
+            var test = FromCBool(Visit(node.Children[0]));
+            var ifTrue = Visit(node.Children[1]);
+            var ifFalse = Visit(node.Children[2]);
 
-            data.Expression = Expression.Condition(test, ifTrue, ifFalse);
+            return Expression.Condition(test, ifTrue, ifFalse);
         }
 
-        void Visit(VisitData data)
+        Expression Visit(ASTNode node)
         {
-            switch (data.Node.Symbol.ID)
+            switch (node.Symbol.ID)
             {
                 case PluralExpressionLexer.ID.VARIABLE:
-                    VisitVariable(data);
-                    return;
+                    return VisitVariable(node);
                 case PluralExpressionLexer.ID.INTEGER:
-                    VisitInteger(data);
-                    return;
+                    return VisitInteger(node);
                 case PluralExpressionParser.ID.multiplicative_expression:
-                    VisitMultiplication(data);
-                    return;
+                    return VisitMultiplication(node);
                 case PluralExpressionParser.ID.additive_expression:
-                    VisitAddition(data);
-                    return;
+                    return VisitAddition(node);
                 case PluralExpressionParser.ID.relational_expression:
-                    VisitRelation(data);
-                    return;
+                    return VisitRelation(node);
                 case PluralExpressionParser.ID.equality_expression:
-                    VisitEquality(data);
-                    return;
+                    return VisitEquality(node);
                 case PluralExpressionParser.ID.logical_and_expression:
-                    VisitLogicalAnd(data);
-                    return;
+                    return VisitLogicalAnd(node);
                 case PluralExpressionParser.ID.logical_or_expression:
-                    VisitLogicalOr(data);
-                    return;
+                    return VisitLogicalOr(node);
                 case PluralExpressionParser.ID.expression:
-                    VisitCondition(data);
-                    return;
+                    return VisitCondition(node);
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -198,44 +167,9 @@ namespace Karambolo.PO.PluralExpression
         {
             _param = Expression.Parameter(typeof(int), "n");
 
-            var stack = new Stack<VisitData>();
-            var visited = new Stack<VisitData>();
+            var expression = Visit(_syntaxTree);
 
-            var root = VisitData.From(_syntaxTree);
-            stack.Push(root);
-
-            while (stack.Count > 0)
-            {
-                var data = stack.Peek();
-
-                if (visited.Count == 0 || !ReferenceEquals(visited.Peek(), data))
-                {
-                    var childNodes = data.Node.Children;
-                    var n = childNodes.Count;
-                    if (n > 0)
-                    {
-                        data.Children = new VisitData[n];
-
-                        visited.Push(data);
-                        stack.Push(data.Children[--n] = VisitData.From(childNodes[n]));
-
-                        while (n > 0)
-                            stack.Push(data.Children[--n] = VisitData.From(childNodes[n]));
-
-                        continue;
-                    }
-                }
-                else
-                    visited.Pop();
-
-                stack.Pop();
-                Visit(data);
-            }
-
-            if (root.Expression == null)
-                return null;
-
-            var lambda = Expression.Lambda<Func<int, int>>(root.Expression, _param);
+            var lambda = Expression.Lambda<Func<int, int>>(expression, _param);
             return lambda.Compile();
         }
     }
