@@ -1,15 +1,56 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project>
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
     <AssemblyName>Karambolo.PO.Test</AssemblyName>
     <RootNamespace>Karambolo.PO.Test</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\source\Karambolo.PO\Karambolo.Public.snk</AssemblyOriginatorKeyFile>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <Configurations>Debug;Debug_Compact;Debug_Minimal;Release;Release_Compact;Release_Minimal</Configurations>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Edition>Full</Edition>
+    <DefineConstants>TRACE;DEBUG;USE_COMMON;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
+    <Edition>Compact</Edition>
+    <DefineConstants>TRACE;DEBUG;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
+    <Edition>Minimal</Edition>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Edition>Full</Edition>
+    <DefineConstants>TRACE;USE_COMMON;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
+    <Edition>Compact</Edition>
+    <DefineConstants>TRACE;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
+    <Edition>Minimal</Edition>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj\$(Edition)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin\$(Edition)\</BaseOutputPath>
+  </PropertyGroup>
+
+  <!-- https://stackoverflow.com/questions/45750068/setting-of-baseintermediateoutputpath-prevents-running-targets-from-nuget -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
   <ItemGroup>
+    <PackageReference Include="Karambolo.Common" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
@@ -24,11 +65,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\sample.po" />
+    <EmbeddedResource Include="Resources\sample.po" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\source\Karambolo.PO\Karambolo.PO.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\sample.po" />
-    <EmbeddedResource Include="Resources\sample.po" />
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

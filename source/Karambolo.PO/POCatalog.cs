@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Karambolo.Common.Properties;
-using Karambolo.PO.PluralExpression;
 
 namespace Karambolo.PO
 {
+#if USE_HIME
+using Karambolo.PO.PluralExpression;
+#endif
+
     public class POCatalog : KeyedCollection<POKey, IPOEntry>, IReadOnlyDictionary<POKey, IPOEntry>
     {
         internal const string IdToken = "msgid";
@@ -92,10 +95,11 @@ namespace Karambolo.PO
 
         public bool TrySetPluralFormSelector(string expression)
         {
+#if USE_HIME
             if (expression == null)
             {
-                _pluralFormSelector = null;
                 _compiledPluralFormSelector = defaultPluralFormSelector;
+                _pluralFormSelector = null;
                 return true;
             }
 
@@ -110,8 +114,9 @@ namespace Karambolo.PO
             try { @delegate = compiler.Compile(); }
             catch { return false; }
 
-            _pluralFormSelector = expression;
             _compiledPluralFormSelector = @delegate;
+#endif
+            _pluralFormSelector = expression;
             return true;
         }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
-using Karambolo.Common.Collections;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -35,20 +34,31 @@ namespace Karambolo.PO.Test
 
             if (expectOrderedHeaders)
             {
-                Assert.IsAssignableFrom<IOrderedDictionary<string, string>>(catalog.Headers);
+#if USE_COMMON
+                Assert.IsAssignableFrom<Karambolo.Common.Collections.IOrderedDictionary<string, string>>(catalog.Headers);
 
                 Assert.Equal(new[] { "Content-Transfer-Encoding", "Content-Type", "Language", "Language-Team", "Last-Translator", "MIME-Version",
                     "Plural-Forms", "PO-Revision-Date", "POT-Creation-Date", "Project-Id-Version", "Report-Msgid-Bugs-To", "X-Generator" },
                     catalog.Headers.Keys);
+#else
+                Assert.True(false, "Compact version doesn't include PreserveHeadersOrder.");
+#endif
             }
 
             Assert.Equal("UTF-8", catalog.Encoding);
             Assert.Equal("en_US", catalog.Language);
             Assert.Equal(2, catalog.PluralFormCount);
             Assert.Equal("(n != 1)", catalog.PluralFormSelector);
+
+#if USE_HIME
             Assert.Equal(0, catalog.GetPluralFormIndex(1));
             Assert.Equal(1, catalog.GetPluralFormIndex(2));
             Assert.Equal(1, catalog.GetPluralFormIndex(5));
+#else
+            Assert.Equal(0, catalog.GetPluralFormIndex(1));
+            Assert.Equal(0, catalog.GetPluralFormIndex(2));
+            Assert.Equal(0, catalog.GetPluralFormIndex(5));
+#endif
 
             if (expectComments)
             {
@@ -76,7 +86,11 @@ namespace Karambolo.PO.Test
             Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 1));
             Assert.Equal("Translation of {0} hours to midnight", catalog[key1][1]);
             Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 1));
+#if USE_HIME
             Assert.Equal("Translation of {0} hours to midnight", catalog.GetTranslation(key1, 2));
+#else
+            Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 2));
+#endif
 
             Assert.Equal(1, catalog[key2].Count);
             Assert.Equal("Some translation of long text", catalog[key2][0]);
@@ -156,6 +170,7 @@ namespace Karambolo.PO.Test
             Assert.Empty(catalog);
         }
 
+#if USE_COMMON
         [Fact]
         public void ParsePreserveHeadersOrder()
         {
@@ -174,6 +189,7 @@ namespace Karambolo.PO.Test
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: true);
             CheckItems(catalog, expectComments: true);
         }
+#endif
 
         [Fact]
         public void ParseSkipComments()

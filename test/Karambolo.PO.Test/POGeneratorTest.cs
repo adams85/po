@@ -88,6 +88,7 @@ namespace Karambolo.PO.Test
             Assert.Equal(expected, result);
         }
 
+#if USE_COMMON
         [Fact]
         public void GeneratePreserveHeadersOrder()
         {
@@ -119,6 +120,7 @@ namespace Karambolo.PO.Test
 
             Assert.Equal(expected, result);
         }
+#endif
 
         [Fact]
         public void GenerateSkipComments()

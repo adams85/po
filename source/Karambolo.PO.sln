@@ -7,12 +7,24 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karambolo.PO", "Karambolo.P
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Compact|Any CPU = Debug_Compact|Any CPU
+		Debug_Minimal|Any CPU = Debug_Minimal|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release_Compact|Any CPU = Release_Compact|Any CPU
+		Release_Minimal|Any CPU = Release_Minimal|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug_Compact|Any CPU.ActiveCfg = Debug_Compact|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug_Compact|Any CPU.Build.0 = Debug_Compact|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug_Minimal|Any CPU.ActiveCfg = Debug_Minimal|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug_Minimal|Any CPU.Build.0 = Debug_Minimal|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release_Compact|Any CPU.ActiveCfg = Release_Compact|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release_Compact|Any CPU.Build.0 = Release_Compact|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release_Minimal|Any CPU.ActiveCfg = Release_Minimal|Any CPU
+		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release_Minimal|Any CPU.Build.0 = Release_Minimal|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D04EBFB7-F038-46C4-8202-37FBDBB1BDF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

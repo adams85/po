@@ -4,19 +4,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Karambolo.Common;
-using Karambolo.Common.Collections;
 using Karambolo.PO.Properties;
+using Karambolo.Common;
 
 namespace Karambolo.PO
 {
+#if USE_COMMON
+    using Karambolo.Common.Collections;
+#endif
+
     public class POParserSettings
     {
         public static readonly POParserSettings Default = new POParserSettings();
 
         internal bool ReadContentTypeHeaderOnly { get; set; }
         public bool ReadHeaderOnly { get; set; }
+#if USE_COMMON
         public bool PreserveHeadersOrder { get; set; }
+#endif
         public bool SkipInfoHeaders { get; set; }
         public bool SkipComments { get; set; }
     }
@@ -79,7 +84,9 @@ namespace Karambolo.PO
             None = 0,
             ReadContentTypeHeaderOnly = 0x1,
             ReadHeaderOnly = 0x2,
+#if USE_COMMON
             PreserveHeadersOrder = 0x4,
+#endif
             SkipInfoHeaders = 0x8,
             SkipComments = 0x10,
         }
@@ -139,8 +146,10 @@ namespace Karambolo.PO
             if (settings.ReadHeaderOnly)
                 _flags |= Flags.ReadHeaderOnly;
 
+#if USE_COMMON
             if (settings.PreserveHeadersOrder)
                 _flags |= Flags.PreserveHeadersOrder;
+#endif
 
             if (settings.SkipInfoHeaders)
                 _flags |= Flags.SkipInfoHeaders;
@@ -647,10 +656,14 @@ namespace Karambolo.PO
         void ParseHeader(POSingularEntry entry)
         {
             if (!HasFlags(Flags.SkipInfoHeaders))
-                _catalog.Headers =
-                    HasFlags(Flags.PreserveHeadersOrder) ?
-                    new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase) :
-                    (IDictionary<string, string>)new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            {
+#if USE_COMMON
+                if (HasFlags(Flags.PreserveHeadersOrder))
+                    _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                else
+#endif
+                    _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            }
 
             _catalog.HeaderComments = entry.Comments;
 

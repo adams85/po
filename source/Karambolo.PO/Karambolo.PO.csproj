@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
   <PropertyGroup>
     <AssemblyName>Karambolo.PO</AssemblyName>
     <RootNamespace>Karambolo.PO</RootNamespace>
@@ -7,14 +7,47 @@
     <AssemblyOriginatorKeyFile>Karambolo.Public.snk</AssemblyOriginatorKeyFile>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <Configurations>Debug;Debug_Compact;Debug_Minimal;Release;Release_Compact;Release_Minimal</Configurations>
   </PropertyGroup>
 
-  <Import Project="Properties\AssemblyInfo.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Edition>Full</Edition>
+    <DefineConstants>TRACE;DEBUG;USE_COMMON;USE_HIME</DefineConstants>
+  </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Hime.Redist" Version="3.4.0" />
-    <PackageReference Include="Karambolo.Common" Version="2.1.0" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
+    <Edition>Compact</Edition>
+    <DefineConstants>TRACE;DEBUG;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
+    <Edition>Minimal</Edition>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Edition>Full</Edition>
+    <DefineConstants>TRACE;USE_COMMON;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
+    <Edition>Compact</Edition>
+    <DefineConstants>TRACE;USE_HIME</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
+    <Edition>Minimal</Edition>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj\$(Edition)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin\$(Edition)\</BaseOutputPath>
+  </PropertyGroup>
+
+  <!-- https://stackoverflow.com/questions/45750068/setting-of-baseintermediateoutputpath-prevents-running-targets-from-nuget -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="Properties\AssemblyInfo.$(Edition).props" />
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -31,6 +64,35 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+ </ItemGroup>
+
+  <ItemGroup Condition="'$(Edition)' == 'Minimal'">
+    <Compile Remove="PluralExpression\**" />
+    <EmbeddedResource Remove="PluralExpression\**" />
+    <None Remove="PluralExpression\**" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Edition)' == 'Compact'">
+    <PackageReference Include="Hime.Redist" Version="3.4.0" />
+
+    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
+    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Edition)' == 'Full'">
+    <PackageReference Include="Hime.Redist" Version="3.4.0" />
+    <PackageReference Include="Karambolo.Common" Version="2.1.0" />
+
+    <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <None Remove="Common\**" />
+
     <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
     <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
   </ItemGroup>
@@ -46,4 +108,6 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <Compile Remove="Compatibility.Net40.cs" />
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

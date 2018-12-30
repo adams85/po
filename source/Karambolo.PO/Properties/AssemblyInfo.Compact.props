@@ -1,11 +1,11 @@
 <Project>
   <PropertyGroup>
-    <PackageId>Karambolo.PO</PackageId>
+    <PackageId>Karambolo.PO.Compact</PackageId>
     <Version>1.0.0</Version>
     <Authors>Adam Simon</Authors>
     <Company>Karambolo</Company>
     <Product>Karambolo.PO</Product>
-    <Description>A library for reading and writing Gettext PO files.</Description>
+    <Description>A library for reading and writing Gettext PO files. The build contained in this package requires essential 3rd party dependencies only (but provides nearly full functionality). See the project page for details.</Description>
     <Copyright>© 2018 Adam Simon</Copyright>
     <AssemblyVersion>1.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>

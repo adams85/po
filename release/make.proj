@@ -3,13 +3,22 @@
     <Git>git.exe</Git>
     <DotNet>dotnet.exe</DotNet>
     <SolutionPath>$(MSBuildProjectDirectory)\..\source</SolutionPath>
-    <TestSolutionPath>$(MSBuildProjectDirectory)\..\test</TestSolutionPath>
     <Solution>$(SolutionPath)\Karambolo.PO.sln</Solution>
-    <VersionPropsPath>$(SolutionPath)\Karambolo.PO\Properties\AssemblyInfo.props</VersionPropsPath>
+    <TestSolutionPath>$(MSBuildProjectDirectory)\..\test</TestSolutionPath>
+    <TestSolution>$(TestSolutionPath)\Karambolo.PO.Test.sln</TestSolution>
+    <VersionPropsPath>$(SolutionPath)\Karambolo.PO\Properties\AssemblyInfo.|EDITION|.props</VersionPropsPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <TestProject Include="$(TestSolutionPath)\Karambolo.PO.Test\Karambolo.PO.Test.csproj" />
+    <Edition Include="Full">
+      <Configuration>Release</Configuration>
+    </Edition>
+    <Edition Include="Compact">
+      <Configuration>Release_Compact</Configuration>
+    </Edition>
+    <Edition Include="Minimal">
+      <Configuration>Release_Minimal</Configuration>
+    </Edition>
   </ItemGroup>
 
   <Target Name="GetVersion" Condition="$(TagVersion) == '' Or $(Revision) == ''">
@@ -43,20 +52,21 @@
     </Exec>
   </Target>
 
-  <Target Name="RunTests">
-    <Exec Command="&quot;$(DotNet)&quot; test &quot;%(TestProject.Identity)&quot;" />
+  <Target Name="RunTests">   
+    <!-- shadow copying must be disabled (https://github.com/dotnet/roslyn/issues/6052, https://xunit.github.io/docs/configuring-with-json.html#file) -->
+    <Exec Command="&quot;$(DotNet)&quot; test &quot;$(TestSolution)&quot; -c &quot;%(Edition.Configuration)&quot;" />
   </Target>
 
   <Target Name="Make" DependsOnTargets="RunTests;GetVersion">
     <!-- setting version -->
-    <UpdateVersion TagVersion="$(TagVersion)" Revision="$(Revision)" VersionPropsPath="$(VersionPropsPath)" />
+    <UpdateVersion TagVersion="$(TagVersion)" Revision="$(Revision)" VersionPropsPath="$(VersionPropsPath.Replace('|EDITION|', '%(Edition.Identity)'))" />
 
     <!-- create nuget package -->
-    <MSBuild Projects="$(Solution)" Targets="Restore;Rebuild;Pack" Properties="Configuration=Release;Platform=Any CPU" />
+    <MSBuild Projects="$(Solution)" Targets="Restore;Rebuild;Pack" Properties="Configuration=%(Edition.Configuration);Platform=Any CPU" />
 
     <!-- copy over package-->
     <ItemGroup>
-      <Package Include="$(SolutionPath)\**\bin\Release\*.nupkg" />
+      <Package Include="$(SolutionPath)\**\bin\*\Release*\*.nupkg" />
     </ItemGroup>
 
     <Move SourceFiles="@(Package)" DestinationFolder="$(MSBuildProjectDirectory)" />
@@ -65,7 +75,7 @@
   </Target>
 
   <Target Name="Cleanup" AfterTargets="Make">
-    <RestoreVersion VersionPropsPath="$(VersionPropsPath)" />
+    <RestoreVersion VersionPropsPath="$(VersionPropsPath.Replace('|EDITION|', '%(Edition.Identity)'))" />
   </Target>
 
   <UsingTask TaskName="UpdateVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll" >
