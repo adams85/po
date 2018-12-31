@@ -16,6 +16,20 @@ Where the documentation was not specific enough, compatibility with [Poedit](htt
 
 Only synchronous API is available, async I/O is not supported for the moment.
 
+### Release configurations
+
+As of version 1.3 three different builds of the library are available:
+
+| Configuration | NuGet Package ID | Missing Features | Dependencies |
+|--|--|--|--|
+| Full | Karambolo.PO | | [Karambolo.Common](https://github.com/adams85/common), [Hime.Redist](https://cenotelie.fr/projects/hime/)
+| Compact | Karambolo.PO.Compact | <ul><li>PreserveHeadersOrder option (see below)</li></ul> | [Hime.Redist](https://cenotelie.fr/projects/hime/) |
+| Minimal | Karambolo.PO.Minimal | <ul><li>PreserveHeadersOrder option (see below)</li><li>Plural expression parsing and evaluation</li></ul> |
+
+*Compact* provides almost all the features the *full* package does but has less dependencies. **If your project doesn't make use of the Karambolo.Common library** (and you don't need the *PreserveHeadersOrder* feature either), **it's recommended to choose the *Compact* edition.**
+
+*Minimal* is the most lightweight configuration requiring no 3rd party dependencies at all. You may choose it if you don't need to lookup [plural form translations](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) in your application.
+
 ### Code samples
 
 #### Parsing PO content
@@ -50,7 +64,7 @@ else
 
 |  | **Description** | **Default value** |
 |---|---|---|
-| **PreserveHeadersOrder** | Retain the order of metadata headers. *POCatalog.Headers* property will be set to a dictionary instance which preserves insertion order. (Available as of version 1.2.) | false |
+| **PreserveHeadersOrder** | Retain the order of metadata headers. *POCatalog.Headers* property will be set to a dictionary instance which preserves insertion order. (Available in the *Full* build only.) | false |
 | **ReadHeaderOnly** | Parse only the metadata header item.  | false |
 | **SkipInfoHeaders** | Parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.  | false |
 | **SkipComments** | Parse no comments at all, not even the ones containing metadata.  | false |
@@ -81,7 +95,7 @@ generator.Generate(writer, catalog);
 | **IgnoreEncoding** | Don't check whether the text encoding of the writer and the text encoding set for the catalog match. | false |
 | **IgnoreLineBreaks** |  Don't respect line breaks ("\n") when wrapping texts. | false |
 | **IgnoreLongLines** |  Don't wrap long lines (lines longer than 80 characters). | false |
-| **PreserveHeadersOrder** | Don't sort but retain the order of metadata headers. *POCatalog.Headers* property should be set to a dictionary instance which preserves insertion order. (Available as of version 1.2.) | false |
+| **PreserveHeadersOrder** | Don't sort but retain the order of metadata headers. *POCatalog.Headers* property should be set to a dictionary instance which preserves insertion order. (Available in the *Full* build only.) | false |
 | **SkipInfoHeaders** | Generate only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest. | false |
 | **SkipComments** | Generate no comments. | false |
 
@@ -153,6 +167,7 @@ translation.GetTranslation(key, 5);
 
  -  *POCatalog.GetTranslation(POKey key)* returns the default translation: *msgstr* for a singular entry and *msgstr[0]* for a plural entry, respectively.
  -  *POCatalog.GetTranslation(POKey key, int count)* returns the plural form translation corresponding the *count* argument. In the case of singular entries *count* is ignored and *msgstr* is returned always. In the case of plural entries, *count* is mapped to the corresponding index using the *POCatalog.PluralFormSelector* expression and *msgstr[index]* is returned. (The index is adjusted to the actual count of translations so no exception is thrown even if the index were out of bounds.)
+ -  When using the *Minimal* build,  plural form selection is not available and thus the first translation is always returned even for plural entries.
 
 ### Real-world application
 
