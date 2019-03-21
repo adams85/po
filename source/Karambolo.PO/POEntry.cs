@@ -6,6 +6,10 @@ using System.Diagnostics;
 
 namespace Karambolo.PO
 {
+#if NET40
+    using Karambolo.Common.Collections;
+#endif
+
     public interface IPOEntry : IReadOnlyList<string>
     {
         POKey Key { get; }

@@ -6,6 +6,10 @@ using Karambolo.Common.Properties;
 
 namespace Karambolo.PO
 {
+#if NET40
+    using Karambolo.Common.Collections;
+#endif
+
 #if USE_HIME
     using Karambolo.PO.PluralExpression;
 #endif

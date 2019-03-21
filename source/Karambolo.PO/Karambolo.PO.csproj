@@ -87,7 +87,7 @@
 
   <ItemGroup Condition="'$(Edition)' == 'Full'">
     <PackageReference Include="Hime.Redist" Version="3.4.0" />
-    <PackageReference Include="Karambolo.Common" Version="2.1.0" />
+    <PackageReference Include="Karambolo.Common" Version="3.0.0" />
 
     <Compile Remove="Common\**" />
     <EmbeddedResource Remove="Common\**" />

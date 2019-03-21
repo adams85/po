@@ -23,8 +23,11 @@ namespace Karambolo.PO
 }
 
 #if !USE_COMMON
-namespace System.Collections.Generic
+namespace Karambolo.Common.Collections
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     public interface IReadOnlyCollection<out T> : IEnumerable<T>, IEnumerable
     {
         int Count { get; }

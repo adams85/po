@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace Karambolo.PO
 {
+#if NET40
+    using Karambolo.Common.Collections;
+#endif
+
     public enum DiagnosticSeverity
     {
         Unknown,

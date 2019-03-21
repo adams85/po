@@ -102,7 +102,7 @@ namespace Karambolo.PO
         }
 
         // caching delegate
-        private static readonly Func<char, bool> s_matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
+        private static readonly Predicate<char> s_matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
 
         public static Encoding DetectEncoding(Stream stream)
         {
@@ -185,7 +185,7 @@ namespace Karambolo.PO
 
         private int FindNextTokenInLine(bool requireWhiteSpace = false)
         {
-            var index = _line.FindIndex(s_matchNonWhiteSpace, _columnIndex);
+            var index = _line.FindIndex(_columnIndex, s_matchNonWhiteSpace);
             if (requireWhiteSpace && index <= _columnIndex)
             {
                 AddError(DiagnosticCodes.UnexpectedToken, new TextLocation(_lineIndex, _columnIndex));

@@ -5,29 +5,40 @@ namespace Karambolo.Common
 {
     internal static class StringUtils
     {
-        public static int FindIndex(this string @this, Func<char, bool> match)
+        public static int FindIndex(this string @string, Predicate<char> match)
         {
-            return @this.FindIndex(match, 0, @this.Length);
+            if (@string == null)
+                throw new ArgumentNullException(nameof(@string));
+
+            return @string.FindIndex(0, @string.Length, match);
         }
 
-        public static int FindIndex(this string @this, Func<char, bool> match, int startIndex)
+        public static int FindIndex(this string @string, int startIndex, Predicate<char> match)
         {
-            return @this.FindIndex(match, startIndex, @this.Length - startIndex);
+            if (@string == null)
+                throw new ArgumentNullException(nameof(@string));
+
+            return @string.FindIndex(startIndex, @string.Length - startIndex, match);
         }
 
-        public static int FindIndex(this string @this, Func<char, bool> match, int startIndex, int count)
+        public static int FindIndex(this string @string, int startIndex, int count, Predicate<char> match)
         {
-            var length = @this.Length;
-            var endIndex = startIndex + count;
+            if (@string == null)
+                throw new ArgumentNullException(nameof(@string));
 
+            var length = @string.Length;
             if (startIndex < 0 || length < startIndex)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
+            var endIndex = startIndex + count;
             if (count < 0 || length < endIndex)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
             for (; startIndex < endIndex; startIndex++)
-                if (match(@this[startIndex]))
+                if (match(@string[startIndex]))
                     return startIndex;
 
             return -1;
