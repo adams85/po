@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Text;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -10,7 +8,7 @@ namespace Karambolo.PO.Test
 {
     public class POParserTest
     {
-        void CheckHeader(POCatalog catalog, bool expectComments, bool expectInfoHeaders, bool expectOrderedHeaders)
+        private void CheckHeader(POCatalog catalog, bool expectComments, bool expectInfoHeaders, bool expectOrderedHeaders)
         {
             if (expectInfoHeaders)
             {
@@ -64,7 +62,7 @@ namespace Karambolo.PO.Test
             {
                 Assert.Equal(1, catalog.HeaderComments.Count);
 
-                var comments = catalog.HeaderComments;
+                IList<POComment> comments = catalog.HeaderComments;
                 Assert.Equal(POCommentKind.Translator, comments[0].Kind);
                 Assert.Equal("header comment", ((POTranslatorComment)comments[0]).Text);
             }
@@ -72,7 +70,7 @@ namespace Karambolo.PO.Test
                 Assert.Null(catalog.HeaderComments);
         }
 
-        void CheckItems(POCatalog catalog, bool expectComments)
+        private void CheckItems(POCatalog catalog, bool expectComments)
         {
             var key1 = new POKey("{0} hour to midnight", "{0} hours to midnight", "Home");
             var key2 = new POKey($"Here is an example of how one might continue a very long string{Environment.NewLine}" +
@@ -100,7 +98,7 @@ namespace Karambolo.PO.Test
                 Assert.Equal(6, catalog[key1].Comments.Count);
                 Assert.Equal(0, catalog[key2].Comments.Count);
 
-                var comments = catalog[key1].Comments;
+                IList<POComment> comments = catalog[key1].Comments;
 
                 Assert.Equal(POCommentKind.Translator, comments[0].Kind);
                 Assert.Equal("some translator comment", ((POTranslatorComment)comments[0]).Text);
@@ -109,13 +107,13 @@ namespace Karambolo.PO.Test
                 Assert.Equal("some extracted comment", ((POExtractedComment)comments[1]).Text);
 
                 Assert.Equal(POCommentKind.Reference, comments[2].Kind);
-                var references = ((POReferenceComment)comments[2]).References;
+                IList<POSourceReference> references = ((POReferenceComment)comments[2]).References;
                 Assert.Equal(1, references.Count);
                 Assert.Equal("/Views/Home/Index.cshtml", references[0].FilePath);
                 Assert.Equal(8, references[0].Line);
 
                 Assert.Equal(POCommentKind.Flags, comments[3].Kind);
-                var flags = ((POFlagsComment)comments[3]).Flags;
+                ISet<string> flags = ((POFlagsComment)comments[3]).Flags;
                 Assert.Equal(2, flags.Count);
                 Assert.Contains("fuzzy", flags);
                 Assert.Contains("csharp-format", flags);
@@ -146,7 +144,7 @@ namespace Karambolo.PO.Test
 
             Assert.True(result.Success);
 
-            var catalog = result.Catalog;
+            POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
         }
@@ -165,7 +163,7 @@ namespace Karambolo.PO.Test
 
             Assert.True(result.Success);
 
-            var catalog = result.Catalog;
+            POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
             Assert.Empty(catalog);
         }
@@ -185,7 +183,7 @@ namespace Karambolo.PO.Test
 
             Assert.True(result.Success);
 
-            var catalog = result.Catalog;
+            POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: true);
             CheckItems(catalog, expectComments: true);
         }
@@ -201,11 +199,11 @@ namespace Karambolo.PO.Test
 
             // Encoding.GetString keeps BOM
             var input = new StreamReader(new MemoryStream(Resources.SamplePO)).ReadToEnd();
-            var result = parser.Parse(input);
+            POParseResult result = parser.Parse(input);
 
             Assert.True(result.Success);
 
-            var catalog = result.Catalog;
+            POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: false, expectInfoHeaders: true, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: false);
         }
@@ -219,11 +217,11 @@ namespace Karambolo.PO.Test
             });
 
             var input = new StreamReader(new MemoryStream(Resources.SamplePO));
-            var result = parser.Parse(input);
+            POParseResult result = parser.Parse(input);
 
             Assert.True(result.Success);
 
-            var catalog = result.Catalog;
+            POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: false, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
         }

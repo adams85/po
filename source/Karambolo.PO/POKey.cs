@@ -34,7 +34,7 @@ namespace Karambolo.PO
             }
         }
 
-        public static bool operator== (POKey left, POKey right)
+        public static bool operator ==(POKey left, POKey right)
         {
             return left.Equals(right);
         }

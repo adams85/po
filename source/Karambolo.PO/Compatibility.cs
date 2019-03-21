@@ -3,7 +3,7 @@ namespace System.Linq
 {
     using System.Collections.Generic;
 
-    static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
 #if USE_COMMON
 
@@ -30,7 +30,7 @@ namespace System.Linq
 
             yield return element;
 
-            foreach (var e in source)
+            foreach (TSource e in source)
                 yield return e;
         }
 
@@ -39,7 +39,7 @@ namespace System.Linq
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            foreach (var e in source)
+            foreach (TSource e in source)
                 yield return e;
 
             yield return element;

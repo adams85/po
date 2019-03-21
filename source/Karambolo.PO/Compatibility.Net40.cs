@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Karambolo.PO
 {
-    struct TypeInfo
+    internal struct TypeInfo
     {
         public TypeInfo(Assembly assembly)
         {
@@ -13,7 +13,7 @@ namespace Karambolo.PO
         public Assembly Assembly { get; }
     }
 
-    static partial class ReflectionExtensions
+    internal static partial class ReflectionExtensions
     {
         public static TypeInfo GetTypeInfo(this Type type)
         {

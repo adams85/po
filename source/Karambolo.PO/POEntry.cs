@@ -13,12 +13,12 @@ namespace Karambolo.PO
         IList<POComment> Comments { get; set; }
     }
 
-    [DebuggerDisplay("Count = {" + nameof(Count) +"}"), DebuggerTypeProxy(typeof(DebugView))]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}"), DebuggerTypeProxy(typeof(DebugView))]
     public class POSingularEntry : IPOEntry
     {
-        sealed class DebugView
+        private sealed class DebugView
         {
-            POSingularEntry _entry;
+            private POSingularEntry _entry;
 
             public DebugView(POSingularEntry entry)
             {
@@ -42,7 +42,7 @@ namespace Karambolo.PO
 
         public POKey Key { get; }
 
-        static string CheckIndex(int index, string value)
+        private static string CheckIndex(int index, string value)
         {
             if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));

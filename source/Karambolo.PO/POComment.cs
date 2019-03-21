@@ -66,8 +66,7 @@ namespace Karambolo.PO
                 throw new ArgumentNullException(nameof(value));
 
             var index = value.LastIndexOf(':');
-            int line;
-            if (index >= 0 && int.TryParse(value.Substring(index + 1), out line))
+            if (index >= 0 && int.TryParse(value.Substring(index + 1), out int line))
                 value = value.Remove(index);
             else
                 line = default(int);
@@ -125,7 +124,7 @@ namespace Karambolo.PO
                 throw new ArgumentNullException(nameof(value));
 
             var withinQuotes = false;
-            var parts = value
+            IEnumerable<string> parts = value
                 .Split(c =>
                 {
                     if (c == '"')
@@ -217,7 +216,7 @@ namespace Karambolo.PO
             int length;
             POIdKind idKind;
             StringBuilder sb;
-            if (index < 0 || 
+            if (index < 0 ||
                 (length = value.Length) < 2 || value[0] != '"' || value[length - 1] != '"' ||
                 (idKind = POKey.GetIdKind(idKindToken)) == POIdKind.Unknown ||
                 POString.Decode(sb = new StringBuilder(), value, 1, length - 2) >= 0)

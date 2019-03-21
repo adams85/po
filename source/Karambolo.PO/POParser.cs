@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Karambolo.PO.Properties;
 using Karambolo.Common;
+using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
 {
@@ -28,7 +28,7 @@ namespace Karambolo.PO
 
     public class POParseResult
     {
-        readonly DiagnosticCollection _diagnostics;
+        private readonly DiagnosticCollection _diagnostics;
 
         internal POParseResult(POCatalog catalog, DiagnosticCollection diagnostics)
         {
@@ -46,7 +46,7 @@ namespace Karambolo.PO
 
     public class POParser
     {
-        class DiagnosticCodes
+        private class DiagnosticCodes
         {
             public static string DuplicateHeaderKey = nameof(Resources.DuplicateHeaderKey);
             public static string DuplicatePluralForm = nameof(Resources.DuplicatePluralForm);
@@ -67,7 +67,7 @@ namespace Karambolo.PO
             public static string UnnecessaryPluralIndex = nameof(Resources.UnnecessaryPluralIndex);
         }
 
-        class ParserDiagnostic : Diagnostic
+        private class ParserDiagnostic : Diagnostic
         {
             public ParserDiagnostic(DiagnosticSeverity severity, string code, params object[] args)
                 : base(severity, code, args) { }
@@ -79,7 +79,7 @@ namespace Karambolo.PO
         }
 
         [Flags]
-        enum Flags
+        private enum Flags
         {
             None = 0,
             ReadContentTypeHeaderOnly = 0x1,
@@ -92,7 +92,7 @@ namespace Karambolo.PO
         }
 
         [Flags]
-        enum EntryTokens
+        private enum EntryTokens
         {
             None,
             Id = 0x1,
@@ -102,14 +102,14 @@ namespace Karambolo.PO
         }
 
         // caching delegate
-        static readonly Func<char, bool> matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
+        private static readonly Func<char, bool> s_matchNonWhiteSpace = c => !char.IsWhiteSpace(c);
 
         public static Encoding DetectEncoding(Stream stream)
         {
             var reader = new StreamReader(stream, Encoding.GetEncoding("ASCII"), detectEncodingFromByteOrderMarks: true);
 
             var parser = new POParser(new POParserSettings { ReadHeaderOnly = true, ReadContentTypeHeaderOnly = true });
-            var result = parser.Parse(reader);
+            POParseResult result = parser.Parse(reader);
             if (!result.Success)
                 return null;
 
@@ -119,19 +119,15 @@ namespace Karambolo.PO
                 reader.CurrentEncoding;
         }
 
-        readonly Flags _flags;
-
-        readonly StringBuilder _builder;
-        readonly List<KeyValuePair<TextLocation, string>> _commentBuffer;
-
-        TextReader _reader;
-
-        POCatalog _catalog;
-        DiagnosticCollection _diagnostics;
-
-        string _line;
-        int _lineIndex;
-        int _columnIndex;
+        private readonly Flags _flags;
+        private readonly StringBuilder _builder;
+        private readonly List<KeyValuePair<TextLocation, string>> _commentBuffer;
+        private TextReader _reader;
+        private POCatalog _catalog;
+        private DiagnosticCollection _diagnostics;
+        private string _line;
+        private int _lineIndex;
+        private int _columnIndex;
 
         public POParser() : this(POParserSettings.Default) { }
 
@@ -162,34 +158,34 @@ namespace Karambolo.PO
             _builder = new StringBuilder();
         }
 
-        bool HasFlags(Flags flags)
+        private bool HasFlags(Flags flags)
         {
             return (_flags & flags) == flags;
         }
 
-        void AddDiagnostic(DiagnosticSeverity severity, string code, params object[] args)
+        private void AddDiagnostic(DiagnosticSeverity severity, string code, params object[] args)
         {
             _diagnostics.Add(new ParserDiagnostic(severity, code, args));
         }
 
-        void AddInformation(string code, params object[] args)
+        private void AddInformation(string code, params object[] args)
         {
             AddDiagnostic(DiagnosticSeverity.Information, code, args);
         }
 
-        void AddWarning(string code, params object[] args)
+        private void AddWarning(string code, params object[] args)
         {
             AddDiagnostic(DiagnosticSeverity.Warning, code, args);
         }
 
-        void AddError(string code, params object[] args)
+        private void AddError(string code, params object[] args)
         {
             AddDiagnostic(DiagnosticSeverity.Error, code, args);
         }
 
-        int FindNextTokenInLine(bool requireWhiteSpace = false)
+        private int FindNextTokenInLine(bool requireWhiteSpace = false)
         {
-            var index = _line.FindIndex(matchNonWhiteSpace, _columnIndex);
+            var index = _line.FindIndex(s_matchNonWhiteSpace, _columnIndex);
             if (requireWhiteSpace && index <= _columnIndex)
             {
                 AddError(DiagnosticCodes.UnexpectedToken, new TextLocation(_lineIndex, _columnIndex));
@@ -199,7 +195,7 @@ namespace Karambolo.PO
         }
 
         // resets _commentBuffer and _columnIndex
-        void SeekNextToken()
+        private void SeekNextToken()
         {
             if (_line != null && (_columnIndex = FindNextTokenInLine()) >= 0)
                 return;
@@ -227,7 +223,7 @@ namespace Karambolo.PO
             }
         }
 
-        EntryTokens DetectEntryToken(out int length)
+        private EntryTokens DetectEntryToken(out int length)
         {
             var n = _line.Length - _columnIndex;
             if (n >= 5 && string.Compare(_line, _columnIndex, "msg", 0, 3) == 0)
@@ -269,7 +265,7 @@ namespace Karambolo.PO
             return EntryTokens.None;
         }
 
-        bool TryReadStringPart(StringBuilder builder)
+        private bool TryReadStringPart(StringBuilder builder)
         {
             var lineLength = _line.Length;
 
@@ -318,7 +314,7 @@ namespace Karambolo.PO
             }
         }
 
-        bool TryReadString(out string result)
+        private bool TryReadString(out string result)
         {
             _builder.Clear();
 
@@ -335,7 +331,7 @@ namespace Karambolo.PO
             return true;
         }
 
-        bool TryReadPluralIndex(out int? result)
+        private bool TryReadPluralIndex(out int? result)
         {
             var lineLength = _line.Length;
 
@@ -372,7 +368,7 @@ namespace Karambolo.PO
             return false;
         }
 
-        List<POComment> ParseComments()
+        private List<POComment> ParseComments()
         {
             var result = new List<POComment>();
 
@@ -436,7 +432,7 @@ namespace Karambolo.PO
             return result;
         }
 
-        bool TryReadEntry(bool allowEmptyId, out IPOEntry result)
+        private bool TryReadEntry(bool allowEmptyId, out IPOEntry result)
         {
             if (_line == null)
             {
@@ -446,14 +442,14 @@ namespace Karambolo.PO
 
             var entryLocation = new TextLocation(_lineIndex, _columnIndex);
 
-            var comments = _commentBuffer != null ? ParseComments() : null;
+            List<POComment> comments = _commentBuffer != null ? ParseComments() : null;
             Dictionary<int, string> translations = null;
             string id = null, pluralId = null, contextId = null;
             IPOEntry entry = null;
-            var expectedTokens = EntryTokens.Id | EntryTokens.PluralId | EntryTokens.ContextId;
+            EntryTokens expectedTokens = EntryTokens.Id | EntryTokens.PluralId | EntryTokens.ContextId;
             do
             {
-                var token = DetectEntryToken(out int tokenLength) & expectedTokens;
+                EntryTokens token = DetectEntryToken(out int tokenLength) & expectedTokens;
                 if (token == EntryTokens.None)
                 {
                     if (!(expectedTokens == EntryTokens.Translation && entry is POPluralEntry))
@@ -602,7 +598,7 @@ namespace Karambolo.PO
             return true;
         }
 
-        bool CheckHeader(IPOEntry entry)
+        private bool CheckHeader(IPOEntry entry)
         {
             if (entry == null || entry.Key.Id != string.Empty)
                 return false;
@@ -622,7 +618,7 @@ namespace Karambolo.PO
             return true;
         }
 
-        void ParseEncoding(string line, string value)
+        private void ParseEncoding(string line, string value)
         {
             Match match;
             if (value.Length > 0 &&
@@ -632,7 +628,7 @@ namespace Karambolo.PO
                 AddWarning(DiagnosticCodes.InvalidHeaderValue, line);
         }
 
-        void ParseLanguage(string line, string value)
+        private void ParseLanguage(string line, string value)
         {
             if (value.Length > 0)
                 _catalog.Language = value;
@@ -640,7 +636,7 @@ namespace Karambolo.PO
                 AddWarning(DiagnosticCodes.InvalidHeaderValue, line);
         }
 
-        void ParsePluralForms(string line, string value)
+        private void ParsePluralForms(string line, string value)
         {
             Match match;
             if (value.Length > 0 &&
@@ -653,7 +649,7 @@ namespace Karambolo.PO
                 AddWarning(DiagnosticCodes.InvalidHeaderValue, line);
         }
 
-        void ParseHeader(POSingularEntry entry)
+        private void ParseHeader(POSingularEntry entry)
         {
             if (!HasFlags(Flags.SkipInfoHeaders))
             {
@@ -662,7 +658,7 @@ namespace Karambolo.PO
                     _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                    _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             }
 
             _catalog.HeaderComments = entry.Comments;

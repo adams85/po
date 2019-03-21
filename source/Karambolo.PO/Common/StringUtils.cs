@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Karambolo.Common
 {
-    static class StringUtils
+    internal static class StringUtils
     {
         public static int FindIndex(this string @this, Func<char, bool> match)
         {

@@ -7,7 +7,7 @@ using Karambolo.Common.Properties;
 namespace Karambolo.PO
 {
 #if USE_HIME
-using Karambolo.PO.PluralExpression;
+    using Karambolo.PO.PluralExpression;
 #endif
 
     public class POCatalog : KeyedCollection<POKey, IPOEntry>, IReadOnlyDictionary<POKey, IPOEntry>
@@ -27,14 +27,12 @@ using Karambolo.PO.PluralExpression;
         public const string ContentTypeHeaderName = "Content-Type";
         public const string ContentTransferEncodingHeaderName = "Content-Transfer-Encoding";
         public const string PluralFormsHeaderName = "Plural-Forms";
-
-        static readonly Func<int, int> defaultPluralFormSelector = n => 0;
-
-        Func<int, int> _compiledPluralFormSelector;
+        private static readonly Func<int, int> s_defaultPluralFormSelector = n => 0;
+        private Func<int, int> _compiledPluralFormSelector;
 
         public POCatalog() : base(null, Constants.RecommendedKeyedCollectionThreshold)
         {
-            _compiledPluralFormSelector = defaultPluralFormSelector;
+            _compiledPluralFormSelector = s_defaultPluralFormSelector;
         }
 
         public POCatalog(POCatalog catalog) : this()
@@ -42,7 +40,7 @@ using Karambolo.PO.PluralExpression;
             if (catalog == null)
                 throw new ArgumentNullException(nameof(catalog));
 
-            foreach (var item in catalog)
+            foreach (IPOEntry item in catalog)
                 Add(item);
         }
 
@@ -51,7 +49,7 @@ using Karambolo.PO.PluralExpression;
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 
-            foreach (var item in items)
+            foreach (IPOEntry item in items)
                 Add(item);
         }
 
@@ -66,10 +64,10 @@ using Karambolo.PO.PluralExpression;
 
         public string Language { get; set; }
 
-        int _pluralFormCount;
+        private int _pluralFormCount;
         public int PluralFormCount
         {
-            get { return _pluralFormCount; }
+            get => _pluralFormCount;
             set
             {
                 if (value < 0)
@@ -79,10 +77,10 @@ using Karambolo.PO.PluralExpression;
             }
         }
 
-        string _pluralFormSelector;
+        private string _pluralFormSelector;
         public string PluralFormSelector
         {
-            get { return _pluralFormSelector; }
+            get => _pluralFormSelector;
             set
             {
                 if (_pluralFormSelector == value)
@@ -98,14 +96,14 @@ using Karambolo.PO.PluralExpression;
 #if USE_HIME
             if (expression == null)
             {
-                _compiledPluralFormSelector = defaultPluralFormSelector;
+                _compiledPluralFormSelector = s_defaultPluralFormSelector;
                 _pluralFormSelector = null;
                 return true;
             }
 
             var lexer = new PluralExpressionLexer(expression);
             var parser = new PluralExpressionParser(lexer);
-            var parseResult = parser.Parse();
+            Hime.Redist.ParseResult parseResult = parser.Parse();
             if (!parseResult.IsSuccess)
                 return false;
 
@@ -134,8 +132,8 @@ using Karambolo.PO.PluralExpression;
             if (!TryGetValue(key, out IPOEntry entry))
                 return null;
 
-            return 
-                entry.Count > 0 ? 
+            return
+                entry.Count > 0 ?
                 entry[0] :
                 null;
         }
@@ -182,7 +180,7 @@ using Karambolo.PO.PluralExpression;
 
         IEnumerator<KeyValuePair<POKey, IPOEntry>> IEnumerable<KeyValuePair<POKey, IPOEntry>>.GetEnumerator()
         {
-            foreach (var item in Values)
+            foreach (IPOEntry item in Values)
                 yield return new KeyValuePair<POKey, IPOEntry>(GetKeyForItem(item), item);
         }
     }

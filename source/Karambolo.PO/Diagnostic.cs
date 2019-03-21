@@ -35,7 +35,7 @@ namespace Karambolo.PO
         bool HasError { get; }
     }
 
-    class DiagnosticCollection : Collection<Diagnostic>, IDiagnostics
+    internal class DiagnosticCollection : Collection<Diagnostic>, IDiagnostics
     {
         public bool HasWarning => this.Any(d => d.Severity == DiagnosticSeverity.Warning);
         public bool HasError => this.Any(d => d.Severity == DiagnosticSeverity.Error);

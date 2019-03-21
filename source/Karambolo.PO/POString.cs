@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Karambolo.PO
 {
-    static class POString
+    internal static class POString
     {
         public static int Decode(StringBuilder builder, string source, int startIndex, int count)
         {

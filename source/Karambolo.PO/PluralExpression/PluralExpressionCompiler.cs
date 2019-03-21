@@ -4,9 +4,9 @@ using Hime.Redist;
 
 namespace Karambolo.PO.PluralExpression
 {
-    class PluralExpressionCompiler
+    internal class PluralExpressionCompiler
     {
-        static Expression FromCBool(Expression expression)
+        private static Expression FromCBool(Expression expression)
         {
             return
                 expression.Type == typeof(int) ?
@@ -14,7 +14,7 @@ namespace Karambolo.PO.PluralExpression
                 expression;
         }
 
-        static Expression ToCBool(Expression expression)
+        private static Expression ToCBool(Expression expression)
         {
             return
                 expression.Type == typeof(bool) ?
@@ -22,29 +22,28 @@ namespace Karambolo.PO.PluralExpression
                 expression;
         }
 
-        readonly ASTNode _syntaxTree;
-
-        ParameterExpression _param;
+        private readonly ASTNode _syntaxTree;
+        private ParameterExpression _param;
 
         public PluralExpressionCompiler(ASTNode syntaxTree)
         {
             _syntaxTree = syntaxTree;
         }
 
-        Expression VisitVariable(ASTNode node)
+        private Expression VisitVariable(ASTNode node)
         {
             return _param;
         }
 
-        Expression VisitInteger(ASTNode node)
+        private Expression VisitInteger(ASTNode node)
         {
             return Expression.Constant(int.Parse(node.Value));
         }
 
-        Expression VisitMultiplication(ASTNode node)
+        private Expression VisitMultiplication(ASTNode node)
         {
-            var left = Visit(node.Children[0]);
-            var right = Visit(node.Children[2]);
+            Expression left = Visit(node.Children[0]);
+            Expression right = Visit(node.Children[2]);
 
             switch (node.Children[1].Symbol.Name)
             {
@@ -59,10 +58,10 @@ namespace Karambolo.PO.PluralExpression
             }
         }
 
-        Expression VisitAddition(ASTNode node)
+        private Expression VisitAddition(ASTNode node)
         {
-            var left = Visit(node.Children[0]);
-            var right = Visit(node.Children[2]);
+            Expression left = Visit(node.Children[0]);
+            Expression right = Visit(node.Children[2]);
 
             switch (node.Children[1].Symbol.Name)
             {
@@ -75,10 +74,10 @@ namespace Karambolo.PO.PluralExpression
             }
         }
 
-        Expression VisitRelation(ASTNode node)
+        private Expression VisitRelation(ASTNode node)
         {
-            var left = Visit(node.Children[0]);
-            var right = Visit(node.Children[2]);
+            Expression left = Visit(node.Children[0]);
+            Expression right = Visit(node.Children[2]);
 
             switch (node.Children[1].Symbol.Name)
             {
@@ -95,10 +94,10 @@ namespace Karambolo.PO.PluralExpression
             }
         }
 
-        Expression VisitEquality(ASTNode node)
+        private Expression VisitEquality(ASTNode node)
         {
-            var left = Visit(node.Children[0]);
-            var right = Visit(node.Children[2]);
+            Expression left = Visit(node.Children[0]);
+            Expression right = Visit(node.Children[2]);
 
             switch (node.Children[1].Symbol.Name)
             {
@@ -111,32 +110,32 @@ namespace Karambolo.PO.PluralExpression
             }
         }
 
-        Expression VisitLogicalAnd(ASTNode node)
+        private Expression VisitLogicalAnd(ASTNode node)
         {
-            var left = FromCBool(Visit(node.Children[0]));
-            var right = FromCBool(Visit(node.Children[1]));
+            Expression left = FromCBool(Visit(node.Children[0]));
+            Expression right = FromCBool(Visit(node.Children[1]));
 
             return ToCBool(Expression.AndAlso(left, right));
         }
 
-        Expression VisitLogicalOr(ASTNode node)
+        private Expression VisitLogicalOr(ASTNode node)
         {
-            var left = FromCBool(Visit(node.Children[0]));
-            var right = FromCBool(Visit(node.Children[1]));
+            Expression left = FromCBool(Visit(node.Children[0]));
+            Expression right = FromCBool(Visit(node.Children[1]));
 
             return ToCBool(Expression.OrElse(left, right));
         }
 
-        Expression VisitCondition(ASTNode node)
+        private Expression VisitCondition(ASTNode node)
         {
-            var test = FromCBool(Visit(node.Children[0]));
-            var ifTrue = Visit(node.Children[1]);
-            var ifFalse = Visit(node.Children[2]);
+            Expression test = FromCBool(Visit(node.Children[0]));
+            Expression ifTrue = Visit(node.Children[1]);
+            Expression ifFalse = Visit(node.Children[2]);
 
             return Expression.Condition(test, ifTrue, ifFalse);
         }
 
-        Expression Visit(ASTNode node)
+        private Expression Visit(ASTNode node)
         {
             switch (node.Symbol.ID)
             {
@@ -167,7 +166,7 @@ namespace Karambolo.PO.PluralExpression
         {
             _param = Expression.Parameter(typeof(int), "n");
 
-            var expression = Visit(_syntaxTree);
+            Expression expression = Visit(_syntaxTree);
 
             var lambda = Expression.Lambda<Func<int, int>>(expression, _param);
             return lambda.Compile();

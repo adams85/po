@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Karambolo.Common;
 using Karambolo.Common.Collections;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
 namespace Karambolo.PO.Test
 {
+#if USE_COMMON
+    using Karambolo.Common;
+#endif
     public class POGeneratorTest
     {
-        static readonly POCatalog catalog = CreateCatalog();
+        private static readonly POCatalog s_catalog = CreateCatalog();
 
         public static POCatalog CreateCatalog()
         {
@@ -76,7 +78,7 @@ namespace Karambolo.PO.Test
             string result;
             using (var ms = new MemoryStream())
             {
-                generator.Generate(ms, catalog);
+                generator.Generate(ms, s_catalog);
                 result = Encoding.UTF8.GetString(ms.ToArray());
             }
 
@@ -96,7 +98,7 @@ namespace Karambolo.PO.Test
 
             var sb = new StringBuilder();
             using (var writer = new StringWriter(sb))
-                generator.Generate(writer, catalog);
+                generator.Generate(writer, s_catalog);
 
             var lines = sb.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
             
@@ -130,7 +132,7 @@ namespace Karambolo.PO.Test
             string result;
             using (var ms = new MemoryStream())
             {
-                generator.Generate(ms, catalog);
+                generator.Generate(ms, s_catalog);
                 result = Encoding.UTF8.GetString(ms.ToArray());
             }
 
@@ -149,7 +151,7 @@ namespace Karambolo.PO.Test
             string result;
             using (var ms = new MemoryStream())
             {
-                generator.Generate(ms, catalog);
+                generator.Generate(ms, s_catalog);
                 result = Encoding.UTF8.GetString(ms.ToArray());
             }
 

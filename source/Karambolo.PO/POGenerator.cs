@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Karambolo.Common;
 using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
@@ -29,7 +28,7 @@ namespace Karambolo.PO
     public class POGenerator
     {
         [Flags]
-        enum Flags
+        private enum Flags
         {
             None = 0,
             IgnoreEncoding = 0x1,
@@ -42,16 +41,13 @@ namespace Karambolo.PO
             IgnoreLongLines = 0x20,
         }
 
-        const int maxLineLength = 80;
-        static readonly string stringBreak = string.Concat("\"", Environment.NewLine, "\"");
-
-        readonly Flags _flags;
-
-        readonly StringBuilder _builder;
-        int _lineStartIndex;
-
-        TextWriter _writer;
-        POCatalog _catalog;
+        private const int MaxLineLength = 80;
+        private static readonly string s_stringBreak = string.Concat("\"", Environment.NewLine, "\"");
+        private readonly Flags _flags;
+        private readonly StringBuilder _builder;
+        private int _lineStartIndex;
+        private TextWriter _writer;
+        private POCatalog _catalog;
 
         public POGenerator() : this(POGeneratorSettings.Default) { }
 
@@ -83,12 +79,12 @@ namespace Karambolo.PO
             _builder = new StringBuilder();
         }
 
-        bool HasFlags(Flags flags)
+        private bool HasFlags(Flags flags)
         {
             return (_flags & flags) == flags;
         }
 
-        int IndexOfNewLine(int startIndex, int endIndex)
+        private int IndexOfNewLine(int startIndex, int endIndex)
         {
             for (endIndex--; startIndex < endIndex; startIndex++)
                 if (_builder[startIndex] == '\\' && _builder[++startIndex] == 'n')
@@ -100,16 +96,16 @@ namespace Karambolo.PO
             return -1;
         }
 
-        int GetStringBreakIndex()
+        private int GetStringBreakIndex()
         {
             var result = -1;
 
             var endIndex = _builder.Length;
             int index;
 
-            if (!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > maxLineLength)
+            if (!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength)
             {
-                result = _lineStartIndex + maxLineLength - 1;
+                result = _lineStartIndex + MaxLineLength - 1;
 
                 char c;
                 for (index = result - 1; index > _lineStartIndex; index--)
@@ -131,13 +127,13 @@ namespace Karambolo.PO
             return result;
         }
 
-        void ResetBuilder()
+        private void ResetBuilder()
         {
             _builder.Clear();
             _lineStartIndex = 0;
         }
 
-        void BuildString(string value)
+        private void BuildString(string value)
         {
             var startIndex = _builder.Length;
             _builder.Append('"');
@@ -145,29 +141,29 @@ namespace Karambolo.PO
             _builder.Append('"');
             var endIndex = _builder.Length;
 
-            if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > maxLineLength ||
+            if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength ||
                  (!HasFlags(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0)))
                 return;
 
             startIndex++;
-            _builder.Insert(startIndex, stringBreak);
-            _lineStartIndex = startIndex + stringBreak.Length;
+            _builder.Insert(startIndex, s_stringBreak);
+            _lineStartIndex = startIndex + s_stringBreak.Length;
             _lineStartIndex--;
 
             while ((startIndex = GetStringBreakIndex()) >= 0)
             {
-                _builder.Insert(startIndex, stringBreak);
-                _lineStartIndex = startIndex + stringBreak.Length;
+                _builder.Insert(startIndex, s_stringBreak);
+                _lineStartIndex = startIndex + s_stringBreak.Length;
                 _lineStartIndex--;
             }
         }
 
-        void WriteComments(IList<POComment> comments)
+        private void WriteComments(IList<POComment> comments)
         {
-            var commentLookup = comments.ToLookup(c => c.Kind).OrderBy(c => c.Key);
+            IOrderedEnumerable<IGrouping<POCommentKind, POComment>> commentLookup = comments.ToLookup(c => c.Kind).OrderBy(c => c.Key);
 
-            foreach (var commentGroup in commentLookup)
-                foreach (var comment in commentGroup)
+            foreach (IGrouping<POCommentKind, POComment> commentGroup in commentLookup)
+                foreach (POComment comment in commentGroup)
                 {
                     char commentKindToken;
                     switch (comment.Kind)
@@ -184,7 +180,7 @@ namespace Karambolo.PO
                 }
         }
 
-        void WriteEntry(IPOEntry entry)
+        private void WriteEntry(IPOEntry entry)
         {
             if (!HasFlags(Flags.SkipComments) && entry.Comments != null)
                 WriteComments(entry.Comments);
@@ -241,7 +237,7 @@ namespace Karambolo.PO
             }
         }
 
-        IPOEntry CreateHeaderEntry()
+        private IPOEntry CreateHeaderEntry()
         {
             IDictionary<string, string> headers;
             if (!HasFlags(Flags.SkipInfoHeaders) && _catalog.Headers != null)
@@ -251,7 +247,7 @@ namespace Karambolo.PO
                     headers = new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                    headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
+                headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
             }
             else
                 headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -276,7 +272,7 @@ namespace Karambolo.PO
                 orderedHeaders = headers.AsEnumerable();
             else
 #endif
-                orderedHeaders = headers.OrderBy(kvp => kvp.Key);
+            orderedHeaders = headers.OrderBy(kvp => kvp.Key);
 
             var value =
                 headers.Count > 0 ?
@@ -314,7 +310,7 @@ namespace Karambolo.PO
             {
                 _lineStartIndex = 0;
 
-                var entry = CreateHeaderEntry();
+                IPOEntry entry = CreateHeaderEntry();
                 if (entry != null)
                     WriteEntry(entry);
 

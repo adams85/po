@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Karambolo.Common
 {
-    static partial class EnumerableUtils
+    internal static partial class EnumerableUtils
     {
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer)
         {
