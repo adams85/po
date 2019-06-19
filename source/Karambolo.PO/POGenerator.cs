@@ -136,6 +136,9 @@ namespace Karambolo.PO
 
         private void BuildString(string value)
         {
+            if (value == null)
+                value = string.Empty;
+
             var startIndex = _builder.Length;
             _builder.Append('"');
             POString.Encode(_builder, value, 0, value.Length);

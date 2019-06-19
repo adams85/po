@@ -22,7 +22,7 @@ namespace Karambolo.PO
     {
         private sealed class DebugView
         {
-            private POSingularEntry _entry;
+            private readonly POSingularEntry _entry;
 
             public DebugView(POSingularEntry entry)
             {
