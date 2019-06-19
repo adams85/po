@@ -11,8 +11,8 @@
 namespace Karambolo.PO.Properties {
     using System;
     using System.Reflection;
-
-
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -20,7 +20,7 @@ namespace Karambolo.PO.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -80,7 +80,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Encoding of writer and catalog should match. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.).
+        ///   Looks up a localized string similar to Encoding of writer and catalog should match. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true..
         /// </summary>
         internal static string EncodingMismatch {
             get {
@@ -89,7 +89,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PO specification allows only single-byte encodings. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.).
+        ///   Looks up a localized string similar to PO specification allows only single-byte encodings so writer should use a single-byte encoding, too. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true..
         /// </summary>
         internal static string EncodingNotSingleByte {
             get {

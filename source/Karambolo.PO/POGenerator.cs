@@ -298,10 +298,10 @@ namespace Karambolo.PO
             if (!HasFlags(Flags.IgnoreEncoding))
             {
                 if (writer.Encoding.GetByteCount(" ") > 1)
-                    throw new InvalidOperationException(Resources.EncodingNotSingleByte);
+                    throw new ArgumentException(Resources.EncodingNotSingleByte, nameof(writer));
 
                 if (catalog.Encoding == null || Encoding.GetEncoding(catalog.Encoding).WebName != writer.Encoding.WebName)
-                    throw new InvalidOperationException(Resources.EncodingMismatch);
+                    throw new ArgumentException(Resources.EncodingMismatch, nameof(writer));
             }
 
             _writer = writer;

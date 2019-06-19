@@ -124,10 +124,10 @@
     <value>Entry beginning at {0} has multiple plural form with index {0}.</value>
   </data>
   <data name="EncodingMismatch" xml:space="preserve">
-    <value>Encoding of writer and catalog should match. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.)</value>
+    <value>Encoding of writer and catalog should match. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true.</value>
   </data>
   <data name="EncodingNotSingleByte" xml:space="preserve">
-    <value>PO specification allows only single-byte encodings. (You may bypass this check by setting POGeneratorSettings.IgnoreEncoding to true.)</value>
+    <value>PO specification allows only single-byte encodings so writer should use a single-byte encoding, too. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true.</value>
   </data>
   <data name="ExpectedToken" xml:space="preserve">
     <value>Token '{1}' is expected at {0}.</value>
