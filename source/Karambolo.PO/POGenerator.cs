@@ -156,6 +156,10 @@ namespace Karambolo.PO
 
             while ((startIndex = GetStringBreakIndex()) >= 0)
             {
+                if (_builder[startIndex - 1] == '\\')
+                {
+                    startIndex--;
+                }
                 _builder.Insert(startIndex, s_stringBreak);
                 _lineStartIndex = startIndex + s_stringBreak.Length;
                 _lineStartIndex--;
