@@ -117,7 +117,7 @@ namespace Karambolo.PO
                     }
 
                 // escape sequences are kept together
-                if (_builder[result - 1] == '\\')
+                if (IsEscaped(_builder, result, _lineStartIndex))
                     result--;
             }
 
@@ -126,6 +126,19 @@ namespace Karambolo.PO
                 result = index;
 
             return result;
+
+            bool IsEscaped(StringBuilder sb, int currentIndex, int startIndex)
+            {
+                bool isEscaped = false;
+
+                for (currentIndex--; currentIndex > startIndex; currentIndex--)
+                    if (sb[currentIndex] == '\\')
+                        isEscaped = !isEscaped;
+                    else
+                        break;
+
+                return isEscaped;
+            }
         }
 
         private void ResetBuilder()
@@ -146,7 +159,7 @@ namespace Karambolo.PO
             var endIndex = _builder.Length;
 
             if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength ||
-                 (!HasFlags(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0)))
+                  !HasFlags(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0))
                 return;
 
             startIndex++;
