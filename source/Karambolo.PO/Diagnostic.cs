@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -28,9 +29,13 @@ namespace Karambolo.PO
         public DiagnosticSeverity Severity { get; }
         public string Code { get; }
         public object[] Args { get; }
-        public string Message => string.Format(GetMessageFormat(), Args);
+
+        [Obsolete("This property is redundant, thus it will be removed in the next major version. Use the ToString method instead.")]
+        public string Message => ToString();
 
         protected abstract string GetMessageFormat();
+
+        public override string ToString() => string.Format(GetMessageFormat(), Args);
     }
 
     public interface IDiagnostics : IReadOnlyList<Diagnostic>
