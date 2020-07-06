@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Karambolo.PO
 {
@@ -70,19 +71,16 @@ namespace Karambolo.PO
 
         public override bool Equals(object obj)
         {
-            return obj is POKey key ? Equals(key) : false;
+            return obj is POKey key && Equals(key);
         }
 
         public override int GetHashCode()
         {
-            var hashCode = Id?.GetHashCode() ?? 0;
-
-            if (PluralId != null)
-                hashCode ^= PluralId.GetHashCode();
-
-            if (ContextId != null)
-                hashCode ^= ContextId.GetHashCode();
-
+            EqualityComparer<string> stringComparer = EqualityComparer<string>.Default;
+            int hashCode = -1618513021;
+            hashCode = hashCode * -1521134295 + stringComparer.GetHashCode(Id);
+            hashCode = hashCode * -1521134295 + stringComparer.GetHashCode(PluralId);
+            hashCode = hashCode * -1521134295 + stringComparer.GetHashCode(ContextId);
             return hashCode;
         }
 
