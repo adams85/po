@@ -31,7 +31,9 @@ namespace Karambolo.PO
         public const string ContentTypeHeaderName = "Content-Type";
         public const string ContentTransferEncodingHeaderName = "Content-Transfer-Encoding";
         public const string PluralFormsHeaderName = "Plural-Forms";
+
         private static readonly Func<int, int> s_defaultPluralFormSelector = n => 0;
+
         private Func<int, int> _compiledPluralFormSelector;
 
         public POCatalog() : base(null, Constants.RecommendedKeyedCollectionThreshold)
@@ -39,16 +41,8 @@ namespace Karambolo.PO
             _compiledPluralFormSelector = s_defaultPluralFormSelector;
         }
 
-        public POCatalog(POCatalog catalog) : this()
-        {
-            if (catalog == null)
-                throw new ArgumentNullException(nameof(catalog));
-
-            foreach (IPOEntry item in catalog)
-                Add(item);
-        }
-
-        public POCatalog(IEnumerable<IPOEntry> items) : this()
+        public POCatalog(IEnumerable<IPOEntry> items)
+            : this()
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
@@ -56,6 +50,10 @@ namespace Karambolo.PO
             foreach (IPOEntry item in items)
                 Add(item);
         }
+
+        [Obsolete("This constructor is redundant (as it is not a proper copy constructor), thus it will be removed or reworked in the next major version. Use POCatalog(IEnumerable<IPOEntry>) instead.")]
+        public POCatalog(POCatalog catalog)
+            : this((catalog ?? throw new ArgumentNullException(nameof(catalog))).AsEnumerable<IPOEntry>()) { }
 
         public IEnumerable<POKey> Keys => Values.Select(GetKeyForItem);
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Karambolo.PO
 {
@@ -79,13 +80,20 @@ namespace Karambolo.PO
 
     public class POPluralEntry : Collection<string>, IPOEntry
     {
-        public POPluralEntry(POKey key)
+        private POPluralEntry(POKey key, IList<string> translations)
+            : base(translations)
         {
             if (!key.IsValid)
                 throw new ArgumentException(null, nameof(key));
 
             Key = key;
         }
+
+        public POPluralEntry(POKey key)
+            : this(key, new List<string>()) { }
+
+        public POPluralEntry(POKey key, IEnumerable<string> translations)
+            : this(key, (translations ?? throw new ArgumentNullException(nameof(translations))).ToList()) { }
 
         public POKey Key { get; }
 
