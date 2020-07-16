@@ -517,9 +517,9 @@ namespace Karambolo.PO
                         {
                             if (pluralIndex != null)
                             {
-                                if (pluralIndex < 0 || pluralIndex >= _catalog.PluralFormCount)
+                                if (pluralIndex < 0 || (_catalog.PluralFormCount > 0 && pluralIndex >= _catalog.PluralFormCount))
                                 {
-                                    AddWarning(DiagnosticCodes.InvalidPluralIndex, new TextLocation(_lineIndex, originalColumnIndex));
+                                    AddError(DiagnosticCodes.InvalidPluralIndex, new TextLocation(_lineIndex, originalColumnIndex));
                                     break;
                                 }
                             }
@@ -576,7 +576,11 @@ namespace Karambolo.PO
 
             if (entry is POPluralEntry pluralEntry)
             {
-                var n = _catalog.PluralFormCount;
+                var n =
+                    _catalog.PluralFormCount > 0 ? _catalog.PluralFormCount :
+                    translations.Count > 0 ? translations.Keys.Max() + 1 :
+                    0;
+
                 for (var i = 0; i < n; i++)
                     if (translations.TryGetValue(i, out string value))
                         pluralEntry.Add(value);
