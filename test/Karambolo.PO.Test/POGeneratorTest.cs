@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Karambolo.Common.Collections;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -12,6 +11,9 @@ namespace Karambolo.PO.Test
 {
 #if USE_COMMON
     using Karambolo.Common;
+    using HeaderDictionary = Common.Collections.OrderedDictionary<string, string>;
+#else
+    using HeaderDictionary = Dictionary<string, string>;
 #endif
     public class POGeneratorTest
     {
@@ -26,7 +28,7 @@ namespace Karambolo.PO.Test
                 new POTranslatorComment { Text = "header comment" }
             };
 
-            result.Headers = new OrderedDictionary<string, string>
+            result.Headers = new HeaderDictionary(StringComparer.OrdinalIgnoreCase)
             {
                 { "Language-Team", "" },
                 { "PO-Revision-Date", "" },

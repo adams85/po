@@ -157,6 +157,7 @@ namespace Karambolo.PO
             return item.Key;
         }
 
+#if NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD2_0
         public bool TryGetValue(POKey key, out IPOEntry value)
         {
             if (Dictionary != null)
@@ -174,6 +175,7 @@ namespace Karambolo.PO
             value = null;
             return false;
         }
+#endif
 
         bool IReadOnlyDictionary<POKey, IPOEntry>.ContainsKey(POKey key)
         {

@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>Karambolo.PO.Test</AssemblyName>
     <RootNamespace>Karambolo.PO.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -50,7 +50,6 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <ItemGroup>
-    <PackageReference Include="Karambolo.Common" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
