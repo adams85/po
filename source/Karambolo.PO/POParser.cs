@@ -265,7 +265,7 @@ namespace Karambolo.PO
             return EntryTokens.None;
         }
 
-        private bool TryReadStringPart(StringBuilder builder)
+        private bool TryReadPOStringPart(StringBuilder builder)
         {
             var lineLength = _line.Length;
 
@@ -314,18 +314,18 @@ namespace Karambolo.PO
             }
         }
 
-        private bool TryReadString(out string result)
+        private bool TryReadPOString(out string result)
         {
             _builder.Clear();
 
-            if (!TryReadStringPart(_builder))
+            if (!TryReadPOStringPart(_builder))
             {
                 result = null;
                 return false;
             }
 
             do { SeekNextToken(); }
-            while (_line != null && _line[_columnIndex] == '"' && TryReadStringPart(_builder));
+            while (_line != null && _line[_columnIndex] == '"' && TryReadPOStringPart(_builder));
 
             result = _builder.ToString();
             return true;
@@ -467,7 +467,7 @@ namespace Karambolo.PO
                 {
                     case EntryTokens.Id:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadString(out id))
+                        if (_columnIndex < 0 || !TryReadPOString(out id))
                         {
                             result = null;
                             return false;
@@ -478,7 +478,7 @@ namespace Karambolo.PO
                         break;
                     case EntryTokens.PluralId:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadString(out pluralId))
+                        if (_columnIndex < 0 || !TryReadPOString(out pluralId))
                         {
                             result = null;
                             return false;
@@ -487,7 +487,7 @@ namespace Karambolo.PO
                         break;
                     case EntryTokens.ContextId:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadString(out contextId))
+                        if (_columnIndex < 0 || !TryReadPOString(out contextId))
                         {
                             result = null;
                             return false;
@@ -499,7 +499,7 @@ namespace Karambolo.PO
                         TryReadPluralIndex(out int? pluralIndex);
 
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadString(out string value))
+                        if (_columnIndex < 0 || !TryReadPOString(out string value))
                         {
                             result = null;
                             return false;

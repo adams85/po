@@ -147,7 +147,7 @@ namespace Karambolo.PO
             _lineStartIndex = 0;
         }
 
-        private void BuildString(string value)
+        private void AppendPOString(string value)
         {
             if (value == null)
                 value = string.Empty;
@@ -207,14 +207,14 @@ namespace Karambolo.PO
                 ResetBuilder();
                 _builder.Append(POCatalog.ContextIdToken);
                 _builder.Append(' ');
-                BuildString(entry.Key.ContextId);
+                AppendPOString(entry.Key.ContextId);
                 _writer.WriteLine(_builder);
             }
 
             ResetBuilder();
             _builder.Append(POCatalog.IdToken);
             _builder.Append(' ');
-            BuildString(entry.Key.Id);
+            AppendPOString(entry.Key.Id);
             _writer.WriteLine(_builder);
 
             if (entry.Key.PluralId != null)
@@ -222,7 +222,7 @@ namespace Karambolo.PO
                 ResetBuilder();
                 _builder.Append(POCatalog.PluralIdToken);
                 _builder.Append(' ');
-                BuildString(entry.Key.PluralId);
+                AppendPOString(entry.Key.PluralId);
                 _writer.WriteLine(_builder);
             }
 
@@ -232,7 +232,7 @@ namespace Karambolo.PO
                     ResetBuilder();
                     _builder.Append(POCatalog.TranslationToken);
                     _builder.Append(' ');
-                    BuildString(singularEntry.Translation);
+                    AppendPOString(singularEntry.Translation);
                     _writer.WriteLine(_builder);
                     break;
                 case POPluralEntry pluralEntry:
@@ -245,7 +245,7 @@ namespace Karambolo.PO
                         _builder.Append(i);
                         _builder.Append(']');
                         _builder.Append(' ');
-                        BuildString(pluralEntry[i]);
+                        AppendPOString(pluralEntry[i]);
                         _writer.WriteLine(_builder);
                     }
                     break;
