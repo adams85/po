@@ -70,44 +70,63 @@
     <EmbeddedResource Remove="obj\**" />
     <None Remove="bin\**" />
     <None Remove="obj\**" />
- </ItemGroup>
-
-  <ItemGroup Condition="'$(Edition)' == 'Minimal'">
-    <Compile Remove="PluralExpression\**" />
-    <EmbeddedResource Remove="PluralExpression\**" />
-    <None Remove="PluralExpression\**" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Edition)' == 'Compact'">
-    <PackageReference Include="Hime.Redist" Version="3.4.0" />
+  <Choose>
+    <When Condition="'$(Edition)' == 'Full'">
+      <ItemGroup>
+        <PackageReference Include="Hime.Redist" Version="3.5.0" />
+        <PackageReference Include="Karambolo.Common" Version="3.2.0" />
 
-    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
-    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
-  </ItemGroup>
+        <Compile Remove="Common\**" />
+        <EmbeddedResource Remove="Common\**" />
+        <None Remove="Common\**" />
 
-  <ItemGroup Condition="'$(Edition)' == 'Full'">
-    <PackageReference Include="Hime.Redist" Version="3.4.0" />
-    <PackageReference Include="Karambolo.Common" Version="3.1.2" />
+        <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
+        <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
+      </ItemGroup>
+    </When>
 
-    <Compile Remove="Common\**" />
-    <EmbeddedResource Remove="Common\**" />
-    <None Remove="Common\**" />
+    <When Condition="'$(Edition)' == 'Compact'">
+      <ItemGroup>
+        <PackageReference Include="Hime.Redist" Version="3.5.0" />
 
-    <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
-    <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
-  </ItemGroup>
+        <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
+        <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
+      </ItemGroup>
+    </When>
+    
+    <When Condition="'$(Edition)' == 'Minimal'">
+      <ItemGroup>
+        <Compile Remove="PluralExpression\**" />
+        <EmbeddedResource Remove="PluralExpression\**" />
+        <None Remove="PluralExpression\**" />
+      </ItemGroup>
+    </When>
+  </Choose>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Compile Remove="Compatibility.Net40.cs" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(TargetFramework)' == 'net40'">
+    </When>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
-    <Compile Remove="Compatibility.Net40.cs" />
-  </ItemGroup>
+    <When Condition="'$(TargetFramework)' == 'net45'">
+      <ItemGroup>
+        <Compile Remove="Compatibility.Net40.cs" />
+      </ItemGroup>
+    </When>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <Compile Remove="Compatibility.Net40.cs" />
-  </ItemGroup>
+    <When Condition="'$(TargetFramework)' == 'netstandard1.0'">
+      <ItemGroup>
+        <Compile Remove="Compatibility.Net40.cs" />
+      </ItemGroup>
+    </When>
+
+    <When Condition="'$(TargetFramework)' == 'netstandard2.0'">
+      <ItemGroup>
+        <Compile Remove="Compatibility.Net40.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
