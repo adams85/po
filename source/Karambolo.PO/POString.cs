@@ -5,7 +5,7 @@ namespace Karambolo.PO
 {
     internal static class POString
     {
-        public static int Decode(StringBuilder builder, string source, int startIndex, int count)
+        public static int Decode(StringBuilder builder, string source, int startIndex, int count, bool environmentIndependentNewLine)
         {
             var endIndex = startIndex + count;
             for (; startIndex < endIndex; startIndex++)
@@ -29,7 +29,12 @@ namespace Karambolo.PO
                     case '\\': b.Append('\\'); return true;
                     case '"': b.Append('"'); return true;
                     case 't': b.Append('\t'); return true;
-                    case 'n': b.Append(Environment.NewLine); return true;
+                    case 'n':
+                        if (environmentIndependentNewLine)
+                            b.Append('\n');
+                        else
+                            b.Append(Environment.NewLine);
+                        return true;
                     default: return false;
                 }
             }

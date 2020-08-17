@@ -24,6 +24,7 @@ namespace Karambolo.PO
 #endif
         public bool SkipInfoHeaders { get; set; }
         public bool SkipComments { get; set; }
+        public bool ReadEnvironmentIndependentNewLine { get; set; }
     }
 
     public class POParseResult
@@ -89,6 +90,7 @@ namespace Karambolo.PO
 #endif
             SkipInfoHeaders = 0x8,
             SkipComments = 0x10,
+            EnvironmentIndependentNewLine = 0x20
         }
 
         [Flags]
@@ -154,6 +156,9 @@ namespace Karambolo.PO
                 _flags |= Flags.SkipComments;
             else
                 _commentBuffer = new List<KeyValuePair<TextLocation, string>>();
+
+            if (settings.ReadEnvironmentIndependentNewLine)
+                _flags |= Flags.EnvironmentIndependentNewLine;
 
             _builder = new StringBuilder();
         }
@@ -287,7 +292,7 @@ namespace Karambolo.PO
                         return false;
                     }
 
-                    var index = POString.Decode(builder, _line, startIndex, endIndex - startIndex);
+                    var index = POString.Decode(builder, _line, startIndex, endIndex - startIndex, HasFlags(Flags.EnvironmentIndependentNewLine));
                     if (index >= 0)
                     {
                         AddError(DiagnosticCodes.InvalidEscapeSequence, new TextLocation(_lineIndex, index));
@@ -421,7 +426,7 @@ namespace Karambolo.PO
                             result.Add(POFlagsComment.Parse(comment));
                             break;
                         case POCommentKind.PreviousValue:
-                            if (POPreviousValueComment.TryParse(comment, out POPreviousValueComment previousValueComment))
+                            if (POPreviousValueComment.TryParse(comment, out POPreviousValueComment previousValueComment, HasFlags(Flags.EnvironmentIndependentNewLine)))
                                 result.Add(previousValueComment);
                             else
                                 AddWarning(DiagnosticCodes.MalformedComment, commentKvp.Key);

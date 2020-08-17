@@ -199,7 +199,7 @@ namespace Karambolo.PO
 
     public class POPreviousValueComment : POComment
     {
-        public static bool TryParse(string value, out POPreviousValueComment result)
+        public static bool TryParse(string value, out POPreviousValueComment result, bool environmentIndependentNewLine)
         {
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
@@ -219,7 +219,7 @@ namespace Karambolo.PO
             if (index < 0 ||
                 (length = value.Length) < 2 || value[0] != '"' || value[length - 1] != '"' ||
                 (idKind = POKey.GetIdKind(idKindToken)) == POIdKind.Unknown ||
-                POString.Decode(sb = new StringBuilder(), value, 1, length - 2) >= 0)
+                POString.Decode(sb = new StringBuilder(), value, 1, length - 2, environmentIndependentNewLine) >= 0)
             {
                 result = null;
                 return false;
@@ -227,14 +227,6 @@ namespace Karambolo.PO
 
             result = new POPreviousValueComment { IdKind = idKind, Value = sb.ToString() };
             return true;
-        }
-
-        public static POPreviousValueComment Parse(string value)
-        {
-            return
-                TryParse(value, out POPreviousValueComment result) ?
-                result :
-                throw new FormatException(Resources.IncorrectFormat);
         }
 
         public POPreviousValueComment() : base(POCommentKind.PreviousValue) { }
