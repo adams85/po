@@ -64,7 +64,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\newlinetest.po" />
     <None Remove="Resources\sample.po" />
+    <EmbeddedResource Include="Resources\newlinetest.po" />
     <EmbeddedResource Include="Resources\sample.po" />
   </ItemGroup>
 

@@ -225,5 +225,62 @@ namespace Karambolo.PO.Test
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: false, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
         }
+
+        [Fact]
+        public void ParseWithStringDecodingOptions()
+        {
+            CheckCatalog(new POStringDecodingOptions { }, Environment.NewLine, Environment.NewLine);
+            CheckCatalog(new POStringDecodingOptions { KeepKeyStringsPlatformIndependent = true }, "\n", Environment.NewLine);
+            CheckCatalog(new POStringDecodingOptions { KeepTranslationStringsPlatformIndependent = true }, Environment.NewLine, "\n");
+            CheckCatalog(new POStringDecodingOptions { KeepKeyStringsPlatformIndependent = true, KeepTranslationStringsPlatformIndependent = true }, "\n", "\n");
+
+            void CheckCatalog(POStringDecodingOptions options, string expectedKeyStringNewLine, string expectedTranslationStringNewLine)
+            {
+                var parserSettings = new POParserSettings
+                {
+                    StringDecodingOptions = options
+                };
+
+                var parser = new POParser(parserSettings);
+
+                POParseResult result = parser.Parse(new MemoryStream(Resources.NewLineTestPO));
+
+                Assert.True(result.Success);
+
+                POCatalog catalog = result.Catalog;
+
+                Assert.Equal(4, catalog.Headers.Count);
+                Assert.Equal("en_US", catalog.Headers["Language"]);
+
+                Assert.Equal(1, catalog.Count);
+
+                Assert.Equal(
+                    new POKey($"Id of{expectedKeyStringNewLine}a long text", $"Plural id of{expectedKeyStringNewLine}a long text", $"Context id of{expectedKeyStringNewLine}a long text"),
+                    catalog[0].Key);
+
+                var entry = catalog[0];
+                Assert.Equal(2, entry.Count);
+                Assert.Equal($"Singular translation of{expectedTranslationStringNewLine}a long text", entry[0]);
+                Assert.Equal($"Plural translation of{expectedTranslationStringNewLine}a long text", entry[1]);
+
+                IList<POComment> comments = catalog[0].Comments;
+                Assert.Equal(3, comments?.Count ?? 0);
+
+                POComment comment = comments[0];
+                Assert.Equal(POCommentKind.PreviousValue, comment.Kind);
+                Assert.Equal(POIdKind.ContextId, ((POPreviousValueComment)comment).IdKind);
+                Assert.Equal($"Previous context id of{expectedKeyStringNewLine}a long text", ((POPreviousValueComment)comment).Value);
+
+                comment = comments[1];
+                Assert.Equal(POCommentKind.PreviousValue, comment.Kind);
+                Assert.Equal(POIdKind.Id, ((POPreviousValueComment)comment).IdKind);
+                Assert.Equal($"Previous id of{expectedKeyStringNewLine}a long text", ((POPreviousValueComment)comment).Value);
+
+                comment = comments[2];
+                Assert.Equal(POCommentKind.PreviousValue, comment.Kind);
+                Assert.Equal(POIdKind.PluralId, ((POPreviousValueComment)comment).IdKind);
+                Assert.Equal($"Previous plural id of{expectedKeyStringNewLine}a long text", ((POPreviousValueComment)comment).Value);
+            }
+        }
     }
 }

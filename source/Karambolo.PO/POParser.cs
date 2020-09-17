@@ -13,6 +13,12 @@ namespace Karambolo.PO
     using Karambolo.Common.Collections;
 #endif
 
+    public class POStringDecodingOptions
+    {
+        public bool KeepKeyStringsPlatformIndependent { get; set; }
+        public bool KeepTranslationStringsPlatformIndependent { get; set; }
+    }
+
     public class POParserSettings
     {
         public static readonly POParserSettings Default = new POParserSettings();
@@ -24,7 +30,8 @@ namespace Karambolo.PO
 #endif
         public bool SkipInfoHeaders { get; set; }
         public bool SkipComments { get; set; }
-        public bool ReadEnvironmentIndependentNewLine { get; set; }
+
+        public POStringDecodingOptions StringDecodingOptions { get; set; }
     }
 
     public class POParseResult
@@ -90,7 +97,6 @@ namespace Karambolo.PO
 #endif
             SkipInfoHeaders = 0x8,
             SkipComments = 0x10,
-            EnvironmentIndependentNewLine = 0x20
         }
 
         [Flags]
@@ -122,6 +128,7 @@ namespace Karambolo.PO
         }
 
         private readonly Flags _flags;
+        private readonly string _keyStringNewLine, _translationStringNewLine;
         private readonly StringBuilder _builder;
         private readonly List<KeyValuePair<TextLocation, string>> _commentBuffer;
         private TextReader _reader;
@@ -157,8 +164,8 @@ namespace Karambolo.PO
             else
                 _commentBuffer = new List<KeyValuePair<TextLocation, string>>();
 
-            if (settings.ReadEnvironmentIndependentNewLine)
-                _flags |= Flags.EnvironmentIndependentNewLine;
+            _keyStringNewLine = POString.NewLine(settings.StringDecodingOptions?.KeepKeyStringsPlatformIndependent ?? false);
+            _translationStringNewLine = POString.NewLine(settings.StringDecodingOptions?.KeepTranslationStringsPlatformIndependent ?? false);
 
             _builder = new StringBuilder();
         }
@@ -270,7 +277,7 @@ namespace Karambolo.PO
             return EntryTokens.None;
         }
 
-        private bool TryReadPOStringPart(StringBuilder builder)
+        private bool TryReadPOStringPart(StringBuilder builder, string newLine)
         {
             var lineLength = _line.Length;
 
@@ -292,7 +299,7 @@ namespace Karambolo.PO
                         return false;
                     }
 
-                    var index = POString.Decode(builder, _line, startIndex, endIndex - startIndex, HasFlags(Flags.EnvironmentIndependentNewLine));
+                    var index = POString.Decode(builder, _line, startIndex, endIndex - startIndex, newLine);
                     if (index >= 0)
                     {
                         AddError(DiagnosticCodes.InvalidEscapeSequence, new TextLocation(_lineIndex, index));
@@ -319,18 +326,18 @@ namespace Karambolo.PO
             }
         }
 
-        private bool TryReadPOString(out string result)
+        private bool TryReadPOString(string newLine, out string result)
         {
             _builder.Clear();
 
-            if (!TryReadPOStringPart(_builder))
+            if (!TryReadPOStringPart(_builder, newLine))
             {
                 result = null;
                 return false;
             }
 
             do { SeekNextToken(); }
-            while (_line != null && _line[_columnIndex] == '"' && TryReadPOStringPart(_builder));
+            while (_line != null && _line[_columnIndex] == '"' && TryReadPOStringPart(_builder, newLine));
 
             result = _builder.ToString();
             return true;
@@ -426,7 +433,7 @@ namespace Karambolo.PO
                             result.Add(POFlagsComment.Parse(comment));
                             break;
                         case POCommentKind.PreviousValue:
-                            if (POPreviousValueComment.TryParse(comment, out POPreviousValueComment previousValueComment, HasFlags(Flags.EnvironmentIndependentNewLine)))
+                            if (POPreviousValueComment.TryParse(comment, _keyStringNewLine, out POPreviousValueComment previousValueComment))
                                 result.Add(previousValueComment);
                             else
                                 AddWarning(DiagnosticCodes.MalformedComment, commentKvp.Key);
@@ -472,7 +479,7 @@ namespace Karambolo.PO
                 {
                     case EntryTokens.Id:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadPOString(out id))
+                        if (_columnIndex < 0 || !TryReadPOString(_keyStringNewLine, out id))
                         {
                             result = null;
                             return false;
@@ -483,7 +490,7 @@ namespace Karambolo.PO
                         break;
                     case EntryTokens.PluralId:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadPOString(out pluralId))
+                        if (_columnIndex < 0 || !TryReadPOString(_keyStringNewLine, out pluralId))
                         {
                             result = null;
                             return false;
@@ -492,7 +499,7 @@ namespace Karambolo.PO
                         break;
                     case EntryTokens.ContextId:
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadPOString(out contextId))
+                        if (_columnIndex < 0 || !TryReadPOString(_keyStringNewLine, out contextId))
                         {
                             result = null;
                             return false;
@@ -504,7 +511,7 @@ namespace Karambolo.PO
                         TryReadPluralIndex(out int? pluralIndex);
 
                         _columnIndex = FindNextTokenInLine(requireWhiteSpace: true);
-                        if (_columnIndex < 0 || !TryReadPOString(out string value))
+                        if (_columnIndex < 0 || !TryReadPOString(_translationStringNewLine, out string value))
                         {
                             result = null;
                             return false;
@@ -676,7 +683,7 @@ namespace Karambolo.PO
                 return;
 
             foreach (var line in entry
-                .Translation.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .Translation.Split(new[] { _translationStringNewLine }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim()))
             {
                 var index = line.IndexOf(':');
