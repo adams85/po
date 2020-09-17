@@ -22,5 +22,18 @@ namespace Karambolo.PO.Test.Properties
                 }
             }
         }
+
+        public static byte[] NewLineTestPO
+        {
+            get
+            {
+                using (Stream stream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.Resources.newlinetest.po"))
+                using (var ms = new MemoryStream((int)stream.Length))
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+        }
     }
 }

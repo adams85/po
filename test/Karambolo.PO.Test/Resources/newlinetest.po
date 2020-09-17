@@ -1,0 +1,16 @@
+﻿#  header comment
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#| msgctxt "Previous context id of\na long text"
+#| msgid "Previous id of\na long text"
+#| msgid_plural "Previous plural id of\na long text"
+msgctxt "Context id of\na long text"
+msgid "Id of\na long text"
+msgid_plural "Plural id of\na long text"
+msgstr[0] "Singular translation of\na long text"
+msgstr[1] "Plural translation of\na long text"
