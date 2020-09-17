@@ -67,6 +67,8 @@ else
 | **ReadHeaderOnly** | Parse only the metadata header item.  | false |
 | **SkipInfoHeaders** | Parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.  | false |
 | **SkipComments** | Parse no comments at all, not even the ones containing metadata.  | false |
+| **StringDecodingOptions. KeepKeyStringsPlatformIndependent** | Keeps `msgctxt`, `msgid` and `msgid_plural` strings platform-independent: preserves `\n` escape sequences in key strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0)  | false |
+| **StringDecodingOptions. KeepTranslationStringsPlatformIndependent** | Keeps `msgstr` strings platform-independent: preserves `\n` escape sequences in translation strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0)  | false |
 
 #### Generating PO file content
 
