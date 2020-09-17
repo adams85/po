@@ -258,7 +258,7 @@ namespace Karambolo.PO.Test
                     new POKey($"Id of{expectedKeyStringNewLine}a long text", $"Plural id of{expectedKeyStringNewLine}a long text", $"Context id of{expectedKeyStringNewLine}a long text"),
                     catalog[0].Key);
 
-                var entry = catalog[0];
+                IPOEntry entry = catalog[0];
                 Assert.Equal(2, entry.Count);
                 Assert.Equal($"Singular translation of{expectedTranslationStringNewLine}a long text", entry[0]);
                 Assert.Equal($"Plural translation of{expectedTranslationStringNewLine}a long text", entry[1]);

@@ -293,7 +293,7 @@ namespace Karambolo.PO
 
             var value =
                 headers.Count > 0 ?
-                string.Join("\n", orderedHeaders.Select(kvp => string.Concat(kvp.Key, ": ", kvp.Value)).Append(string.Empty)) :
+                string.Join("\n", orderedHeaders.Select(kvp => kvp.Key + ": " + kvp.Value).Append(string.Empty)) :
                 string.Empty;
 
             return new POSingularEntry(new POKey(string.Empty))
@@ -323,7 +323,7 @@ namespace Karambolo.PO
             _writer = writer;
             _catalog = catalog;
 
-            _stringBreak = string.Concat("\"", _writer.NewLine, "\"");
+            _stringBreak = "\"" + _writer.NewLine + "\"";
             _lineStartIndex = 0;
 
             try

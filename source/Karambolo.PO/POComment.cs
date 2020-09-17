@@ -106,7 +106,7 @@ namespace Karambolo.PO
         {
             var filePath =
                 !string.IsNullOrEmpty(FilePath) ?
-                (FilePath.FindIndex(char.IsWhiteSpace) >= 0 ? string.Concat("\"", FilePath, "\"") : FilePath) :
+                (FilePath.FindIndex(char.IsWhiteSpace) >= 0 ? "\"" + FilePath + "\"" : FilePath) :
                 "(unknown)";
 
             return

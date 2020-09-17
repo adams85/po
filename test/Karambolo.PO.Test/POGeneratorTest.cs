@@ -194,7 +194,7 @@ namespace Karambolo.PO.Test
             expected.AddRange(lines);
             expected.Add(@"msgstr """"");
 
-            var actual = sb.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None).Skip(5).Take(lines.Length + 2);
+            IEnumerable<string> actual = sb.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None).Skip(5).Take(lines.Length + 2);
             Assert.Equal(expected, actual);
         }
 
