@@ -43,12 +43,12 @@ namespace Karambolo.PO
         }
 
         private const int MaxLineLength = 80;
-        private static readonly string s_stringBreak = string.Concat("\"", Environment.NewLine, "\"");
         private readonly Flags _flags;
         private readonly StringBuilder _builder;
-        private int _lineStartIndex;
         private TextWriter _writer;
         private POCatalog _catalog;
+        private string _stringBreak;
+        private int _lineStartIndex;
 
         public POGenerator() : this(POGeneratorSettings.Default) { }
 
@@ -163,14 +163,14 @@ namespace Karambolo.PO
                 return;
 
             startIndex++;
-            _builder.Insert(startIndex, s_stringBreak);
-            _lineStartIndex = startIndex + s_stringBreak.Length;
+            _builder.Insert(startIndex, _stringBreak);
+            _lineStartIndex = startIndex + _stringBreak.Length;
             _lineStartIndex--;
 
             while ((startIndex = GetStringBreakIndex()) >= 0)
             {
-                _builder.Insert(startIndex, s_stringBreak);
-                _lineStartIndex = startIndex + s_stringBreak.Length;
+                _builder.Insert(startIndex, _stringBreak);
+                _lineStartIndex = startIndex + _stringBreak.Length;
                 _lineStartIndex--;
             }
         }
@@ -323,10 +323,11 @@ namespace Karambolo.PO
             _writer = writer;
             _catalog = catalog;
 
+            _stringBreak = string.Concat("\"", _writer.NewLine, "\"");
+            _lineStartIndex = 0;
+
             try
             {
-                _lineStartIndex = 0;
-
                 IPOEntry entry = CreateHeaderEntry();
                 if (entry != null)
                     WriteEntry(entry);
