@@ -222,6 +222,8 @@ namespace Karambolo.PO
 
                 if (_line == null)
                     return;
+                else
+                    _line = _line.Trim('\0');
 
                 _columnIndex = FindNextTokenInLine();
 
