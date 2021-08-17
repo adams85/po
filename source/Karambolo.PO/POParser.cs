@@ -387,8 +387,7 @@ namespace Karambolo.PO
             KeyValuePair<TextLocation, string> commentKvp;
             string comment;
             int commentLength;
-            var n = _commentBuffer.Count;
-            for (var i = 0; i < n; i++)
+            for (int i = 0, n = _commentBuffer.Count; i < n; i++)
                 if ((commentLength = (comment = (commentKvp = _commentBuffer[i]).Value).Length) > 0)
                 {
                     var index = 0;

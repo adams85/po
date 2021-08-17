@@ -236,8 +236,7 @@ namespace Karambolo.PO
                     _writer.WriteLine(_builder);
                     break;
                 case POPluralEntry pluralEntry:
-                    var n = pluralEntry.Count;
-                    for (var i = 0; i < n; i++)
+                    for (int i = 0, n = pluralEntry.Count; i < n; i++)
                     {
                         ResetBuilder();
                         _builder.Append(POCatalog.TranslationToken);
@@ -332,8 +331,7 @@ namespace Karambolo.PO
                 if (entry != null)
                     WriteEntry(entry);
 
-                var n = catalog.Count;
-                for (var i = 0; i < n; i++)
+                for (int i = 0, n = catalog.Count; i < n; i++)
                 {
                     _writer.WriteLine();
                     WriteEntry(catalog[i]);

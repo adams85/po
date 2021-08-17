@@ -164,8 +164,7 @@ namespace Karambolo.PO
                 return Dictionary.TryGetValue(key, out value);
 
             IPOEntry item;
-            var n = Count;
-            for (var i = 0; i < n; i++)
+            for (int i = 0, n = Count; i < n; i++)
                 if (GetKeyForItem(item = this[i]) == key)
                 {
                     value = item;
