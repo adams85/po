@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -238,14 +239,14 @@ namespace Karambolo.PO
         private EntryTokens DetectEntryToken(out int length)
         {
             var n = _line.Length - _columnIndex;
-            if (n >= 5 && string.Compare(_line, _columnIndex, "msg", 0, 3) == 0)
+            if (n >= 5 && string.Compare(_line, _columnIndex, "msg", 0, 3, StringComparison.Ordinal) == 0)
             {
                 var index = _columnIndex + 3;
                 switch (_line[index++])
                 {
                     case 'i':
                         if (_line[index++] == 'd')
-                            if (string.Compare(_line, index, "_plural", 0, 7) == 0)
+                            if (string.Compare(_line, index, "_plural", 0, 7, StringComparison.Ordinal) == 0)
                             {
                                 length = 12;
                                 return EntryTokens.PluralId;
@@ -257,14 +258,14 @@ namespace Karambolo.PO
                             }
                         break;
                     case 'c':
-                        if (string.Compare(_line, index, "txt", 0, 3) == 0)
+                        if (string.Compare(_line, index, "txt", 0, 3, StringComparison.Ordinal) == 0)
                         {
                             length = 7;
                             return EntryTokens.ContextId;
                         }
                         break;
                     case 's':
-                        if (string.Compare(_line, index, "tr", 0, 2) == 0)
+                        if (string.Compare(_line, index, "tr", 0, 2, StringComparison.Ordinal) == 0)
                         {
                             length = 6;
                             return EntryTokens.Translation;
@@ -359,7 +360,7 @@ namespace Karambolo.PO
                 if ((c = _line[_columnIndex]) == ']')
                 {
                     var endIndex = _columnIndex++;
-                    if (!int.TryParse(_line.Substring(startIndex, endIndex - startIndex), out int indexValue))
+                    if (!int.TryParse(_line.Substring(startIndex, endIndex - startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture, out int indexValue))
                     {
                         AddError(DiagnosticCodes.InvalidPluralIndex, new TextLocation(_lineIndex, startIndex - 1));
                         result = null;
@@ -656,7 +657,7 @@ namespace Karambolo.PO
             Match match;
             if (value.Length > 0 &&
                 (match = Regex.Match(value, @"^nplurals\s*=\s*(\d+);\s*plural\s*=\s*([^;]+);$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)).Success &&
-                int.TryParse(match.Groups[1].Value, out int pluralFormCount) &&
+                int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int pluralFormCount) &&
                 pluralFormCount > 0 &&
                 _catalog.TrySetPluralFormSelector(match.Groups[2].Value))
                 _catalog.PluralFormCount = pluralFormCount;

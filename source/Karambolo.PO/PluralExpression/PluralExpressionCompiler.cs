@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using Hime.Redist;
 
@@ -37,7 +38,7 @@ namespace Karambolo.PO.PluralExpression
 
         private Expression VisitInteger(ASTNode node)
         {
-            return Expression.Constant(int.Parse(node.Value));
+            return Expression.Constant(int.Parse(node.Value, CultureInfo.InvariantCulture));
         }
 
         private Expression VisitMultiplication(ASTNode node)

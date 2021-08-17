@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Karambolo.Common;
@@ -66,7 +67,7 @@ namespace Karambolo.PO
                 throw new ArgumentNullException(nameof(value));
 
             var index = value.LastIndexOf(':');
-            if (index >= 0 && int.TryParse(value.Substring(index + 1), out int line))
+            if (index >= 0 && int.TryParse(value.Substring(index + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out int line))
                 value = value.Remove(index);
             else
                 line = default(int);
