@@ -134,6 +134,15 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid control character encountered at {0}..
+        /// </summary>
+        internal static string InvalidControlChar {
+            get {
+                return ResourceManager.GetString("InvalidControlChar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Entry beginning at {0} must not have an empty id..
         /// </summary>
         internal static string InvalidEntryKey {

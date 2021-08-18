@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -281,6 +282,29 @@ namespace Karambolo.PO.Test
                 Assert.Equal(POIdKind.PluralId, ((POPreviousValueComment)comment).IdKind);
                 Assert.Equal($"Previous plural id of{expectedKeyStringNewLine}a long text", ((POPreviousValueComment)comment).Value);
             }
+        }
+
+        [Fact]
+        public void Issue11_InvalidControlCharacters()
+        {
+            var parser = new POParser(new POParserSettings
+            {
+                SkipComments = true
+            });
+
+            // Encoding.GetString keeps BOM
+            var input = new StreamReader(new MemoryStream(Resources.InvalidControlCharTestPO)).ReadToEnd();
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.False(result.Success);
+
+            Assert.True(result.Diagnostics.HasError);
+            Assert.Equal(1, result.Diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Error, result.Diagnostics[0].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.InvalidControlChar, result.Diagnostics[0].Code);
+            Assert.Equal(1, result.Diagnostics[0].Args.Length);
+            Assert.Equal(new TextLocation(10, 0), result.Diagnostics[0].Args[0]);
         }
     }
 }

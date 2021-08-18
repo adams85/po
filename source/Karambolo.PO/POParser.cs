@@ -55,25 +55,26 @@ namespace Karambolo.PO
 
     public class POParser
     {
-        private class DiagnosticCodes
+        internal static class DiagnosticCodes
         {
-            public static string DuplicateHeaderKey = nameof(Resources.DuplicateHeaderKey);
-            public static string DuplicatePluralForm = nameof(Resources.DuplicatePluralForm);
-            public static string ExpectedToken = nameof(Resources.ExpectedToken);
-            public static string HeaderNotSingular = nameof(Resources.HeaderNotSingular);
-            public static string IncompleteEntry = nameof(Resources.IncompleteEntry);
-            public static string InvalidEntryKey = nameof(Resources.InvalidEntryKey);
-            public static string InvalidEscapeSequence = nameof(Resources.InvalidEscapeSequence);
-            public static string InvalidHeaderComment = nameof(Resources.InvalidHeaderComment);
-            public static string InvalidHeaderEntryKey = nameof(Resources.InvalidHeaderEntryKey);
-            public static string InvalidHeaderValue = nameof(Resources.InvalidHeaderValue);
-            public static string InvalidPluralIndex = nameof(Resources.InvalidPluralIndex);
-            public static string MalformedComment = nameof(Resources.MalformedComment);
-            public static string MalformedHeaderItem = nameof(Resources.MalformedHeaderItem);
-            public static string MissingPluralIndex = nameof(Resources.MissingPluralIndex);
-            public static string MissingPluralForm = nameof(Resources.MissingPluralForm);
-            public static string UnexpectedToken = nameof(Resources.UnexpectedToken);
-            public static string UnnecessaryPluralIndex = nameof(Resources.UnnecessaryPluralIndex);
+            public const string DuplicateHeaderKey = nameof(Resources.DuplicateHeaderKey);
+            public const string DuplicatePluralForm = nameof(Resources.DuplicatePluralForm);
+            public const string ExpectedToken = nameof(Resources.ExpectedToken);
+            public const string HeaderNotSingular = nameof(Resources.HeaderNotSingular);
+            public const string IncompleteEntry = nameof(Resources.IncompleteEntry);
+            public const string InvalidControlChar = nameof(Resources.InvalidControlChar);
+            public const string InvalidEntryKey = nameof(Resources.InvalidEntryKey);
+            public const string InvalidEscapeSequence = nameof(Resources.InvalidEscapeSequence);
+            public const string InvalidHeaderComment = nameof(Resources.InvalidHeaderComment);
+            public const string InvalidHeaderEntryKey = nameof(Resources.InvalidHeaderEntryKey);
+            public const string InvalidHeaderValue = nameof(Resources.InvalidHeaderValue);
+            public const string InvalidPluralIndex = nameof(Resources.InvalidPluralIndex);
+            public const string MalformedComment = nameof(Resources.MalformedComment);
+            public const string MalformedHeaderItem = nameof(Resources.MalformedHeaderItem);
+            public const string MissingPluralIndex = nameof(Resources.MissingPluralIndex);
+            public const string MissingPluralForm = nameof(Resources.MissingPluralForm);
+            public const string UnexpectedToken = nameof(Resources.UnexpectedToken);
+            public const string UnnecessaryPluralIndex = nameof(Resources.UnnecessaryPluralIndex);
         }
 
         private class ParserDiagnostic : Diagnostic
@@ -196,12 +197,17 @@ namespace Karambolo.PO
             AddDiagnostic(DiagnosticSeverity.Error, code, args);
         }
 
+        private string GetUnexpectedCharDiagnosticCode(string defaultDiagnosticCode)
+        {
+            return 0 <= _columnIndex && _columnIndex < _line.Length && char.IsControl(_line[_columnIndex]) ? DiagnosticCodes.InvalidControlChar : defaultDiagnosticCode;
+        }
+
         private int FindNextTokenInLine(bool requireWhiteSpace = false)
         {
             var index = _line.FindIndex(_columnIndex, s_matchNonWhiteSpace);
             if (requireWhiteSpace && index <= _columnIndex)
             {
-                AddError(DiagnosticCodes.UnexpectedToken, new TextLocation(_lineIndex, _columnIndex));
+                AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, _columnIndex));
                 return -1;
             }
             return index;
@@ -284,7 +290,7 @@ namespace Karambolo.PO
 
             if (_columnIndex >= lineLength || _line[_columnIndex] != '"')
             {
-                AddError(DiagnosticCodes.ExpectedToken, new TextLocation(_lineIndex, _columnIndex >= 0 ? _columnIndex : lineLength), '"');
+                AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.ExpectedToken), new TextLocation(_lineIndex, _columnIndex >= lineLength ? lineLength : _columnIndex), '"');
                 return false;
             }
 
@@ -296,7 +302,7 @@ namespace Karambolo.PO
                     _columnIndex = FindNextTokenInLine();
                     if (_columnIndex >= 0)
                     {
-                        AddError(DiagnosticCodes.UnexpectedToken, new TextLocation(_lineIndex, lineLength));
+                        AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, _columnIndex));
                         return false;
                     }
 
@@ -371,12 +377,13 @@ namespace Karambolo.PO
                 }
                 else if (!char.IsDigit(c))
                 {
-                    AddError(DiagnosticCodes.InvalidPluralIndex, new TextLocation(_lineIndex, startIndex - 1));
+                    var diagnosticCode = GetUnexpectedCharDiagnosticCode(DiagnosticCodes.InvalidPluralIndex);
+                    AddError(diagnosticCode, new TextLocation(_lineIndex, diagnosticCode == DiagnosticCodes.InvalidPluralIndex ? startIndex - 1 : _columnIndex));
                     result = null;
                     return false;
                 }
 
-            AddError(DiagnosticCodes.ExpectedToken, new TextLocation(_lineIndex, _columnIndex), ']');
+            AddError(DiagnosticCodes.ExpectedToken, new TextLocation(_lineIndex, lineLength), ']');
             result = null;
             return false;
         }
@@ -466,7 +473,7 @@ namespace Karambolo.PO
                 {
                     if (!(expectedTokens == EntryTokens.Translation && entry is POPluralEntry))
                     {
-                        AddError(DiagnosticCodes.UnexpectedToken, new TextLocation(_lineIndex, _columnIndex));
+                        AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, _columnIndex));
                         result = null;
                         return false;
                     }
@@ -586,6 +593,15 @@ namespace Karambolo.PO
             }
             while (_line != null && expectedTokens != EntryTokens.None);
 
+            if (entry == null)
+            {
+                if (_columnIndex >= 0)
+                    AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.IncompleteEntry), entryLocation);
+
+                result = null;
+                return false;
+            }
+
             if (entry is POPluralEntry pluralEntry)
             {
                 var n =
@@ -601,13 +617,6 @@ namespace Karambolo.PO
                         pluralEntry.Add(null);
                         AddWarning(DiagnosticCodes.MissingPluralForm, entryLocation, i);
                     }
-            }
-
-            if (entry == null)
-            {
-                AddError(DiagnosticCodes.IncompleteEntry, entryLocation);
-                result = null;
-                return false;
             }
 
             result = entry;

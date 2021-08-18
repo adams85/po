@@ -35,5 +35,18 @@ namespace Karambolo.PO.Test.Properties
                 }
             }
         }
+
+        public static byte[] InvalidControlCharTestPO
+        {
+            get
+            {
+                using (Stream stream = s_assembly.GetManifestResourceStream($"{s_assembly.GetName().Name}.Resources.invalidcontrolchartest.po"))
+                using (var ms = new MemoryStream((int)stream.Length))
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+        }
     }
 }

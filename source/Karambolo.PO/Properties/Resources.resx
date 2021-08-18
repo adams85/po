@@ -141,6 +141,9 @@
   <data name="IncorrectFormat" xml:space="preserve">
     <value>Input string was not in a correct format.</value>
   </data>
+  <data name="InvalidControlChar" xml:space="preserve">
+    <value>Invalid control character encountered at {0}.</value>
+  </data>
   <data name="InvalidEntryKey" xml:space="preserve">
     <value>Entry beginning at {0} must not have an empty id.</value>
   </data>
