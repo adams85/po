@@ -11,7 +11,7 @@ namespace Karambolo.PO.PluralExpression
     /// <summary>
     /// Represents a lexer
     /// </summary>
-    class PluralExpressionLexer : ContextFreeLexer
+    sealed class PluralExpressionLexer : ContextFreeLexer
 	{
 		/// <summary>
 		/// The automaton for this lexer

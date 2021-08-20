@@ -77,7 +77,7 @@ namespace Karambolo.PO
             public const string UnnecessaryPluralIndex = nameof(Resources.UnnecessaryPluralIndex);
         }
 
-        private class ParserDiagnostic : Diagnostic
+        private sealed class ParserDiagnostic : Diagnostic
         {
             public ParserDiagnostic(DiagnosticSeverity severity, string code, params object[] args)
                 : base(severity, code, args) { }
@@ -284,7 +284,7 @@ namespace Karambolo.PO
             return EntryTokens.None;
         }
 
-        private bool TryReadPOStringPart(StringBuilder builder, string newLine)
+        private bool TryReadPOStringPart(string newLine)
         {
             var lineLength = _line.Length;
 
@@ -306,7 +306,7 @@ namespace Karambolo.PO
                         return false;
                     }
 
-                    var index = POString.Decode(builder, _line, startIndex, endIndex - startIndex, newLine);
+                    var index = POString.Decode(_builder, _line, startIndex, endIndex - startIndex, newLine);
                     if (index >= 0)
                     {
                         AddError(DiagnosticCodes.InvalidEscapeSequence, new TextLocation(_lineIndex, index));
@@ -337,14 +337,14 @@ namespace Karambolo.PO
         {
             _builder.Clear();
 
-            if (!TryReadPOStringPart(_builder, newLine))
+            if (!TryReadPOStringPart(newLine))
             {
                 result = null;
                 return false;
             }
 
             do { SeekNextToken(); }
-            while (_line != null && _line[_columnIndex] == '"' && TryReadPOStringPart(_builder, newLine));
+            while (_line != null && _line[_columnIndex] == '"' && TryReadPOStringPart(newLine));
 
             result = _builder.ToString();
             return true;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -241,7 +242,7 @@ namespace Karambolo.PO
                         ResetBuilder();
                         _builder.Append(POCatalog.TranslationToken);
                         _builder.Append('[');
-                        _builder.Append(i);
+                        _builder.Append(i, CultureInfo.InvariantCulture);
                         _builder.Append(']');
                         _builder.Append(' ');
                         AppendPOString(pluralEntry[i]);
@@ -280,7 +281,7 @@ namespace Karambolo.PO
                 headers["Language"] = _catalog.Language;
 
             if (_catalog.PluralFormCount > 0 && _catalog.PluralFormSelector != null)
-                headers["Plural-Forms"] = $"nplurals={_catalog.PluralFormCount}; plural={_catalog.PluralFormSelector};";
+                headers["Plural-Forms"] = $"nplurals={_catalog.PluralFormCount.ToString(CultureInfo.InvariantCulture)}; plural={_catalog.PluralFormSelector};";
 
             IEnumerable<KeyValuePair<string, string>> orderedHeaders;
 #if USE_COMMON

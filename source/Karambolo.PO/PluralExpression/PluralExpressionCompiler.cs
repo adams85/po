@@ -5,13 +5,13 @@ using Hime.Redist;
 
 namespace Karambolo.PO.PluralExpression
 {
-    internal class PluralExpressionCompiler
+    internal sealed class PluralExpressionCompiler
     {
         private static Expression FromCBool(Expression expression)
         {
             return
                 expression.Type == typeof(int) ?
-                expression = Expression.NotEqual(expression, Expression.Constant(0)) :
+                Expression.NotEqual(expression, Expression.Constant(0)) :
                 expression;
         }
 
@@ -19,7 +19,7 @@ namespace Karambolo.PO.PluralExpression
         {
             return
                 expression.Type == typeof(bool) ?
-                expression = Expression.Condition(expression, Expression.Constant(1), Expression.Constant(0)) :
+                Expression.Condition(expression, Expression.Constant(1), Expression.Constant(0)) :
                 expression;
         }
 

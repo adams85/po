@@ -112,7 +112,7 @@ namespace Karambolo.PO
 
             return
                 Line > 0 ?
-                string.Concat(filePath, ":", Line) :
+                filePath + ":" + Line.ToString(CultureInfo.InvariantCulture) :
                 filePath;
         }
     }
