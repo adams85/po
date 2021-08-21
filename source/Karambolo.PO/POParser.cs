@@ -244,15 +244,14 @@ namespace Karambolo.PO
 
         private EntryTokens DetectEntryToken(out int length)
         {
-            var n = _line.Length - _columnIndex;
-            if (n >= 5 && string.Compare(_line, _columnIndex, "msg", 0, 3, StringComparison.Ordinal) == 0)
+            var index = _columnIndex;
+            if (index + 5 <= _line.Length && _line[index++] == 'm' && _line[index++] == 's' && _line[index++] == 'g')
             {
-                var index = _columnIndex + 3;
                 switch (_line[index++])
                 {
                     case 'i':
                         if (_line[index++] == 'd')
-                            if (string.Compare(_line, index, "_plural", 0, 7, StringComparison.Ordinal) == 0)
+                            if (index + 7 <= _line.Length && _line[index++] == '_' && string.CompareOrdinal(_line, index, "plural", 0, 6) == 0)
                             {
                                 length = 12;
                                 return EntryTokens.PluralId;
@@ -264,14 +263,14 @@ namespace Karambolo.PO
                             }
                         break;
                     case 'c':
-                        if (string.Compare(_line, index, "txt", 0, 3, StringComparison.Ordinal) == 0)
+                        if (index + 3 <= _line.Length && _line[index++] == 't' && _line[index++] == 'x' && _line[index] == 't')
                         {
                             length = 7;
                             return EntryTokens.ContextId;
                         }
                         break;
                     case 's':
-                        if (string.Compare(_line, index, "tr", 0, 2, StringComparison.Ordinal) == 0)
+                        if (index + 2 <= _line.Length && _line[index++] == 't' && _line[index] == 'r')
                         {
                             length = 6;
                             return EntryTokens.Translation;
