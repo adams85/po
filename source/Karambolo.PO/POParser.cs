@@ -523,7 +523,7 @@ namespace Karambolo.PO
                             return false;
                         }
 
-                        if (!allowEmptyId && entry == null && id == string.Empty)
+                        if (!allowEmptyId && entry == null && id == string.Empty && contextId == string.Empty)
                         {
                             AddError(Resources.InvalidEntryKey, entryLocation);
                             result = null;
