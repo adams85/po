@@ -61,6 +61,8 @@ namespace Karambolo.PO
 
         public bool IsValid => Id != null;
 
+        internal bool IsHeaderEntryKey => IsValid && Id.Length == 0 && PluralId == null && ContextId == null;
+
         public bool Equals(POKey other)
         {
             return

@@ -98,6 +98,15 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entry beginning at {0} has an empty id..
+        /// </summary>
+        internal static string EntryHasEmptyId {
+            get {
+                return ResourceManager.GetString("EntryHasEmptyId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Token &apos;{1}&apos; is expected at {0}..
         /// </summary>
         internal static string ExpectedToken {
@@ -143,7 +152,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Entry beginning at {0} must not have an empty id..
+        ///   Looks up a localized string similar to Entry beginning at {0} has an invalid key..
         /// </summary>
         internal static string InvalidEntryKey {
             get {
@@ -166,15 +175,6 @@ namespace Karambolo.PO.Properties {
         internal static string InvalidHeaderComment {
             get {
                 return ResourceManager.GetString("InvalidHeaderComment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Header entry should not contain context or plural id..
-        /// </summary>
-        internal static string InvalidHeaderEntryKey {
-            get {
-                return ResourceManager.GetString("InvalidHeaderEntryKey", resourceCulture);
             }
         }
         

@@ -64,9 +64,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\emptyidtest.po" />
     <None Remove="Resources\invalidcontrolchartest.po" />
     <None Remove="Resources\newlinetest.po" />
     <None Remove="Resources\sample.po" />
+    <EmbeddedResource Include="Resources\emptyidtest.po" />
     <EmbeddedResource Include="Resources\invalidcontrolchartest.po" />
     <EmbeddedResource Include="Resources\newlinetest.po" />
     <EmbeddedResource Include="Resources\sample.po" />

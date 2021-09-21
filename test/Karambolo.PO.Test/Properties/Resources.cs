@@ -48,5 +48,12 @@ namespace Karambolo.PO.Test.Properties
                 }
             }
         }
+
+        public static string GetEmbeddedResourceAsString(string resourcePath)
+        {
+            using (Stream stream = s_assembly.GetManifestResourceStream($"{s_assembly.GetName().Name}.{resourcePath.Replace('/', '.')}"))
+            using (var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
+                return reader.ReadToEnd();
+        }
     }
 }

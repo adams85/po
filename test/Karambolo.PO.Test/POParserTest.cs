@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -305,6 +304,64 @@ namespace Karambolo.PO.Test
             Assert.Equal(POParser.DiagnosticCodes.InvalidControlChar, result.Diagnostics[0].Code);
             Assert.Equal(1, result.Diagnostics[0].Args.Length);
             Assert.Equal(new TextLocation(10, 0), result.Diagnostics[0].Args[0]);
+        }
+
+        [Fact]
+        public void DuplicateHeaderEntryKey()
+        {
+            var parser = new POParser();
+
+            var input = Resources.GetEmbeddedResourceAsString("Resources/emptyidtest.po");
+            input = input + Environment.NewLine +
+@"msgid """"
+msgstr """"";
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.False(result.Success);
+            Assert.True(result.Diagnostics.HasError);
+            Assert.Equal(2, result.Diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Error, result.Diagnostics[1].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.InvalidEntryKey, result.Diagnostics[1].Code);
+            Assert.Equal(1, result.Diagnostics[1].Args.Length);
+            Assert.Equal(new TextLocation(25, 0), result.Diagnostics[1].Args[0]);
+        }
+
+        [Fact]
+        public void Issue14_EmptyIdWithContext()
+        {
+            var parser = new POParser();
+
+            var input = Resources.GetEmbeddedResourceAsString("Resources/emptyidtest.po");
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.True(result.Success);
+            Assert.True(result.Diagnostics.HasWarning);
+            Assert.Equal(1, result.Diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Warning, result.Diagnostics[0].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.EntryHasEmptyId, result.Diagnostics[0].Code);
+            Assert.Equal(1, result.Diagnostics[0].Args.Length);
+            Assert.Equal(new TextLocation(13, 0), result.Diagnostics[0].Args[0]);
+        }
+
+        [Fact]
+        public void Issue14_EmptyIdWithContext_WithoutHeader()
+        {
+            var parser = new POParser();
+
+            var input = Resources.GetEmbeddedResourceAsString("Resources/emptyidtest.po");
+            input = input.Substring(input.IndexOf("msgctxt"));
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.True(result.Success);
+            Assert.True(result.Diagnostics.HasWarning);
+            Assert.Equal(1, result.Diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Warning, result.Diagnostics[0].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.EntryHasEmptyId, result.Diagnostics[0].Code);
+            Assert.Equal(1, result.Diagnostics[0].Args.Length);
+            Assert.Equal(new TextLocation(0, 0), result.Diagnostics[0].Args[0]);
         }
     }
 }

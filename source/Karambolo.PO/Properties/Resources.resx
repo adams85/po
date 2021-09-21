@@ -129,6 +129,9 @@
   <data name="EncodingNotSingleByte" xml:space="preserve">
     <value>PO specification allows only single-byte encodings so writer should use a single-byte encoding, too. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true.</value>
   </data>
+  <data name="EntryHasEmptyId" xml:space="preserve">
+    <value>Entry beginning at {0} has an empty id.</value>
+  </data>
   <data name="ExpectedToken" xml:space="preserve">
     <value>Token '{1}' is expected at {0}.</value>
   </data>
@@ -145,16 +148,13 @@
     <value>Invalid control character encountered at {0}.</value>
   </data>
   <data name="InvalidEntryKey" xml:space="preserve">
-    <value>Entry beginning at {0} must not have an empty id.</value>
+    <value>Entry beginning at {0} has an invalid key.</value>
   </data>
   <data name="InvalidEscapeSequence" xml:space="preserve">
     <value>Escape sequence is invalid at {0}.</value>
   </data>
   <data name="InvalidHeaderComment" xml:space="preserve">
     <value>Header entry should have only translator comments.</value>
-  </data>
-  <data name="InvalidHeaderEntryKey" xml:space="preserve">
-    <value>Header entry should not contain context or plural id.</value>
   </data>
   <data name="InvalidHeaderValue" xml:space="preserve">
     <value>Header value '{0}' is invalid.</value>
