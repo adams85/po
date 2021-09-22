@@ -143,6 +143,15 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entry has an invalid key. {0} must be non-null and can be empty only if {1} or {2} is non-null, i.e. key is not the reserved header entry key..
+        /// </summary>
+        internal static string InvalidCatalogEntryKey {
+            get {
+                return ResourceManager.GetString("InvalidCatalogEntryKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid control character encountered at {0}..
         /// </summary>
         internal static string InvalidControlChar {
@@ -188,11 +197,29 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Key is invalid. {0} must be non-null and {1} must be non-null..
+        /// </summary>
+        internal static string InvalidPluralEntryKey {
+            get {
+                return ResourceManager.GetString("InvalidPluralEntryKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plural index is invalid at {0}..
         /// </summary>
         internal static string InvalidPluralIndex {
             get {
                 return ResourceManager.GetString("InvalidPluralIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key is invalid. {0} must be non-null and {1} must be null..
+        /// </summary>
+        internal static string InvalidSingularEntryKey {
+            get {
+                return ResourceManager.GetString("InvalidSingularEntryKey", resourceCulture);
             }
         }
         

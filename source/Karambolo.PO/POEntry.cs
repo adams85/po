@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
 {
@@ -39,8 +40,8 @@ namespace Karambolo.PO
 
         public POSingularEntry(POKey key)
         {
-            if (!key.IsValid)
-                throw new ArgumentException(null, nameof(key));
+            if (!key.IsValid || key.PluralId != null)
+                throw new ArgumentException(string.Format(Resources.InvalidSingularEntryKey, nameof(POKey.Id), nameof(POKey.PluralId)), nameof(key));
 
             Key = key;
         }
@@ -83,8 +84,8 @@ namespace Karambolo.PO
         private POPluralEntry(POKey key, IList<string> translations)
             : base(translations)
         {
-            if (!key.IsValid)
-                throw new ArgumentException(null, nameof(key));
+            if (!key.IsValid || key.PluralId == null)
+                throw new ArgumentException(string.Format(Resources.InvalidPluralEntryKey, nameof(POKey.Id), nameof(POKey.PluralId)), nameof(key));
 
             Key = key;
         }

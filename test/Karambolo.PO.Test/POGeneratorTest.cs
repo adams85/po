@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Karambolo.PO.Test.Helpers;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -285,6 +287,62 @@ namespace Karambolo.PO.Test
                 @"""01234567891123456789212345678931234567894123456789512345678961234567897123456""",
                 @"""\n""",
                 @"""898123456789""");
+        }
+
+        [Fact]
+        public void CustomEntryType()
+        {
+            var generator = new POGenerator(new POGeneratorSettings
+            {
+                IgnoreEncoding = true,
+                SkipInfoHeaders = true,
+            });
+
+            var catalog = new POCatalog { Encoding = "UTF-8" };
+
+            var entry = new CustomPOEntry(new POKey());
+            Assert.Throws<ArgumentException>("item", () => catalog.Add(entry));
+
+            entry = new CustomPOEntry(new POKey(""));
+            Assert.Throws<ArgumentException>("item", () => catalog.Add(entry));
+
+            entry = new CustomPOEntry(new POKey("", null, ""), "");
+            catalog.Add(entry);
+
+            entry = new CustomPOEntry(new POKey("", null, ""), "");
+            Assert.Throws<ArgumentException>(() => catalog.Add(entry));
+
+            entry = new CustomPOEntry(new POKey("", null, "X"), "");
+            catalog.Add(entry);
+
+            entry = new CustomPOEntry(new POKey("", "", ""), "", "");
+            catalog.Add(entry);
+
+            var sb = new StringBuilder();
+            generator.Generate(sb, catalog);
+
+            var expected =
+@"msgid """"
+msgstr """"
+""Content-Transfer-Encoding: 8bit\n""
+""Content-Type: text/plain; charset=UTF-8\n""
+
+msgctxt """"
+msgid """"
+msgstr """"
+
+msgctxt ""X""
+msgid """"
+msgstr """"
+
+msgctxt """"
+msgid """"
+msgid_plural """"
+msgstr[0] """"
+msgstr[1] """"
+";
+
+            Assert.Equal(expected, sb.ToString());
         }
     }
 }

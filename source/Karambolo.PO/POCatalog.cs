@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Karambolo.Common.Properties;
+using Karambolo.PO.Properties;
 
 namespace Karambolo.PO
 {
@@ -148,8 +149,27 @@ namespace Karambolo.PO
             var count = entry.Count;
             return
                 count > 0 ?
-                (entry[--count > 0 ? Math.Max(Math.Min(count, _compiledPluralFormSelector(n)), 0) : 0]) :
+                entry[--count > 0 ? Math.Max(Math.Min(count, _compiledPluralFormSelector(n)), 0) : 0] :
                 null;
+        }
+
+        private static void CheckEntry(IPOEntry item)
+        {
+            POKey key = item.Key;
+            if (!key.IsValid || key.IsHeaderEntryKey)
+                throw new ArgumentException(string.Format(Resources.InvalidCatalogEntryKey, nameof(POKey.Id),nameof(POKey.PluralId), nameof(POKey.ContextId)), nameof(item));
+        }
+
+        protected override void InsertItem(int index, IPOEntry item)
+        {
+            CheckEntry(item);
+            base.InsertItem(index, item);
+        }
+
+        protected override void SetItem(int index, IPOEntry item)
+        {
+            CheckEntry(item);
+            base.SetItem(index, item);
         }
 
         protected override POKey GetKeyForItem(IPOEntry item)

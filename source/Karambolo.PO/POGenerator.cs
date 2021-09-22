@@ -198,7 +198,7 @@ namespace Karambolo.PO
                 }
         }
 
-        private void WriteEntry(IPOEntry entry)
+        private void WriteEntryCommentsAndKey(IPOEntry entry)
         {
             if (!HasFlags(Flags.SkipComments) && entry.Comments != null)
                 WriteComments(entry.Comments);
@@ -226,31 +226,62 @@ namespace Karambolo.PO
                 AppendPOString(entry.Key.PluralId);
                 _writer.WriteLine(_builder);
             }
+        }
 
+        private void WriteSingularEntryTranslation(string translation)
+        {
+            ResetBuilder();
+            _builder.Append(POCatalog.TranslationToken);
+            _builder.Append(' ');
+            AppendPOString(translation);
+            _writer.WriteLine(_builder);
+        }
+
+        private void WritePluralEntryTranslation(int index, string translation)
+        {
+            ResetBuilder();
+            _builder.Append(POCatalog.TranslationToken);
+            _builder.Append('[');
+            _builder.Append(index, CultureInfo.InvariantCulture);
+            _builder.Append(']');
+            _builder.Append(' ');
+            AppendPOString(translation);
+            _writer.WriteLine(_builder);
+        }
+        private void WriteEntry(IPOEntry entry, Action<TextWriter> writeBeginning)
+        {
             switch (entry)
             {
                 case POSingularEntry singularEntry:
-                    ResetBuilder();
-                    _builder.Append(POCatalog.TranslationToken);
-                    _builder.Append(' ');
-                    AppendPOString(singularEntry.Translation);
-                    _writer.WriteLine(_builder);
+                    writeBeginning(_writer);
+                    WriteEntryCommentsAndKey(singularEntry);
+                    WriteSingularEntryTranslation(singularEntry.Translation);
                     break;
                 case POPluralEntry pluralEntry:
-                    for (int i = 0, n = pluralEntry.Count; i < n; i++)
+                    var n = entry.Count;
+                    if (n > 0)
                     {
-                        ResetBuilder();
-                        _builder.Append(POCatalog.TranslationToken);
-                        _builder.Append('[');
-                        _builder.Append(i, CultureInfo.InvariantCulture);
-                        _builder.Append(']');
-                        _builder.Append(' ');
-                        AppendPOString(pluralEntry[i]);
-                        _writer.WriteLine(_builder);
+                        writeBeginning(_writer);
+                        WriteEntryCommentsAndKey(pluralEntry);
+                        for (var i = 0; i < n; i++)
+                            WritePluralEntryTranslation(i, entry[i]);
                     }
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    n = entry.Count;
+                    if (n > 0)
+                    {
+                        writeBeginning(_writer);
+                        WriteEntryCommentsAndKey(entry);
+                        if (entry.Key.PluralId != null)
+                        {
+                            for (var i = 0; i < n; i++)
+                                WritePluralEntryTranslation(i, entry[i]);
+                        }
+                        else
+                            WriteSingularEntryTranslation(entry[0]);
+                    }
+                    break;
             }
         }
 
@@ -328,15 +359,10 @@ namespace Karambolo.PO
 
             try
             {
-                IPOEntry entry = CreateHeaderEntry();
-                if (entry != null)
-                    WriteEntry(entry);
+                WriteEntry(CreateHeaderEntry(), _ => { });
 
                 for (int i = 0, n = catalog.Count; i < n; i++)
-                {
-                    _writer.WriteLine();
-                    WriteEntry(catalog[i]);
-                }
+                    WriteEntry(catalog[i], w => w.WriteLine());
             }
             finally
             {
