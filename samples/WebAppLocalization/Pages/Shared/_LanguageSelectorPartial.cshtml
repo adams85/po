@@ -1,0 +1,24 @@
+@using System.Threading
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Http.Extensions
+
+@inject IOptions<AppLocalizationOptions> LocalizationOptions
+
+@{ 
+    var currentUICulture = Thread.CurrentThread.CurrentUICulture;
+    var request = ViewContext.HttpContext.Request;
+    var currentUrl = UriHelper.BuildRelative(request.PathBase, request.Path, request.QueryString);
+}
+
+<li class="nav-item dropdown ml-sm-auto">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @T["Select Language", TextContext.From("MainMenu")]
+    </a>
+    <form class="dropdown-menu" aria-labelledby="navbarDropdown" method="post" asp-page="/Index" asp-page-handler="ChangeLanguage">
+        <input type="hidden" name="returnUrl" value="@currentUrl" />
+        @foreach (var culture in LocalizationOptions.Value.SupportedCultureInfos)
+        {
+            <button class="btn btn-link dropdown-item @(culture.Equals(currentUICulture) ? "active" : null)" type="submit" name="culture" value="@culture.Name">@culture.NativeName</button>
+        }
+    </form>
+</li>

@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using WebApp.Infrastructure.Localization;
 
 namespace WebApp
 {
@@ -23,11 +24,20 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.Configure<AppLocalizationOptions>(Configuration.GetSection("Localization"));
+
+            services
+                .AddSingleton<ITranslationsProvider, DefaultTranslationsProvider>()
+                .AddSingleton<IStringLocalizerFactory, POStringLocalizerFactory>()
+                .AddSingleton<IHtmlLocalizerFactory, ExtendedHtmlLocalizerFactory>()
+                .AddTransient<IViewLocalizer, ExtendedViewLocalizer>();
+
+            services.AddRazorPages()
+                .AddMvcLocalization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<AppLocalizationOptions> localizationOptions)
         {
             if (env.IsDevelopment())
             {
@@ -42,6 +52,15 @@ namespace WebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            var supportedCultures = localizationOptions.Value.SupportedCultureInfos.ToArray();
+            var defaultCulture = localizationOptions.Value.DefaultCultureInfo;
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(defaultCulture, defaultCulture),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures,
+            });
 
             app.UseRouting();
 

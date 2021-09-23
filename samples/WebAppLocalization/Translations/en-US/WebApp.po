@@ -1,0 +1,115 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: en_US\n"
+"Language-Team: \n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"PO-Revision-Date: \n"
+"POT-Creation-Date: 2021-09-25 08:30+0200\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+
+#: Pages\Error.cshtml:8
+msgid "An error occurred while processing your request."
+msgstr "An error occurred while processing your request."
+
+#: Pages\Error.cshtml:17
+msgid "Development Mode"
+msgstr "Development Mode"
+
+#: Pages\Error.cshtml:4
+msgctxt "Pages"
+msgid "Error"
+msgstr "Error"
+
+#: Pages\Error.cshtml:7
+msgid "Error."
+msgstr "Error."
+
+#: Pages\Shared\_Layout.cshtml:22
+msgctxt "Navigation"
+msgid "Home"
+msgstr "Home"
+
+#: Pages\Index.cshtml:4
+msgctxt "Pages"
+msgid "Home page"
+msgstr "Home page"
+
+#: Pages\Error.cshtml:23
+msgid ""
+"It can result in displaying sensitive information from exceptions to end "
+"users. For local debugging, enable the <strong>Development</strong> "
+"environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> "
+"environment variable to <strong>Development</strong> and restarting the app."
+msgstr ""
+"It can result in displaying sensitive information from exceptions to end "
+"users. For local debugging, enable the <strong>Development</strong> "
+"environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> "
+"environment variable to <strong>Development</strong> and restarting the app."
+
+#: Pages\Index.cshtml:9
+msgid "Learn about <a href=\"{0}\">building Web apps with ASP.NET Core</a>."
+msgstr "Learn about <a href=\"{0}\">building Web apps with ASP.NET Core</a>."
+
+#: Pages\Shared\_Layout.cshtml:25 Pages\Shared\_Layout.cshtml:41
+msgctxt "Navigation"
+msgid "Privacy"
+msgstr "Privacy"
+
+#: Pages\Privacy.cshtml:4
+msgctxt "Pages"
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+#: Pages\Error.cshtml:13
+msgid "Request ID:"
+msgstr "Request ID:"
+
+#: Pages\Shared\_LanguageSelectorPartial.cshtml:15
+msgctxt "MainMenu"
+msgid "Select Language"
+msgstr "Select Language"
+
+#: Pages\Error.cshtml:19
+msgid ""
+"Swapping to the <strong>Development</strong> environment displays detailed "
+"information about the error that occurred."
+msgstr ""
+"Swapping to the <strong>Development</strong> environment displays detailed "
+"information about the error that occurred."
+
+#: Pages\Error.cshtml:22
+msgid ""
+"The Development environment shouldn't be enabled for deployed applications."
+msgstr ""
+"The Development environment shouldn't be enabled for deployed applications."
+
+#: Pages\Index.cshtml.cs:38
+msgid "The time is {0:T} (GMT)."
+msgstr "The time is {0:T} (GMT)."
+
+#: Pages\Index.cshtml.cs:36
+msgid "Today is {0:D}."
+msgstr "Today is {0:D}."
+
+#: Pages\Privacy.cshtml:8
+msgid "Use this page to detail your site's privacy policy."
+msgstr "Use this page to detail your site's privacy policy."
+
+#: Pages\Shared\_Layout.cshtml:6
+msgid "Web application localization with PO demo"
+msgstr "Web application localization with PO demo"
+
+#: Pages\Index.cshtml:8
+msgid "Welcome"
+msgstr "Welcome"
+
+#: Pages\Index.cshtml.cs:44
+msgid "{0} day until next weekend."
+msgid_plural "{0} days until next weekend."
+msgstr[0] "{0} day until next weekend."
+msgstr[1] "{0} days until next weekend."

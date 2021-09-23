@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace WebApp.Pages
     [IgnoreAntiforgeryToken]
     public class ErrorModel : PageModel
     {
-        public string RequestId { get; set; }
+        public string? RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 

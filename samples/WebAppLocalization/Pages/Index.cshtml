@@ -1,10 +1,17 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = T["Home page", TextContext.From("Pages")];
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">@T["Welcome"]</h1>
+    <p>@T["Learn about <a href=\"{0}\">building Web apps with ASP.NET Core</a>.", "https://docs.microsoft.com/aspnet/core"]</p>
+    <p>
+        <i class="fa fa-calendar" aria-hidden="true"></i> @Model.CurrentDate
+        <br />
+        <i class="fa fa-clock-o" aria-hidden="true"></i> @Model.CurrentTime
+        <br />
+        @Model.DaysUntilNextWeekend
+    </p>
 </div>

@@ -1,3 +1,15 @@
-﻿@using WebApp
+﻿@*
+    TODO: decorating views with the AssociatedAssemblyName attribute will become unnecessary and can be removed after upgrading to .NET 6
+    (see also https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnet-core/6.0/razor-compiler-doesnt-produce-views-assembly)
+*@
+@attribute [WebApp.Infrastructure.AssociatedAssemblyName("WebApp")]
+
 @namespace WebApp.Pages
+
+@using Karambolo.Common.Localization
+@using WebApp
+
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@* name the view localizer property "T" to enable automatic text extraction by POTools *@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
