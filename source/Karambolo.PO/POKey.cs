@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Karambolo.PO
 {
@@ -62,6 +63,14 @@ namespace Karambolo.PO
         public bool IsValid => Id != null;
 
         internal bool IsHeaderEntryKey => IsValid && Id.Length == 0 && PluralId == null && ContextId == null;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Deconstruct(out string id, out string pluralId, out string contextId)
+        {
+            id = Id;
+            pluralId = PluralId;
+            contextId = ContextId;
+        }
 
         public bool Equals(POKey other)
         {
