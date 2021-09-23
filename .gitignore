@@ -301,3 +301,5 @@ __pycache__/
 # Other
 NuGet.exe
 .axoCover/
+
+**/wwwroot/lib/
