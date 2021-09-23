@@ -199,7 +199,10 @@ namespace Karambolo.PO
 
         private string GetUnexpectedCharDiagnosticCode(string defaultDiagnosticCode)
         {
-            return 0 <= _columnIndex && _columnIndex < _line.Length && char.IsControl(_line[_columnIndex]) ? DiagnosticCodes.InvalidControlChar : defaultDiagnosticCode;
+            return
+                _line != null && 0 <= _columnIndex && _columnIndex < _line.Length && char.IsControl(_line[_columnIndex]) ?
+                DiagnosticCodes.InvalidControlChar :
+                defaultDiagnosticCode;
         }
 
         private int FindNextTokenInLine(bool requireWhiteSpace = false)
