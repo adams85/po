@@ -173,23 +173,29 @@ translation.GetTranslation(key, 5);
 
 ### Real-world application
 
-Localizing a .NET application is not as convenient as it could be. All that hassle with XML resources and satellite assemblies can be cumbersome sometimes.
+Implementing multi-language support in software is usually a tedious, time-consuming task, so the capabilities of the localization infrastructure (API, tooling, etc.) may have a significant impact on development experience and, thus, the time required for development. The out-of-the-box localization infrastructure provided by .NET is based on XML resources and satellite assemblies. It gets the job done but is not as convenient as it could be.
 
-PO, besides providing some additional features over .NET resources, is an excellent alternative as there are great and mature tools around which can aid and speed up the process of translating text resources and keeping them in sync.
+PO-based localization, besides providing some additional features over .NET resources, is an excellent alternative as there are great and mature tools around which can aid and speed up the process of translating text resources and keeping them in sync.
 
-However,  there are some pieces missing to use PO when developing .NET applications. This library was created with an intention to have a base on which these pieces can be built.
+However, there are some pieces missing to use PO-based localization in .NET applications. This library was created with an intention to have a base on which these pieces can be built.
 
-In my [sample ASP.NET project](https://github.com/adams85/aspnetskeleton) I show how to complete the puzzle to get a complete and efficient localization solution based on PO files. (The idea is not tied to ASP.NET at all, it can be applied to other types of .NET projects easily.)
+The repository also includes an [ASP.NET Core web application project](https://github.com/adams85/po/tree/master/samples/WebAppLocalization) which demonstrates how to complete the puzzle to get a complete and efficient localization solution based on PO files. (The idea is not tied to ASP.NET Core at all, it can be applied to other types of .NET projects easily.)
 
-The toolset consists of the following components:
+The demo project is based on the default web application template which ships with .NET (it was created by issuing the command `dotnet new webapp --razor-runtime-compilation`), so by examining [this diff](https://github.com/adams85/po/commit/54f20e1f8d5b943cd4ef403cb47bd54b8b6cead4?diff=unified) you can easily follow what changes are needed for enabling PO-based localization in a .NET web application.
+
+The PO localization infrastructure consists of the following components:
  - **A localization API** which provides the translations for the application.
-   -  In .NET Core this infrastructure is available out-of-the-box. The key interfaces are *IStringLocalizer*, *IHtmlLocalizer*, *IViewLocalizer*. Due to the modular design of .NET Core it's easy to provide a custom implementation which uses PO files as its source. A sample implementation can be found [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Web/UI/Infrastructure/Localization). (For a simpler setup and some more explanation check out [this discussion](https://github.com/adams85/aspnetskeleton/issues/1#issuecomment-495389888).)
-   - .NET Framework doesn't have such an API but it's not difficult to define something similar to what .NET Core provides. My approach to this is [available](https://github.com/adams85/common/tree/master/source/Karambolo.Common/Localization) in my utility library. The key interface here is *ITextLocalizer*. A sample implementation is [available](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Web/UI/Infrastructure/Localization), as well.
- - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate. With [Roslyn](https://github.com/dotnet/roslyn) on board implementing such a tool is not a tough job again **if** a naming convention is used consistently in the application source code. E.g. I always access the localizer object through a property named *T* (sample [here](https://github.com/adams85/aspnetskeleton/blob/NetCore/source/Web/UI/Controllers/AccountController.cs#L281)) what provides a terse syntax and what's more important, makes text extracting possible.
-My sample ASP.NET project also includes a ready-to-use implementation of a tool of this kind: .NET Core version is available [here](https://github.com/adams85/aspnetskeleton/tree/NetCore/source/Tools/POTools) and .NET Framework version is [here](https://github.com/adams85/aspnetskeleton/tree/NetFramework/source/Tools/POTools). (This is a command-line tool which can be built independently of the web application using the *Tools.sln* solution.) Its usage as simple as follows:
-   ```
-   dotnet potools.dll scan | dotnet potools.dll extract /o=project.pot
-   ```
-   (On .NET Framework use `potools.exe` instead of `dotnet potools.dll`.)
-   It's important to change the working directory to the project's base directory before issuing the command to get correct source reference paths. Alternatively, you can use the */p* optional arguments to set a base path other then the current directory.
- - **An editor tool** which enables editing the extracted PO templates. As the PO file format is easy for humans to read, it's even possible to use a simple text editor. However, there are much more productive tools. I recommend [Poedit](https://poedit.net/), which is available on multiple platforms, moreover, it has some essential features like merging different versions of a PO file.
+
+    In .NET Core/.NET 5+ this part is available out-of-the-box. The key interfaces are `IStringLocalizerFactory`, `IStringLocalizer<T>` and, in the case of an ASP.NET Core application, `IHtmlLocalizerFactory`, `IHtmlLocalizer<T>` and `IViewLocalizer`. Due to the modular design of .NET Core/.NET 5+ it's easy to provide a custom implementation which [uses PO files as its source](https://github.com/adams85/po/blob/54f20e1f8d5b943cd4ef403cb47bd54b8b6cead4/samples/WebAppLocalization/Infrastructure/Localization/POStringLocalizer.cs).
+
+    The implementation included in the demo introduces an additional interface (`ITranslationsProvider`) to separate the logic of providing PO content from the translation lookup logic. This makes possible customizations to the former without changing the latter: e.g. [an advanced implementation of `ITranslationsProvider` which supports translation cache invalidation](https://github.com/adams85/aspnetskeleton2/blob/cb6424f34eb9c1baa1c9f056f2f1c25c6d28128d/src/Service/Translations) (e.g. to enable picking up changes made to source files during the execution of the application) or an implementation which loads PO content from the database instead of the file system, etc.
+ - **An extractor tool** which scans the source files (Razor views, code-behind files, etc.) of the application and extracts the texts to translate.
+
+    By means of [Roslyn](https://github.com/dotnet/roslyn) implementing such a tool is not a tough job again **if** a naming convention is used consistently throughout the application source code.
+
+    I have [a ready-to-use implementation of a tool of this kind](https://github.com/adams85/aspnetskeleton2/tree/cb6424f34eb9c1baa1c9f056f2f1c25c6d28128d/tools/POTools), which looks for string localizer usage via properties named `T` (or fields/variables named `t`/`_t`). It is currently distributed as part of my web application template project but it can be employed universally in any .NET Core/.NET 5+ project as it's implemented as a [.NET tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools), so it's essentially a simple console application which you can invoke directly or via the `dotnet` CLI toolchain as well. The demo project was set up for the latter, so I included a [simple batch script which installs it as a .NET local tool](https://github.com/adams85/po/blob/54f20e1f8d5b943cd4ef403cb47bd54b8b6cead4/samples/WebAppLocalization/install-potools.cmd). After executing the script successfully, the extractor tool can be invoked by `dotnet po` within the project directory.
+
+    The demo project contains [another batch script](https://github.com/adams85/po/blob/54f20e1f8d5b943cd4ef403cb47bd54b8b6cead4/samples/WebAppLocalization/Translations/extract.cmd) which shows you how to use the tool to automate the extraction of localizable texts. For details see the built-in help of the tool.
+ - **An editor tool** which enables editing the extracted PO files.
+
+    As the PO file format is easy for humans to read, it's even possible to use a simple text editor. However, there are much more productive tools: I recommend [Poedit](https://poedit.net/), which is available on multiple platforms.
