@@ -83,6 +83,7 @@ var generator = new POGenerator(new POGeneratorSettings {
 
 TextWriter writer = ...;
 generator.Generate(writer, catalog);
+writer.Flush();
 ```
 
 ##### Remarks:
