@@ -163,7 +163,15 @@ namespace Karambolo.PO
         protected override void InsertItem(int index, IPOEntry item)
         {
             CheckEntry(item);
-            base.InsertItem(index, item);
+
+            try
+            {
+                base.InsertItem(index, item);
+            }
+            catch (ArgumentException ae)
+            {
+                throw new ArgumentException(ae.Message + Environment.NewLine + "Key: " + item.Key, ae);
+            }
         }
 
         protected override void SetItem(int index, IPOEntry item)
