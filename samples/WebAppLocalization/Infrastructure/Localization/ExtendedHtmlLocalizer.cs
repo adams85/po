@@ -15,7 +15,7 @@ namespace WebApp.Infrastructure.Localization
         {
             get
             {
-                var translation = _stringLocalizer.GetTranslation(name, default, default, out var _, out var resourceNotFound);
+                var translation = _stringLocalizer.GetTranslation(name, default, default, out _, out var resourceNotFound);
                 return new LocalizedHtmlString(name, translation, resourceNotFound);
             }
         }
@@ -25,7 +25,7 @@ namespace WebApp.Infrastructure.Localization
             get
             {
                 var (plural, context) = LocalizationHelper.GetSpecialArgs(arguments);
-                var translation = _stringLocalizer.GetTranslation(name, plural, context, out var _, out var resourceNotFound);
+                var translation = _stringLocalizer.GetTranslation(name, plural, context, out _, out var resourceNotFound);
                 return new LocalizedHtmlString(name, translation, resourceNotFound, arguments);
             }
         }
