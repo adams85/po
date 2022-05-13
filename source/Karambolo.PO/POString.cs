@@ -34,6 +34,7 @@ namespace Karambolo.PO
                     case '\\': b.Append('\\'); return true;
                     case '"': b.Append('"'); return true;
                     case 't': b.Append('\t'); return true;
+                    case 'r': return true;
                     case 'n': b.Append(newLine); return true;
                     default: return false;
                 }
