@@ -193,8 +193,9 @@ namespace Karambolo.PO
                         case POCommentKind.PreviousValue: commentKindToken = '|'; break;
                         default: throw new InvalidOperationException();
                     }
+                    var separator = string.IsNullOrEmpty(comment.ToString()) ? string.Empty : " ";
 
-                    _writer.WriteLine($"#{commentKindToken} {comment}");
+                    _writer.WriteLine($"#{commentKindToken}{separator}{comment}");
                 }
         }
 
