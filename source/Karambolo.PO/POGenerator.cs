@@ -194,7 +194,9 @@ namespace Karambolo.PO
                         default: throw new InvalidOperationException();
                     }
 
-                    _writer.WriteLine($"#{commentKindToken} {comment}");
+                    var commentContent = comment.ToString(); 
+                    var separator = !string.IsNullOrEmpty(commentContent) ? " " : string.Empty;
+                    _writer.WriteLine($"#{commentKindToken}{separator}{commentContent}");
                 }
         }
 

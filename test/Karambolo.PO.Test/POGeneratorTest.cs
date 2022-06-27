@@ -344,5 +344,41 @@ msgstr[1] """"
 
             Assert.Equal(expected, sb.ToString());
         }
+
+        [Fact]
+        public void Pr20_EmptyCommentContent()
+        {
+            var generator = new POGenerator(new POGeneratorSettings
+            {
+                IgnoreEncoding = true,
+                SkipInfoHeaders = true,
+            });
+
+            var catalog = new POCatalog { Encoding = "UTF-8" };
+
+            catalog.Add(new POSingularEntry(new POKey("x"))
+            {
+                Comments = new POComment[]
+                {
+                    new POTranslatorComment { }
+                }
+            });
+
+            var writer = new StringWriter();
+            generator.Generate(writer, catalog);
+
+            var expected =
+@"msgid """"
+msgstr """"
+""Content-Transfer-Encoding: 8bit\n""
+""Content-Type: text/plain; charset=UTF-8\n""
+
+# 
+msgid ""x""
+msgstr """"
+";
+
+            Assert.Equal(expected, writer.ToString());
+        }
     }
 }
