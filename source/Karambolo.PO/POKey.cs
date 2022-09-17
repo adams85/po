@@ -12,7 +12,7 @@ namespace Karambolo.PO
         ContextId,
     }
 
-    public struct POKey : IEquatable<POKey>
+    public readonly struct POKey : IEquatable<POKey>
     {
         internal static POIdKind GetIdKind(string value)
         {

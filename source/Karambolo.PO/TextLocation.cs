@@ -2,7 +2,7 @@
 
 namespace Karambolo.PO
 {
-    public struct TextLocation
+    public readonly struct TextLocation
     {
         public TextLocation(int line, int column)
         {

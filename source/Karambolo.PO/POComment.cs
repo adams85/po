@@ -59,7 +59,7 @@ namespace Karambolo.PO
         }
     }
 
-    public struct POSourceReference
+    public readonly struct POSourceReference
     {
         public static bool TryParse(string value, out POSourceReference result)
         {
