@@ -12,52 +12,69 @@ namespace Karambolo.PO
 
         public static int Decode(StringBuilder builder, string source, int startIndex, int count, string newLine)
         {
-            var endIndex = startIndex + count;
-            for (; startIndex < endIndex; startIndex++)
+            for (var endIndex = startIndex + count; startIndex < endIndex; startIndex++)
             {
                 var c = source[startIndex];
-                if (c == '\\')
-                    if (++startIndex < endIndex && TryDecodeEscapeSequence(builder, source[startIndex]))
-                        continue;
-                    else
-                        return startIndex - 1;
+                if (c != '\\')
+                {
+                    builder.Append(c);
+                    continue;
+                }
+                
+                if (++startIndex < endIndex)
+                {
+                    c = source[startIndex];
+                    switch (c)
+                    {
+                        case '\\':
+                        case '"':
+                            builder.Append(c);
+                            continue;
+                        case 't':
+                            builder.Append('\t');
+                            continue;
+                        case 'r':
+                            var index = startIndex;
+                            if (++index + 1 < endIndex && source[index] == '\\' && source[++index] == 'n')
+                                startIndex = index;
+                            // "\r" and "\r\n" are both accepted as new line
+                            goto case 'n';
+                        case 'n':
+                            builder.Append(newLine);
+                            continue;
+                    }
+                }
 
-                builder.Append(c);
+                // invalid escape sequence
+                return startIndex - 1;
             }
 
             return -1;
-
-            bool TryDecodeEscapeSequence(StringBuilder b, char c)
-            {
-                switch (c)
-                {
-                    case '\\': b.Append('\\'); return true;
-                    case '"': b.Append('"'); return true;
-                    case 't': b.Append('\t'); return true;
-                    case 'n': b.Append(newLine); return true;
-                    default: return false;
-                }
-            }
         }
 
         public static void Encode(StringBuilder builder, string source, int startIndex, int count)
         {
-            var endIndex = startIndex + count;
-            for (; startIndex < endIndex; startIndex++)
+            for (var endIndex = startIndex + count; startIndex < endIndex; startIndex++)
             {
                 var c = source[startIndex];
                 switch (c)
                 {
-                    case '\\': builder.Append('\\'); break;
-                    case '"': builder.Append('\\'); break;
-                    case '\t': builder.Append('\\'); c = 't'; break;
+                    case '\\':
+                    case '"':
+                        builder.Append('\\').Append(c);
+                        continue;
+                    case '\t':
+                        builder.Append('\\').Append('t');
+                        continue;
                     case '\r':
-                    case '\n':
                         var index = startIndex;
-                        if (c == '\r' && ++index < endIndex && source[index] == '\n')
+                        if (++index < endIndex && source[index] == '\n')
                             startIndex = index;
-
-                        builder.Append('\\'); c = 'n'; break;
+                        // "\r" and "\r\n" are encoded the same as "\n" to keep PO content platform-independent
+                        goto case '\n';
+                    case '\n':
+                        builder.Append('\\').Append('n');
+                        continue;
                 }
 
                 builder.Append(c);
