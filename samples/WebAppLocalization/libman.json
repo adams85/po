@@ -19,7 +19,7 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "bootstrap@4.5.2",
+      "library": "bootstrap@5.1.0",
       "destination": "wwwroot/lib/bootstrap/"
     }
   ]

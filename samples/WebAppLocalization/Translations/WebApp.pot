@@ -5,7 +5,7 @@ msgstr ""
 "Language-Team: \n"
 "Last-Translator: \n"
 "PO-Revision-Date: \n"
-"POT-Creation-Date: 2021-09-25 08:30+0200\n"
+"POT-Creation-Date: 2022-09-18 12:44+0200\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 
@@ -26,7 +26,7 @@ msgstr "Error"
 msgid "Error."
 msgstr "Error."
 
-#: Pages\Shared\_Layout.cshtml:22
+#: Pages\Shared\_Layout.cshtml:23
 msgctxt "Navigation"
 msgid "Home"
 msgstr "Home"
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Learn about <a href=\"{0}\">building Web apps with ASP.NET Core</a>."
 msgstr "Learn about <a href=\"{0}\">building Web apps with ASP.NET Core</a>."
 
-#: Pages\Shared\_Layout.cshtml:25 Pages\Shared\_Layout.cshtml:41
+#: Pages\Shared\_Layout.cshtml:26 Pages\Shared\_Layout.cshtml:42
 msgctxt "Navigation"
 msgid "Privacy"
 msgstr "Privacy"

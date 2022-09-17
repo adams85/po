@@ -8,7 +8,7 @@ msgstr ""
 "Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "PO-Revision-Date: \n"
-"POT-Creation-Date: 2021-09-25 08:30+0200\n"
+"POT-Creation-Date: 2022-09-18 12:44+0200\n"
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 
@@ -29,7 +29,7 @@ msgstr "Fehler"
 msgid "Error."
 msgstr "Fehler."
 
-#: Pages\Shared\_Layout.cshtml:22
+#: Pages\Shared\_Layout.cshtml:23
 msgctxt "Navigation"
 msgid "Home"
 msgstr "Start"
@@ -58,7 +58,7 @@ msgstr ""
 "Erfahren Sie mehr über <a href=\"{0}\">das Erstellen von Web-Apps mit ASP.NET "
 "Core</a>."
 
-#: Pages\Shared\_Layout.cshtml:25 Pages\Shared\_Layout.cshtml:41
+#: Pages\Shared\_Layout.cshtml:26 Pages\Shared\_Layout.cshtml:42
 msgctxt "Navigation"
 msgid "Privacy"
 msgstr "Datenschutz"

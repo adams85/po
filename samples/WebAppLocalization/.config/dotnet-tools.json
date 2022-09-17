@@ -5,7 +5,7 @@
     "karambolo.aspnetskeleton.potools": {
       "version": "1.0.0",
       "commands": [
-        "po"
+        "dotnet-po"
       ]
     }
   }

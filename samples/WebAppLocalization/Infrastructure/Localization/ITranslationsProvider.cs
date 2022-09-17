@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Karambolo.PO;
 
-namespace WebApp.Infrastructure.Localization
+namespace WebApp.Infrastructure.Localization;
+
+public interface ITranslationsProvider
 {
-    public interface ITranslationsProvider
-    {
-        IReadOnlyDictionary<(string Location, string Culture), POCatalog> GetCatalogs();
-    }
+    IReadOnlyDictionary<(string Location, string Culture), POCatalog> GetCatalogs();
 }
