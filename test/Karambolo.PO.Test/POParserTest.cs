@@ -363,5 +363,28 @@ msgstr """"";
             Assert.Equal(1, result.Diagnostics[0].Args.Length);
             Assert.Equal(new TextLocation(0, 0), result.Diagnostics[0].Args[0]);
         }
+
+        [Fact]
+        public void Pr19_NonUnixLineTerminators()
+        {
+            var parser = new POParser(new POParserSettings
+            {
+                StringDecodingOptions = new POStringDecodingOptions { KeepKeyStringsPlatformIndependent = true }
+            });
+
+            var input =
+@"msgid ""Windows\r\nLine Terminator""
+msgstr ""\\r\rLine Terminator""
+";
+            POParseResult result = parser.Parse(input);
+
+            Assert.True(result.Success);
+            Assert.False(result.Diagnostics.HasWarning);
+
+            var catalog = result.Catalog;
+            var key = new POKey("Windows\nLine Terminator");
+            Assert.True(catalog.Contains(key));
+            Assert.Equal($"\\r{Environment.NewLine}Line Terminator", catalog[key][0]);
+        }
     }
 }
