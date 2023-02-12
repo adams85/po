@@ -29,6 +29,7 @@ namespace Karambolo.PO
         public const string LastTranslatorHeaderName = "Last-Translator";
         public const string LanguageTeamHeaderName = "Language-Team";
         public const string LanguageHeaderName = "Language";
+        public const string MIMEVersionHeaderName = "MIME-Version";
         public const string ContentTypeHeaderName = "Content-Type";
         public const string ContentTransferEncodingHeaderName = "Content-Transfer-Encoding";
         public const string PluralFormsHeaderName = "Plural-Forms";

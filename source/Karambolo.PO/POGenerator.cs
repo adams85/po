@@ -287,6 +287,39 @@ namespace Karambolo.PO
             }
         }
 
+        private static IEnumerable<KeyValuePair<string, string>> OrderHeaders(IDictionary<string, string> headers)
+        {
+            var Ret = new List<KeyValuePair<string, string>>();
+            var AllKeys = headers.Keys.ToHashSet();
+
+            // Sort standard keys in accordance with GNU gettext behaviour
+            foreach (var key in new string[] {
+                POCatalog.ProjectIdVersionHeaderName,
+                POCatalog.ReportMsgidBugsToHeaderName,
+                POCatalog.PotCreationDateHeaderName,
+                POCatalog.PORevisionDateHeaderName,
+                POCatalog.LastTranslatorHeaderName,
+                POCatalog.LanguageTeamHeaderName,
+                POCatalog.LanguageHeaderName,
+                POCatalog.MIMEVersionHeaderName,
+                POCatalog.ContentTypeHeaderName,
+                POCatalog.ContentTransferEncodingHeaderName,
+                POCatalog.PluralFormsHeaderName,
+            })
+            {
+                if (AllKeys.Contains(key))
+                {
+                    Ret.Add(new KeyValuePair<string, string>(key, headers[key]));
+                    AllKeys.Remove(key);
+                }
+            }
+
+            // Sort remaining keys alphabetically
+            Ret.AddRange(AllKeys.OrderBy(key => key)
+                                .Select(key => new KeyValuePair<string, string>(key, headers[key])));
+            return Ret;
+        }
+
         private IPOEntry CreateHeaderEntry()
         {
             IDictionary<string, string> headers;
@@ -322,7 +355,7 @@ namespace Karambolo.PO
                 orderedHeaders = headers.AsEnumerable();
             else
 #endif
-            orderedHeaders = headers.OrderBy(kvp => kvp.Key);
+            orderedHeaders = OrderHeaders(headers);
 
             var value =
                 headers.Count > 0 ?

@@ -162,13 +162,13 @@ namespace Karambolo.PO.Test
 
             // Encoding.GetString keeps BOM
             var expected = new StreamReader(new MemoryStream(Resources.SamplePO)).ReadToEnd()
-                .Replace("\"Language-Team: \\n\"\r\n", "")
-                .Replace("\"Last-Translator: \\n\"\r\n", "")
-                .Replace("\"MIME-Version: 1.0\\n\"\r\n", "")
-                .Replace("\"PO-Revision-Date: \\n\"\r\n", "")
-                .Replace("\"POT-Creation-Date: 2018-06-22 07:01+0200\\n\"\r\n", "")
                 .Replace("\"Project-Id-Version: \\n\"\r\n", "")
                 .Replace("\"Report-Msgid-Bugs-To: \\n\"\r\n", "")
+                .Replace("\"POT-Creation-Date: 2018-06-22 07:01+0200\\n\"\r\n", "")
+                .Replace("\"PO-Revision-Date: \\n\"\r\n", "")
+                .Replace("\"Last-Translator: \\n\"\r\n", "")
+                .Replace("\"Language-Team: \\n\"\r\n", "")
+                .Replace("\"MIME-Version: 1.0\\n\"\r\n", "")
                 .Replace("\"X-Generator: Poedit 2.0.8\\n\"\r\n", "")
                 .Replace("# should be skipped\r\n", "")
                 .Replace("# should be skipped too\r\n", "");
@@ -324,8 +324,8 @@ namespace Karambolo.PO.Test
             var expected =
 @"msgid """"
 msgstr """"
-""Content-Transfer-Encoding: 8bit\n""
 ""Content-Type: text/plain; charset=UTF-8\n""
+""Content-Transfer-Encoding: 8bit\n""
 
 msgctxt """"
 msgid """"
@@ -370,8 +370,8 @@ msgstr[1] """"
             var expected =
 @"msgid """"
 msgstr """"
-""Content-Transfer-Encoding: 8bit\n""
 ""Content-Type: text/plain; charset=UTF-8\n""
+""Content-Transfer-Encoding: 8bit\n""
 
 # 
 msgid ""x""
