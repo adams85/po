@@ -41,7 +41,7 @@ grammar PluralExpression
 
         additive_expression -> multiplicative_expression^
                              | additive_expression '+' multiplicative_expression
-                             | additive_expression '_' multiplicative_expression
+                             | additive_expression '-' multiplicative_expression
                              ;
 
         multiplicative_expression -> factor^

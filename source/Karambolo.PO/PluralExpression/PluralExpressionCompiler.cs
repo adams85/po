@@ -140,23 +140,23 @@ namespace Karambolo.PO.PluralExpression
         {
             switch (node.Symbol.ID)
             {
-                case PluralExpressionLexer.ID.VARIABLE:
+                case PluralExpressionLexer.ID.TerminalVariable:
                     return VisitVariable(node);
-                case PluralExpressionLexer.ID.INTEGER:
+                case PluralExpressionLexer.ID.TerminalInteger:
                     return VisitInteger(node);
-                case PluralExpressionParser.ID.multiplicative_expression:
+                case PluralExpressionParser.ID.VariableMultiplicativeExpression:
                     return VisitMultiplication(node);
-                case PluralExpressionParser.ID.additive_expression:
+                case PluralExpressionParser.ID.VariableAdditiveExpression:
                     return VisitAddition(node);
-                case PluralExpressionParser.ID.relational_expression:
+                case PluralExpressionParser.ID.VariableRelationalExpression:
                     return VisitRelation(node);
-                case PluralExpressionParser.ID.equality_expression:
+                case PluralExpressionParser.ID.VariableEqualityExpression:
                     return VisitEquality(node);
-                case PluralExpressionParser.ID.logical_and_expression:
+                case PluralExpressionParser.ID.VariableLogicalAndExpression:
                     return VisitLogicalAnd(node);
-                case PluralExpressionParser.ID.logical_or_expression:
+                case PluralExpressionParser.ID.VariableLogicalOrExpression:
                     return VisitLogicalOr(node);
-                case PluralExpressionParser.ID.expression:
+                case PluralExpressionParser.ID.VariableExpression:
                     return VisitCondition(node);
                 default:
                     throw new InvalidOperationException();
