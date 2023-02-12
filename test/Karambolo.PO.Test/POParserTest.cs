@@ -178,7 +178,7 @@ namespace Karambolo.PO.Test
             });
 
             POParseResult result;
-            using (var ms = new MemoryStream(Resources.SamplePO))
+            using (var ms = new MemoryStream(Resources.SamplePO_WithCustomHeaderOrder))
                 result = parser.Parse(ms);
 
             Assert.True(result.Success);

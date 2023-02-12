@@ -23,6 +23,19 @@ namespace Karambolo.PO.Test.Properties
             }
         }
 
+        public static byte[] SamplePO_WithCustomHeaderOrder
+        {
+            get
+            {
+                using (Stream stream = s_assembly.GetManifestResourceStream($"{s_assembly.GetName().Name}.Resources.sample_withcustomheaderorder.po"))
+                using (var ms = new MemoryStream((int)stream.Length))
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+        }
+
         public static byte[] NewLineTestPO
         {
             get

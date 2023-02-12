@@ -121,7 +121,7 @@ namespace Karambolo.PO.Test
             var result = string.Join(Environment.NewLine, lines);
 
             // Encoding.GetString keeps BOM
-            var expected = new StreamReader(new MemoryStream(Resources.SamplePO)).ReadToEnd()
+            var expected = new StreamReader(new MemoryStream(Resources.SamplePO_WithCustomHeaderOrder)).ReadToEnd()
                 .Replace("# should be skipped\r\n", "")
                 .Replace("# should be skipped too\r\n", "");
 
@@ -379,6 +379,50 @@ msgstr """"
 ";
 
             Assert.Equal(expected, writer.ToString());
+        }
+
+        [Fact]
+        public void Pr22_HeaderDefaultOrder()
+        {
+            IEnumerable<string> actualOrder = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Content-Type",
+                "Language-Team",
+                "MIME-Version",
+                "A",
+                "Content-Transfer-Encoding",
+                "Language",
+                "Plural-Forms",
+                "PO-Revision-Date",
+                "b",
+                "X-Generator",
+                "Project-Id-Version",
+                "C",
+                "POT-Creation-Date",
+                "Last-Translator",
+                "Report-Msgid-Bugs-To",
+            }.OrderBy(x => x, POHeaderDefaultOrderComparer.Instance);
+
+            var expectedOrder = new[]
+            {
+                "Project-Id-Version",
+                "Report-Msgid-Bugs-To",
+                "POT-Creation-Date",
+                "PO-Revision-Date",
+                "Last-Translator",
+                "Language-Team",
+                "Language",
+                "MIME-Version",
+                "Content-Type",
+                "Content-Transfer-Encoding",
+                "Plural-Forms",
+                "A",
+                "b",
+                "C",
+                "X-Generator",
+            };
+
+            Assert.Equal(expectedOrder, actualOrder);
         }
     }
 }
