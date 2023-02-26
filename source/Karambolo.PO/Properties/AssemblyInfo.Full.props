@@ -6,7 +6,7 @@
     <Company>Karambolo</Company>
     <Product>Karambolo.PO</Product>
     <Description>A library for reading and writing Gettext PO files. The build contained in this package depends on the Karambolo.Common library. If you don't need that, consider installing the Compact or Minimal build instead. See the project page for details.</Description>
-    <Copyright>© 2022 Adam Simon</Copyright>
+    <Copyright>© 2023 Adam Simon</Copyright>
     <AssemblyVersion>1.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <PackageLicenseUrl>https://github.com/adams85/po/blob/master/LICENSE</PackageLicenseUrl>
