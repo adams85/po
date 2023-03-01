@@ -181,23 +181,43 @@ namespace Karambolo.PO
             IOrderedEnumerable<IGrouping<POCommentKind, POComment>> commentLookup = comments.ToLookup(c => c.Kind).OrderBy(c => c.Key);
 
             foreach (IGrouping<POCommentKind, POComment> commentGroup in commentLookup)
-                foreach (POComment comment in commentGroup)
+            {
+                char commentKindToken;
+                switch (commentGroup.Key)
                 {
-                    char commentKindToken;
-                    switch (comment.Kind)
-                    {
-                        case POCommentKind.Translator: commentKindToken = ' '; break;
-                        case POCommentKind.Extracted: commentKindToken = '.'; break;
-                        case POCommentKind.Reference: commentKindToken = ':'; break;
-                        case POCommentKind.Flags: commentKindToken = ','; break;
-                        case POCommentKind.PreviousValue: commentKindToken = '|'; break;
-                        default: throw new InvalidOperationException();
-                    }
+                    case POCommentKind.Translator: commentKindToken = ' '; break;
+                    case POCommentKind.Extracted: commentKindToken = '.'; break;
+                    case POCommentKind.Reference: commentKindToken = ':'; break;
+                    case POCommentKind.Flags: commentKindToken = ','; break;
+                    case POCommentKind.PreviousValue: commentKindToken = '|'; break;
+                    default: throw new InvalidOperationException();
+                }
 
-                    var commentContent = comment.ToString(); 
+                var commentContents = commentGroup.Select(c => c.ToString());
+
+                // PreviousValue comments follow a very specific format. Only msgctxt, msgid, and msgid_plural are
+                // valid key names, must appear in that specific order, and only one entry is allowed for each
+                // key name. We remove any invalid comments and reorder them if necessary.
+                if (commentGroup.Key == POCommentKind.PreviousValue)
+                {
+                    var previousValueOrder = new Dictionary<string, int>()
+                    {
+                        ["msgctxt"] = 0,
+                        ["msgid"] = 1,
+                        ["msgid_plural"] = 2,
+                    };
+                    commentContents = commentContents.ToLookup(c => c.ToString().Split().FirstOrDefault())
+                                                     .Where(g => previousValueOrder.ContainsKey(g.Key))
+                                                     .OrderBy(g => previousValueOrder[g.Key])
+                                                     .Select(g => g.First());
+                }
+
+                foreach (string commentContent in commentContents)
+                {
                     var separator = !string.IsNullOrEmpty(commentContent) ? " " : string.Empty;
                     _writer.WriteLine($"#{commentKindToken}{separator}{commentContent}");
                 }
+            }
         }
 
         private void WriteEntryCommentsAndKey(IPOEntry entry)
