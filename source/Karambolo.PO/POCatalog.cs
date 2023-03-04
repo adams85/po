@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using Karambolo.Common.Properties;
 using Karambolo.PO.Properties;
 
@@ -11,7 +12,7 @@ namespace Karambolo.PO
     using Karambolo.Common.Collections;
 #endif
 
-#if USE_HIME
+#if ENABLE_PLURALFORMS
     using Karambolo.PO.PluralExpression;
 #endif
 
@@ -97,7 +98,7 @@ namespace Karambolo.PO
 
         public bool TrySetPluralFormSelector(string expression)
         {
-#if USE_HIME
+#if ENABLE_PLURALFORMS
             if (expression == null)
             {
                 _compiledPluralFormSelector = s_defaultPluralFormSelector;
@@ -105,18 +106,15 @@ namespace Karambolo.PO
                 return true;
             }
 
-            var lexer = new PluralExpressionLexer(expression);
-            var parser = new PluralExpressionParser(lexer);
-            Hime.Redist.ParseResult parseResult = parser.Parse();
-            if (!parseResult.IsSuccess)
-                return false;
-
-            var compiler = new PluralExpressionCompiler(parseResult.Root);
-            Func<int, int> @delegate;
-            try { @delegate = compiler.Compile(); }
+            Func<int, int> evaluator;
+            try
+            {
+                Expression parsedExpression = PluralExpressionParser.Parse(expression, out ParameterExpression param);
+                evaluator = PluralExpressionEvaluator.From(parsedExpression, param);
+            }
             catch { return false; }
 
-            _compiledPluralFormSelector = @delegate;
+            _compiledPluralFormSelector = evaluator;
 #endif
             _pluralFormSelector = expression;
             return true;

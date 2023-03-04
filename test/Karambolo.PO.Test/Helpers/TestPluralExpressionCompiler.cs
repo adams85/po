@@ -2,31 +2,17 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using Hime.Redist;
+using Karambolo.Po.Test.Helpers;
+using Karambolo.PO.PluralExpression;
 
-namespace Karambolo.PO.PluralExpression
+namespace Karambolo.PO.Test.Helpers
 {
-    internal sealed class PluralExpressionCompiler
+    internal sealed class TestPluralExpressionCompiler
     {
-        private static Expression FromCBool(Expression expression)
-        {
-            return
-                expression.Type == typeof(int) ?
-                Expression.NotEqual(expression, Expression.Constant(0)) :
-                expression;
-        }
-
-        private static Expression ToCBool(Expression expression)
-        {
-            return
-                expression.Type == typeof(bool) ?
-                Expression.Condition(expression, Expression.Constant(1), Expression.Constant(0)) :
-                expression;
-        }
-
         private readonly ASTNode _syntaxTree;
         private ParameterExpression _param;
 
-        public PluralExpressionCompiler(ASTNode syntaxTree)
+        public TestPluralExpressionCompiler(ASTNode syntaxTree)
         {
             _syntaxTree = syntaxTree;
         }
@@ -83,13 +69,13 @@ namespace Karambolo.PO.PluralExpression
             switch (node.Children[1].Symbol.Name)
             {
                 case "<":
-                    return ToCBool(Expression.LessThan(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.LessThan(left, right));
                 case ">":
-                    return ToCBool(Expression.GreaterThan(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.GreaterThan(left, right));
                 case "<=":
-                    return ToCBool(Expression.LessThanOrEqual(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.LessThanOrEqual(left, right));
                 case ">=":
-                    return ToCBool(Expression.GreaterThanOrEqual(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.GreaterThanOrEqual(left, right));
                 default:
                     throw new InvalidOperationException();
             }
@@ -103,9 +89,9 @@ namespace Karambolo.PO.PluralExpression
             switch (node.Children[1].Symbol.Name)
             {
                 case "==":
-                    return ToCBool(Expression.Equal(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.Equal(left, right));
                 case "!=":
-                    return ToCBool(Expression.NotEqual(left, right));
+                    return PluralExpressionParser.EnsureInt32(Expression.NotEqual(left, right));
                 default:
                     throw new InvalidOperationException();
             }
@@ -113,23 +99,23 @@ namespace Karambolo.PO.PluralExpression
 
         private Expression VisitLogicalAnd(ASTNode node)
         {
-            Expression left = FromCBool(Visit(node.Children[0]));
-            Expression right = FromCBool(Visit(node.Children[1]));
+            Expression left = PluralExpressionParser.EnsureBoolean(Visit(node.Children[0]));
+            Expression right = PluralExpressionParser.EnsureBoolean(Visit(node.Children[1]));
 
-            return ToCBool(Expression.AndAlso(left, right));
+            return PluralExpressionParser.EnsureInt32(Expression.AndAlso(left, right));
         }
 
         private Expression VisitLogicalOr(ASTNode node)
         {
-            Expression left = FromCBool(Visit(node.Children[0]));
-            Expression right = FromCBool(Visit(node.Children[1]));
+            Expression left = PluralExpressionParser.EnsureBoolean(Visit(node.Children[0]));
+            Expression right = PluralExpressionParser.EnsureBoolean(Visit(node.Children[1]));
 
-            return ToCBool(Expression.OrElse(left, right));
+            return PluralExpressionParser.EnsureInt32(Expression.OrElse(left, right));
         }
 
         private Expression VisitCondition(ASTNode node)
         {
-            Expression test = FromCBool(Visit(node.Children[0]));
+            Expression test = PluralExpressionParser.EnsureBoolean(Visit(node.Children[0]));
             Expression ifTrue = Visit(node.Children[1]);
             Expression ifFalse = Visit(node.Children[2]);
 
@@ -140,35 +126,38 @@ namespace Karambolo.PO.PluralExpression
         {
             switch (node.Symbol.ID)
             {
-                case PluralExpressionLexer.ID.TerminalVariable:
+                case TestPluralExpressionLexer.ID.TerminalVariable:
                     return VisitVariable(node);
-                case PluralExpressionLexer.ID.TerminalInteger:
+                case TestPluralExpressionLexer.ID.TerminalInteger:
                     return VisitInteger(node);
-                case PluralExpressionParser.ID.VariableMultiplicativeExpression:
+                case TestPluralExpressionParser.ID.VariableMultiplicativeExpression:
                     return VisitMultiplication(node);
-                case PluralExpressionParser.ID.VariableAdditiveExpression:
+                case TestPluralExpressionParser.ID.VariableAdditiveExpression:
                     return VisitAddition(node);
-                case PluralExpressionParser.ID.VariableRelationalExpression:
+                case TestPluralExpressionParser.ID.VariableRelationalExpression:
                     return VisitRelation(node);
-                case PluralExpressionParser.ID.VariableEqualityExpression:
+                case TestPluralExpressionParser.ID.VariableEqualityExpression:
                     return VisitEquality(node);
-                case PluralExpressionParser.ID.VariableLogicalAndExpression:
+                case TestPluralExpressionParser.ID.VariableLogicalAndExpression:
                     return VisitLogicalAnd(node);
-                case PluralExpressionParser.ID.VariableLogicalOrExpression:
+                case TestPluralExpressionParser.ID.VariableLogicalOrExpression:
                     return VisitLogicalOr(node);
-                case PluralExpressionParser.ID.VariableExpression:
+                case TestPluralExpressionParser.ID.VariableExpression:
                     return VisitCondition(node);
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        public Func<int, int> Compile()
+        public Expression Visit()
         {
             _param = Expression.Parameter(typeof(int), "n");
+            return Visit(_syntaxTree);
+        }
 
-            Expression expression = Visit(_syntaxTree);
-
+        public Func<int, int> Compile()
+        {
+            Expression expression = Visit();
             var lambda = Expression.Lambda<Func<int, int>>(expression, _param);
             return lambda.Compile();
         }

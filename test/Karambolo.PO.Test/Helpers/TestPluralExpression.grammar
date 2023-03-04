@@ -1,4 +1,4 @@
-grammar PluralExpression
+grammar TestPluralExpression
 {
     options
     {
@@ -16,7 +16,7 @@ grammar PluralExpression
     rules
     {
         expression -> logical_or_expression^ 
-		            | logical_or_expression '?'! expression ':'! expression
+                    | logical_or_expression '?'! expression ':'! expression
                     ;
 
         logical_or_expression -> logical_and_expression^

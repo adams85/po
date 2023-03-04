@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>net462;netcoreapp2.1;netcoreapp3.1;net6.0</TargetFrameworks>
     <AssemblyName>Karambolo.PO.Test</AssemblyName>
     <RootNamespace>Karambolo.PO.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -13,12 +13,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_COMMON;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
@@ -28,12 +28,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;USE_COMMON;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
@@ -84,6 +84,29 @@
     <None Remove="bin\**" />
     <None Remove="obj\**" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(Edition)' == 'Minimal'">
+      <ItemGroup>
+        <Compile Remove="Helpers\TestPluralExpression*" />
+        <EmbeddedResource Remove="Helpers\TestPluralExpression*" />
+        <None Remove="Helpers\TestPluralExpression*" />
+      </ItemGroup>
+    </When>
+
+    <Otherwise>
+      <ItemGroup>
+        <None Remove="Helpers\TestPluralExpressionLexer.bin" />
+        <None Remove="Helpers\TestPluralExpressionParser.bin" />
+        <EmbeddedResource Include="Helpers\TestPluralExpressionLexer.bin" />
+        <EmbeddedResource Include="Helpers\TestPluralExpressionParser.bin" />
+      </ItemGroup>
+
+      <ItemGroup>
+        <PackageReference Include="Hime.Redist" Version="3.5.1" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <ProjectReference Include="..\..\source\Karambolo.PO\Karambolo.PO.csproj" />

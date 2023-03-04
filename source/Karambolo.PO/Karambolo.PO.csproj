@@ -12,12 +12,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_COMMON;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
@@ -27,12 +27,12 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;USE_COMMON;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;USE_HIME</DefineConstants>
+    <DefineConstants>TRACE;ENABLE_PLURALFORMS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
@@ -75,27 +75,14 @@
   <Choose>
     <When Condition="'$(Edition)' == 'Full'">
       <ItemGroup>
-        <PackageReference Include="Hime.Redist" Version="3.5.1" />
         <PackageReference Include="Karambolo.Common" Version="3.4.1" />
 
         <Compile Remove="Common\**" />
         <EmbeddedResource Remove="Common\**" />
         <None Remove="Common\**" />
-
-        <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
-        <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
       </ItemGroup>
     </When>
 
-    <When Condition="'$(Edition)' == 'Compact'">
-      <ItemGroup>
-        <PackageReference Include="Hime.Redist" Version="3.5.1" />
-
-        <EmbeddedResource Include="PluralExpression\PluralExpressionLexer.bin" />
-        <EmbeddedResource Include="PluralExpression\PluralExpressionParser.bin" />
-      </ItemGroup>
-    </When>
-    
     <When Condition="'$(Edition)' == 'Minimal'">
       <ItemGroup>
         <Compile Remove="PluralExpression\**" />

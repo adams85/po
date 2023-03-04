@@ -48,7 +48,7 @@ namespace Karambolo.PO.Test
             Assert.Equal(2, catalog.PluralFormCount);
             Assert.Equal("(n != 1)", catalog.PluralFormSelector);
 
-#if USE_HIME
+#if ENABLE_PLURALFORMS
             Assert.Equal(0, catalog.GetPluralFormIndex(1));
             Assert.Equal(1, catalog.GetPluralFormIndex(2));
             Assert.Equal(1, catalog.GetPluralFormIndex(5));
@@ -84,7 +84,7 @@ namespace Karambolo.PO.Test
             Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 1));
             Assert.Equal("Translation of {0} hours to midnight", catalog[key1][1]);
             Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 1));
-#if USE_HIME
+#if ENABLE_PLURALFORMS
             Assert.Equal("Translation of {0} hours to midnight", catalog.GetTranslation(key1, 2));
 #else
             Assert.Equal("Translation of {0} hour to midnight", catalog.GetTranslation(key1, 2));

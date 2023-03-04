@@ -16,19 +16,19 @@ Where the documentation was not specific enough, compatibility with [Poedit](htt
 
 Only synchronous API is available, async I/O is not supported for the moment.
 
-### Release configurations
+### Editions
 
-As of version 1.3 three different builds of the library are available:
+As of version 1.3 three editions (builds) of the library are available with different feature sets:
 
-| Configuration | NuGet Package ID | Missing Features | Dependencies |
+| Edition | NuGet Package ID | Missing Features | Dependencies |
 |--|--|--|--|
-| Full | Karambolo.PO | | [Karambolo.Common](https://github.com/adams85/common), [Hime.Redist](https://cenotelie.fr/projects/hime/)
-| Compact | Karambolo.PO.Compact | <ul><li>PreserveHeadersOrder option (see below)</li></ul> | [Hime.Redist](https://cenotelie.fr/projects/hime/) |
+| Full | Karambolo.PO | | [Karambolo.Common](https://github.com/adams85/common) |
+| Compact | Karambolo.PO.Compact | <ul><li>PreserveHeadersOrder option (see below)</li></ul> | |
 | Minimal | Karambolo.PO.Minimal | <ul><li>PreserveHeadersOrder option (see below)</li><li>Plural expression parsing and evaluation</li></ul> |
 
-*Compact* provides almost all the features the *full* package does but has less dependencies. **If your project doesn't make use of the Karambolo.Common library** (and you don't need the *PreserveHeadersOrder* feature either), **it's recommended to choose the *Compact* edition.**
+*Compact* provides almost all the features the *Full* package does but requires no 3rd party dependencies. **If your project doesn't make use of the Karambolo.Common library** (and you don't need the *PreserveHeadersOrder* feature either), **it's recommended to choose the *Compact* edition.**
 
-*Minimal* is the most lightweight configuration requiring no 3rd party dependencies at all. You may choose it if you don't need to lookup [plural form translations](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) in your application.
+*Minimal* is the most lightweight edition. You may choose it if you don't need to lookup [plural form translations](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) in your application.
 
 ### Code samples
 

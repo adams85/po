@@ -19,6 +19,16 @@ namespace Karambolo.PO
         {
             return new TypeInfo(type.Assembly);
         }
+
+#if ENABLE_PLURALFORMS
+        public static MethodInfo GetMethodInfo(this Delegate del)
+        {
+            if (del == null)
+                throw new ArgumentNullException(nameof(del));
+
+            return del.Method;
+        }
+#endif
     }
 }
 
