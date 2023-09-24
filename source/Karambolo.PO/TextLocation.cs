@@ -7,10 +7,10 @@ namespace Karambolo.PO
         public TextLocation(int line, int column)
         {
             if (line < 0)
-                throw new ArgumentOutOfRangeException(nameof(line));
+                throw new ArgumentOutOfRangeException(nameof(line), line, null);
 
             if (column < 0)
-                throw new ArgumentOutOfRangeException(nameof(column));
+                throw new ArgumentOutOfRangeException(nameof(column), column, null);
 
             Line = line;
             Column = column;

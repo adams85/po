@@ -51,7 +51,7 @@ namespace Karambolo.PO
         private static string CheckIndex(int index, string value)
         {
             if (index != 0)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, null);
 
             return value;
         }

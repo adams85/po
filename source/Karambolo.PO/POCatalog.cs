@@ -76,7 +76,7 @@ namespace Karambolo.PO
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
 
                 _pluralFormCount = value;
             }
