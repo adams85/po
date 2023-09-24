@@ -95,7 +95,7 @@ namespace Karambolo.PO.Test
 
             if (expectComments)
             {
-                Assert.Equal(6, catalog[key1].Comments.Count);
+                Assert.Equal(7, catalog[key1].Comments.Count);
                 Assert.Equal(0, catalog[key2].Comments.Count);
 
                 IList<POComment> comments = catalog[key1].Comments;
@@ -119,12 +119,16 @@ namespace Karambolo.PO.Test
                 Assert.Contains("csharp-format", flags);
 
                 Assert.Equal(POCommentKind.PreviousValue, comments[4].Kind);
-                Assert.Equal(POIdKind.Id, ((POPreviousValueComment)comments[4]).IdKind);
-                Assert.Equal("{0} hour to midnite", ((POPreviousValueComment)comments[4]).Value);
+                Assert.Equal(POIdKind.ContextId, ((POPreviousValueComment)comments[4]).IdKind);
+                Assert.Equal("Previous Home", ((POPreviousValueComment)comments[4]).Value);
 
                 Assert.Equal(POCommentKind.PreviousValue, comments[5].Kind);
-                Assert.Equal(POIdKind.PluralId, ((POPreviousValueComment)comments[5]).IdKind);
-                Assert.Equal("{0} hours to midnite", ((POPreviousValueComment)comments[5]).Value);
+                Assert.Equal(POIdKind.Id, ((POPreviousValueComment)comments[5]).IdKind);
+                Assert.Equal("{0} hour to midnite", ((POPreviousValueComment)comments[5]).Value);
+
+                Assert.Equal(POCommentKind.PreviousValue, comments[6].Kind);
+                Assert.Equal(POIdKind.PluralId, ((POPreviousValueComment)comments[6]).IdKind);
+                Assert.Equal("{0} hours to midnite", ((POPreviousValueComment)comments[6]).Value);
             }
             else
             {

@@ -59,8 +59,10 @@ namespace Karambolo.PO.Test
                 new POExtractedComment { Text = "some extracted comment" },
                 new POReferenceComment { References = new POSourceReference[] { new POSourceReference("/Views/Home/Index.cshtml", 8) } },
                 new POFlagsComment { Flags = new SortedSet<string> { "fuzzy", "csharp-format" } },
-                new POPreviousValueComment { IdKind = POIdKind.Id, Value = "{0} hour to midnite" },
+                // These entries should be reordered
                 new POPreviousValueComment { IdKind = POIdKind.PluralId, Value = "{0} hours to midnite" },
+                new POPreviousValueComment { IdKind = POIdKind.ContextId, Value = "Previous Home" },
+                new POPreviousValueComment { IdKind = POIdKind.Id, Value = "{0} hour to midnite" },
             };
             result.Add(entry);
 

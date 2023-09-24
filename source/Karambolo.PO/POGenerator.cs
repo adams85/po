@@ -181,23 +181,30 @@ namespace Karambolo.PO
             IOrderedEnumerable<IGrouping<POCommentKind, POComment>> commentLookup = comments.ToLookup(c => c.Kind).OrderBy(c => c.Key);
 
             foreach (IGrouping<POCommentKind, POComment> commentGroup in commentLookup)
-                foreach (POComment comment in commentGroup)
+            {
+                string commentKindToken;
+                IEnumerable<POComment> orderedComments = commentGroup;
+                switch (commentGroup.Key)
                 {
-                    char commentKindToken;
-                    switch (comment.Kind)
-                    {
-                        case POCommentKind.Translator: commentKindToken = ' '; break;
-                        case POCommentKind.Extracted: commentKindToken = '.'; break;
-                        case POCommentKind.Reference: commentKindToken = ':'; break;
-                        case POCommentKind.Flags: commentKindToken = ','; break;
-                        case POCommentKind.PreviousValue: commentKindToken = '|'; break;
-                        default: throw new InvalidOperationException();
-                    }
+                    case POCommentKind.Translator: commentKindToken = " "; break;
+                    case POCommentKind.Extracted: commentKindToken = "."; break;
+                    case POCommentKind.Reference: commentKindToken = ":"; break;
+                    case POCommentKind.Flags: commentKindToken = ","; break;
+                    case POCommentKind.PreviousValue:
 
-                    var commentContent = comment.ToString(); 
+                        commentKindToken = "|";
+                        orderedComments = orderedComments.OrderBy(c => c, POPreviousValueCommentDefaultOrderComparer.Instance);
+                        break;
+                    default: throw new InvalidOperationException();
+                }
+
+                foreach (POComment comment in orderedComments)
+                {
+                    var commentContent = comment.ToString();
                     var separator = !string.IsNullOrEmpty(commentContent) ? " " : string.Empty;
                     _writer.WriteLine($"#{commentKindToken}{separator}{commentContent}");
                 }
+            }
         }
 
         private void WriteEntryCommentsAndKey(IPOEntry entry)
