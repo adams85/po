@@ -49,6 +49,19 @@ namespace Karambolo.PO.Test.Properties
             }
         }
 
+        public static byte[] EscapedCharTestPO
+        {
+            get
+            {
+                using (Stream stream = s_assembly.GetManifestResourceStream($"{s_assembly.GetName().Name}.Resources.escapedchartest.po"))
+                using (var ms = new MemoryStream((int)stream.Length))
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+        }
+
         public static byte[] InvalidControlCharTestPO
         {
             get

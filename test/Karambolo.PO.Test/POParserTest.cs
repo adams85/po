@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -389,6 +390,35 @@ msgstr ""\\r\rLine Terminator""
             var key = new POKey("Windows\nLine Terminator");
             Assert.True(catalog.Contains(key));
             Assert.Equal($"\\r{Environment.NewLine}Line Terminator", catalog[key][0]);
+        }
+
+
+        [Fact]
+        public void Issue24_DoubleQuoteEscaping()
+        {
+            //var parser = new POParser(new POParserSettings
+            //{
+            //    SkipComments = true
+            //});
+
+            //// Encoding.GetString keeps BOM
+            //var input = new StreamReader(new MemoryStream(Resources.EscapedCharTestPO)).ReadToEnd();
+
+            //POParseResult result = parser.Parse(input);
+
+            //Assert.True(result.Success);
+
+            var catalog = new POCatalog
+            {
+                new POSingularEntry(new POKey("Do you want to remove \"House\" from the list?"))
+                {
+                    Translation = "Möchtest du \"Haus\" von der Liste löschen?"
+                },
+            };
+
+            var sb = new StringBuilder();
+            new POGenerator(new POGeneratorSettings { IgnoreEncoding = true }).Generate(sb, catalog);
+            var generated = sb.ToString();
         }
     }
 }
