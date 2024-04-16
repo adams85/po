@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using Hime.Redist;
-using Karambolo.Po.Test.Helpers;
 using Karambolo.PO.PluralExpression;
 
 namespace Karambolo.PO.Test.Helpers
@@ -25,6 +24,31 @@ namespace Karambolo.PO.Test.Helpers
         private Expression VisitInteger(ASTNode node)
         {
             return Expression.Constant(int.Parse(node.Value, CultureInfo.InvariantCulture));
+        }
+
+        private Expression VisitUnary(ASTNode node)
+        {
+            Expression operand = Visit(node.Children[1]);
+
+            switch (node.Children[0].Symbol.Name)
+            {
+                case "!":
+                    return PluralExpressionParser.EnsureInt32(Expression.Not(PluralExpressionParser.EnsureBoolean(operand)));
+                case "+":
+                    return operand;
+                case "-":
+                    if (operand.NodeType == ExpressionType.Constant)
+                    {
+                        var value = (int)((ConstantExpression)operand).Value;
+                        return Expression.Constant(-value);
+                    }
+                    else
+                    {
+                        return Expression.Negate(operand);
+                    }
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         private Expression VisitMultiplication(ASTNode node)
@@ -130,6 +154,8 @@ namespace Karambolo.PO.Test.Helpers
                     return VisitVariable(node);
                 case TestPluralExpressionLexer.ID.TerminalInteger:
                     return VisitInteger(node);
+                case TestPluralExpressionParser.ID.VariableUnaryExpression:
+                    return VisitUnary(node);
                 case TestPluralExpressionParser.ID.VariableMultiplicativeExpression:
                     return VisitMultiplication(node);
                 case TestPluralExpressionParser.ID.VariableAdditiveExpression:

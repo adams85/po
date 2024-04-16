@@ -93,7 +93,7 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // conditional_expression = logical_or_expression
-        //                        | logical_or_expression op_consequent conditional_expression op_alternate conditional_expression
+        //                        | logical_or_expression OpConsequent conditional_expression OpAlternate conditional_expression
         //                        ;
         private Expression ParseConditionalExpression()
         {
@@ -116,7 +116,7 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // logical_or_expression = logical_and_expression
-        //                       | logical_or_expression op_logical_or logical_and_expression
+        //                       | logical_or_expression OpLogicalOr logical_and_expression
         //                       ;
         private Expression ParseLogicalOrExpression()
         {
@@ -140,7 +140,7 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // logical_and_expression = equality_expression
-        //                        | logical_and_expression op_logical_and equality_expression
+        //                        | logical_and_expression OpLogicalAnd equality_expression
         //                        ;
         private Expression ParseLogicalAndExpression()
         {
@@ -164,8 +164,8 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // equality_expression = relational_expression
-        //                     | equality_expression op_eq relational_expression
-        //                     | equality_expression op_neq relational_expression
+        //                     | equality_expression OpEq relational_expression
+        //                     | equality_expression OpNeq relational_expression
         //                     ;
         private Expression ParseEqualityExpression()
         {
@@ -196,10 +196,10 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // relational_expression = additive_expression
-        //                       | relational_expression op_lt additive_expression
-        //                       | relational_expression op_gt additive_expression
-        //                       | relational_expression op_lte additive_expression
-        //                       | relational_expression op_gte additive_expression
+        //                       | relational_expression OpLt additive_expression
+        //                       | relational_expression OpGt additive_expression
+        //                       | relational_expression OpLte additive_expression
+        //                       | relational_expression OpGte additive_expression
         //                       ;
         private Expression ParseRelationalExpression()
         {
@@ -236,8 +236,8 @@ namespace Karambolo.PO.PluralExpression
         }
 
         // additive_expression = multiplicative_expression
-        //                     | additive_expression op_add multiplicative_expression
-        //                     | additive_expression op_sub multiplicative_expression
+        //                     | additive_expression OpPlus multiplicative_expression
+        //                     | additive_expression OpMinus multiplicative_expression
         //                     ;
         private Expression ParseAdditiveExpression()
         {
@@ -252,10 +252,10 @@ namespace Karambolo.PO.PluralExpression
                 ExpressionType binaryType;
                 switch (_lookahead.Symbol)
                 {
-                    case Symbol.OpAdd:
+                    case Symbol.OpPlus:
                         binaryType = ExpressionType.Add;
                         break;
-                    case Symbol.OpSub:
+                    case Symbol.OpMinus:
                         binaryType = ExpressionType.Subtract;
                         break;
                     default:
@@ -267,10 +267,10 @@ namespace Karambolo.PO.PluralExpression
             }
         }
 
-        // multiplicative_expression = factor
-        //                           | multiplicative_expression op_mul factor
-        //                           | multiplicative_expression op_div factor
-        //                           | multiplicative_expression op_mod factor
+        // multiplicative_expression = unary_expression
+        //                           | multiplicative_expression OpMul unary_expression
+        //                           | multiplicative_expression OpDiv unary_expression
+        //                           | multiplicative_expression OpRem unary_expression
         //                           ;
         private Expression ParseMultiplicativeExpression()
         {
@@ -278,7 +278,7 @@ namespace Karambolo.PO.PluralExpression
             RuntimeHelpers.EnsureSufficientExecutionStack();
 #endif
 
-            Expression left = ParseFactor();
+            Expression left = ParseUnaryExpression();
 
             for (; ; )
             {
@@ -291,7 +291,7 @@ namespace Karambolo.PO.PluralExpression
                     case Symbol.OpDiv:
                         binaryType = ExpressionType.Divide;
                         break;
-                    case Symbol.OpMod:
+                    case Symbol.OpRem:
                         binaryType = ExpressionType.Modulo;
                         break;
                     default:
@@ -299,7 +299,53 @@ namespace Karambolo.PO.PluralExpression
                 }
 
                 NextToken();
-                left = Expression.MakeBinary(binaryType, left, ParseFactor());
+                left = Expression.MakeBinary(binaryType, left, ParseUnaryExpression());
+            }
+        }
+
+        // unary_expression = factor
+        //                  | OpLogicalNot unary_expression
+        //                  | OpPlus unary_expression
+        //                  | OpMinus unary_expression
+        //                  ;
+        private Expression ParseUnaryExpression()
+        {
+#if !NETSTANDARD1_0
+            RuntimeHelpers.EnsureSufficientExecutionStack();
+#endif
+
+            Expression operand;
+
+            for (; ; )
+            {
+                switch (_lookahead.Symbol)
+                {
+                    case Symbol.OpLogicalNot:
+                        NextToken();
+                        operand = ParseUnaryExpression();
+                        return EnsureInt32(Expression.MakeUnary(ExpressionType.Not, EnsureBoolean(operand), type: null));
+                    case Symbol.OpPlus:
+                        NextToken();
+                        continue;
+                    case Symbol.OpMinus:
+                        NextToken();
+                        operand = ParseUnaryExpression();
+                        if (operand.NodeType == ExpressionType.Constant)
+                        {
+                            var value = (int)((ConstantExpression)operand).Value;
+                            return Expression.Constant(-value, typeof(int));
+                        }
+                        else if (operand.NodeType == ExpressionType.Negate)
+                        {
+                            return ((UnaryExpression)operand).Operand;
+                        }
+                        else
+                        {
+                            return Expression.MakeUnary(ExpressionType.Negate, operand, type: null);
+                        }
+                    default:
+                        return ParseFactor();
+                }
             }
         }
 
@@ -320,9 +366,9 @@ namespace Karambolo.PO.PluralExpression
                     token = NextToken();
                     var value =
 #if NETSTANDARD2_1_OR_GREATER
-                        int.Parse(_tokenizer.Input.AsSpan(token.Start, token.End - token.Start), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                        int.Parse(_tokenizer.Input.AsSpan(token.Start, token.End - token.Start), NumberStyles.None, CultureInfo.InvariantCulture);
 #else
-                        int.Parse(_tokenizer.Input.Substring(token.Start, token.End - token.Start), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                        int.Parse(_tokenizer.Input.Substring(token.Start, token.End - token.Start), NumberStyles.None, CultureInfo.InvariantCulture);
 #endif
                     return Expression.Constant(value, typeof(int));
 

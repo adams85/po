@@ -14,19 +14,20 @@ namespace Karambolo.PO.PluralExpression
             OpAlternate = 4,
             OpLogicalOr = 5,
             OpLogicalAnd = 6,
-            OpEq = 7,
-            OpNeq = 8,
-            OpLt = 9,
-            OpGt = 10,
-            OpLte = 11,
-            OpGte = 12,
-            OpAdd = 13,
-            OpSub = 14,
-            OpMul = 15,
-            OpDiv = 16,
-            OpMod = 17,
-            OpenParen = 18,
-            CloseParen = 19,
+            OpLogicalNot = 7,
+            OpEq = 8,
+            OpNeq = 9,
+            OpLt = 10,
+            OpGt = 11,
+            OpLte = 12,
+            OpGte = 13,
+            OpPlus = 14,
+            OpMinus = 15,
+            OpMul = 16,
+            OpDiv = 17,
+            OpRem = 18,
+            OpenParen = 19,
+            CloseParen = 20,
         }
 
         public readonly struct Token
@@ -94,13 +95,23 @@ namespace Karambolo.PO.PluralExpression
                 case '+':
                 case '-':
                     _index++;
-                    if (!IsDecimalDigit((char)CharCodeAtIndex()))
+                    if ((char)CharCodeAtIndex() == ch)
                     {
-                        return new Token(start, _index, ch == '+' ? Symbol.OpAdd : Symbol.OpSub);
+                        // Increment and decrement operators are not supported.
+                        goto default;
                     }
-                    goto case '0';
+
+                    return new Token(start, _index, ch == '+' ? Symbol.OpPlus : Symbol.OpMinus);
 
                 case '0':
+                    _index++;
+                    if (IsDecimalDigit((char)CharCodeAtIndex()))
+                    {
+                        // Octal numbers are not supported.
+                        goto default;
+                    }
+                    return new Token(start, _index, Symbol.Integer);
+
                 case '1':
                 case '2':
                 case '3':
@@ -142,6 +153,10 @@ namespace Karambolo.PO.PluralExpression
                     _index++;
                     if (CharCodeAtIndex() != '=')
                     {
+                        if (ch == '!')
+                        {
+                            return new Token(start, _index, Symbol.OpLogicalNot);
+                        }
                         goto default;
                     }
                     _index++;
@@ -170,7 +185,7 @@ namespace Karambolo.PO.PluralExpression
 
                 case '%':
                     _index++;
-                    return new Token(start, _index, Symbol.OpMod);
+                    return new Token(start, _index, Symbol.OpRem);
 
                 case '(':
                     _index++;

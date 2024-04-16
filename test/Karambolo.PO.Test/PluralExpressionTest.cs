@@ -1,14 +1,13 @@
 ﻿#if ENABLE_PLURALFORMS
 
-using System.Collections.Generic;
 using System;
-using Xunit;
+using System.Collections.Generic;
 using System.Linq;
-using Karambolo.PO.PluralExpression;
 using System.Linq.Expressions;
-using Karambolo.Po.Test.Helpers;
-using Karambolo.PO.Test.Helpers;
 using Hime.Redist;
+using Karambolo.PO.PluralExpression;
+using Karambolo.PO.Test.Helpers;
+using Xunit;
 
 namespace Karambolo.PO.Test
 {
@@ -41,8 +40,8 @@ namespace Karambolo.PO.Test
             (-1, "+1 + +2", "(1 + 2)"),
             (-1, "-1 + -2", "(-1 + -2)"),
             (-1, "1+-2", "(1 + -2)"),
-            (-1, "1++2", "(1 + 2)"),
-            (-1, "1--2", "(1 - -2)"),
+            (-1, "1+ +2", "(1 + 2)"),
+            (-1, "1- -2", "(1 - -2)"),
             (-1, "1-+2", "(1 - 2)"),
             (-1, "1 + 2 * 3", "(1 + (2 * 3))"),
             (-1, "(1 - 2) / 3 % 4", "(((1 - 2) / 3) % 4)"),
@@ -58,6 +57,8 @@ namespace Karambolo.PO.Test
             (-1, "n >= 0 && n <= 2 ? 1 : n == 3 ? 3 : 4", "IIF(((n >= 0) AndAlso (n <= 2)), 1, IIF((n == 3), 3, 4))"),
             (-1, "(n >= 0 && n <= 2 ? 1 : n == 3) ? 3 : 4", "IIF(FromCBool(IIF(((n >= 0) AndAlso (n <= 2)), 1, ToCBool((n == 3)))), 3, 4)"),
             (-1, "n >= 0 && n <= 2 ? (n == 1 ? 1 : 0) : 3", "IIF(((n >= 0) AndAlso (n <= 2)), IIF((n == 1), 1, 0), 3)"),
+            (-1, "!(n >= 0) ? n : -1", "IIF(Not((n >= 0)), n, -1)"),
+            (-1, "n * !n", "(n * ToCBool(Not(FromCBool(n))))"),
         };
 
         public static IEnumerable<object[]> PluralForms { get; } = s_pluralForms.Select(item => new object[] { item.Item1, item.Item2, item.Item3 }).ToArray();
@@ -66,11 +67,7 @@ namespace Karambolo.PO.Test
         [MemberData(nameof(PluralForms))]
         public void ParserCanParsePluralForms(int _, string input, string expectedExpression)
         {
-            var lexer = new TestPluralExpressionLexer(input);
-            var parser = new TestPluralExpressionParser(lexer);
-            ParseResult parseResult = parser.Parse();
-            Assert.True(parseResult.IsSuccess);
-            Expression verificationExpression = new TestPluralExpressionCompiler(parseResult.Root).Visit();
+            Expression verificationExpression = GetVerificationExpressionCompiler(input).Visit();
             Assert.Equal(verificationExpression.ToString(), expectedExpression);
 
             Expression actualExpression = PluralExpressionParser.Parse(input, out ParameterExpression param);
@@ -89,23 +86,25 @@ namespace Karambolo.PO.Test
         [InlineData("n)", "Unexpected token")]
         [InlineData("(2 * (n + 1) > 1", "Unexpected end of input")]
         [InlineData("2 * (n + 1)) > 1", "Unexpected token")]
-        [InlineData("1+++2", "Unexpected token")]
-        [InlineData("1++-2", "Unexpected token")]
-        [InlineData("1+-+2", "Unexpected token")]
-        [InlineData("1+--2", "Unexpected token")]
-        [InlineData("1-++2", "Unexpected token")]
-        [InlineData("1-+-2", "Unexpected token")]
-        [InlineData("1--+2", "Unexpected token")]
-        [InlineData("1---2", "Unexpected token")]
         [InlineData("n |", "Unexpected token")]
         [InlineData("n | 1", "Unexpected token")]
         [InlineData("n & 1", "Unexpected token")]
         [InlineData("n = 1", "Unexpected token")]
-        [InlineData("!n", "Unexpected token")]
         [InlineData("n + n | 1", "Unexpected token")]
         [InlineData("n + n & 1", "Unexpected token")]
         [InlineData("n + n = 1", "Unexpected token")]
-        [InlineData("n + !n", "Unexpected token")]
+        [InlineData("++n", "Unexpected token")]
+        [InlineData("--n", "Unexpected token")]
+        [InlineData("1++n", "Unexpected token")]
+        [InlineData("1--n", "Unexpected token")]
+        [InlineData("1+++n", "Unexpected token")]
+        [InlineData("1-++n", "Unexpected token")]
+        [InlineData("1---n", "Unexpected token")]
+        [InlineData("1+--n", "Unexpected token")]
+        [InlineData("00", "Unexpected token")]
+        [InlineData("07", "Unexpected token")]
+        [InlineData("08", "Unexpected token")]
+        [InlineData("09", "Unexpected token")]
         public void ParserCanHandleInvalidInput(string input, string expectedMessage)
         {
             InvalidOperationException ex = Assert.Throws<InvalidOperationException>(() => PluralExpressionParser.Parse(input, out _));
@@ -114,9 +113,106 @@ namespace Karambolo.PO.Test
         }
 
         [Theory]
+        [InlineData("+n")]
+        [InlineData("+-n")]
+        [InlineData("+-+n")]
+        [InlineData("+ +n")]
+
+        [InlineData("-n")]
+        [InlineData("-+n")]
+        [InlineData("-+-n")]
+        [InlineData("- -n")]
+
+        [InlineData("1+ +n")]
+        [InlineData("1 + + n")]
+        [InlineData("1+ + +n")]
+        [InlineData("1+ +-n")]
+        [InlineData("1+-+n")]
+        [InlineData("1+- -n")]
+
+        [InlineData("1- -n")]
+        [InlineData("1 - - n")]
+        [InlineData("1- - -n")]
+        [InlineData("1- -+n")]
+        [InlineData("1-+-n")]
+        [InlineData("1-+ +n")]
+
+        [InlineData("+2")]
+        [InlineData("+-2")]
+        [InlineData("+-+2")]
+        [InlineData("+ +2")]
+
+        [InlineData("-2")]
+        [InlineData("-+2")]
+        [InlineData("-+-2")]
+        [InlineData("- -2")]
+
+        [InlineData("1+ +2")]
+        [InlineData("1 + + 2")]
+        [InlineData("1+ + +2")]
+        [InlineData("1+ +-2")]
+        [InlineData("1+-+2")]
+        [InlineData("1+- -2")]
+
+        [InlineData("1- -2")]
+        [InlineData("1 - - 2")]
+        [InlineData("1- - -2")]
+        [InlineData("1- -+2")]
+        [InlineData("1-+-2")]
+        [InlineData("1-+ +2")]
+
+        [InlineData("+(-(+(n / 1)))")]
+        [InlineData("-(+(-(n / 1)))")]
+
+        [InlineData("!n")]
+        [InlineData("!!n")]
+        [InlineData("!!!n")]
+        [InlineData("!+!+n")]
+        [InlineData("!+!-n")]
+        [InlineData("-!+!n")]
+        [InlineData("-!-!n")]
+        [InlineData("n + !n")]
+
+        [InlineData("!2")]
+        [InlineData("!!2")]
+        [InlineData("!!!2")]
+        [InlineData("!+!+2")]
+        [InlineData("!+!-2")]
+        [InlineData("-!+!2")]
+        [InlineData("-!-!2")]
+        [InlineData("n + !2")]
+
+        [InlineData("!(n > 0)")]
+        [InlineData("(n > 0) + !(n + 1)")]
+        [InlineData("n > 0 + !(n + 1)")]
+        [InlineData("n > 0 && !(n + 1)")]
+        public void ParserCanHandleUnaryExpressions(string input)
+        {
+            Func<int, int> verificationEvaluator = GetVerificationExpressionCompiler(input).Compile();
+
+            Expression expression = PluralExpressionParser.Parse(input, out ParameterExpression param);
+
+            Func<int, int> compiledEvaluator = PluralExpressionEvaluator.Compile(expression, param);
+            Func<int, int> interpreterEvaluator = PluralExpressionEvaluator.BuildInterpreter(expression, param);
+
+            for (var n = -1000; n < 1000; n++)
+            {
+                var compiledEvaluatorResult = compiledEvaluator(n);
+                Assert.Equal(verificationEvaluator(n), compiledEvaluatorResult);
+
+                var interpreterEvaluatorResult = interpreterEvaluator(n);
+                Assert.Equal(compiledEvaluatorResult, interpreterEvaluatorResult);
+
+                Assert.Equal(compiledEvaluatorResult, interpreterEvaluatorResult);
+            }
+        }
+
+        [Theory]
         [MemberData(nameof(PluralForms))]
         public void CompilerCanEvaluateParsedExpressions(int expectedPluralCount, string input, string _)
         {
+            Func<int, int> verificationEvaluator = GetVerificationExpressionCompiler(input).Compile();
+
             Expression expression = PluralExpressionParser.Parse(input, out ParameterExpression param);
 
             Func<int, int> compiledEvaluator = PluralExpressionEvaluator.Compile(expression, param);
@@ -124,11 +220,12 @@ namespace Karambolo.PO.Test
 
             var actualEvaluationResults = new HashSet<int>();
 
-            for (var n = 0; n < 1000; n++)
+            for (var n = -1000; n < 1000; n++)
             {
                 var compiledEvaluatorResult = compiledEvaluator(n);
-                var interpreterEvaluatorResult = interpreterEvaluator(n);
+                Assert.Equal(verificationEvaluator(n), compiledEvaluatorResult);
 
+                var interpreterEvaluatorResult = interpreterEvaluator(n);
                 Assert.Equal(compiledEvaluatorResult, interpreterEvaluatorResult);
 
                 actualEvaluationResults.Add(compiledEvaluatorResult);
@@ -136,6 +233,15 @@ namespace Karambolo.PO.Test
 
             if (expectedPluralCount >= 0)
                 Assert.Equal(expectedPluralCount, actualEvaluationResults.Count);
+        }
+
+        private static TestPluralExpressionCompiler GetVerificationExpressionCompiler(string input)
+        {
+            var lexer = new TestPluralExpressionLexer(input);
+            var parser = new TestPluralExpressionParser(lexer);
+            ParseResult parseResult = parser.Parse();
+            Assert.True(parseResult.IsSuccess);
+            return new TestPluralExpressionCompiler(parseResult.Root);
         }
     }
 }

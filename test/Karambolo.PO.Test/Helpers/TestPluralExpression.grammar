@@ -10,7 +10,7 @@ grammar TestPluralExpression
         WHITE_SPACE	-> U+0020 | U+0009 ;
         SEPARATOR -> WHITE_SPACE+;
 
-        INTEGER -> ('+' | '-')? [0-9]+ ;
+        INTEGER -> [0-9]+ ;
         VARIABLE -> 'n' ; 
     }
     rules
@@ -44,14 +44,20 @@ grammar TestPluralExpression
                              | additive_expression '-' multiplicative_expression
                              ;
 
-        multiplicative_expression -> factor^
-                                   | multiplicative_expression '*' factor
-                                   | multiplicative_expression '/' factor
-                                   | multiplicative_expression '%' factor
+        multiplicative_expression -> unary_expression^
+                                   | multiplicative_expression '*' unary_expression
+                                   | multiplicative_expression '/' unary_expression
+                                   | multiplicative_expression '%' unary_expression
                                    ;
 
-        factor -> INTEGER^ 
-                | VARIABLE^ 
+        unary_expression -> factor^
+                          | '!' unary_expression
+                          | '+' unary_expression
+                          | '-' unary_expression
+                          ;
+
+        factor -> INTEGER^
+                | VARIABLE^
                 | '('! expression^ ')'!
                 ;
     }

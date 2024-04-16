@@ -65,6 +65,8 @@ namespace Karambolo.PO.PluralExpression
                     return _n;
                 case ExpressionType.Constant:
                     return (int)((ConstantExpression)node).Value;
+                case ExpressionType.Negate:
+                    return -Evaluate(((UnaryExpression)node).Operand);
                 case ExpressionType.Multiply:
                     return Evaluate(((BinaryExpression)node).Left) * Evaluate(((BinaryExpression)node).Right);
                 case ExpressionType.Divide:
@@ -87,6 +89,8 @@ namespace Karambolo.PO.PluralExpression
                     return ToCBool(Evaluate(((BinaryExpression)node).Left) == Evaluate(((BinaryExpression)node).Right));
                 case ExpressionType.NotEqual:
                     return ToCBool(Evaluate(((BinaryExpression)node).Left) != Evaluate(((BinaryExpression)node).Right));
+                case ExpressionType.Not:
+                    return ToCBool(!FromCBool(Evaluate(((UnaryExpression)node).Operand)));
                 case ExpressionType.AndAlso:
                     return ToCBool(FromCBool(Evaluate(((BinaryExpression)node).Left)) && FromCBool(Evaluate(((BinaryExpression)node).Right)));
                 case ExpressionType.OrElse:
