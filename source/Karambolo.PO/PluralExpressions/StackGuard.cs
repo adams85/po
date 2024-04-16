@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Karambolo.PO.PluralExpression
+namespace Karambolo.PO.PluralExpressions
 {
     // Based on: https://github.com/dotnet/roslyn/blob/VSCode-CSharp-2.18.15/src/Compilers/Core/Portable/InternalUtilities/StackGuard.cs
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Karambolo.PO.PluralExpression
+namespace Karambolo.PO.PluralExpressions
 {
     internal struct PluralExpressionTokenizer
     {

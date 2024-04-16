@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
-namespace Karambolo.PO.PluralExpression
+namespace Karambolo.PO.PluralExpressions
 {
     using static PluralExpressionTokenizer;
 

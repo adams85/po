@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Karambolo.PO.PluralExpression
+namespace Karambolo.PO.PluralExpressions
 {
     internal readonly struct PluralExpressionEvaluator
     {

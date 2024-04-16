@@ -89,9 +89,9 @@
 
     <When Condition="'$(Edition)' == 'Minimal'">
       <ItemGroup>
-        <Compile Remove="PluralExpression\**" />
-        <EmbeddedResource Remove="PluralExpression\**" />
-        <None Remove="PluralExpression\**" />
+        <Compile Remove="PluralExpressions\**" />
+        <EmbeddedResource Remove="PluralExpressions\**" />
+        <None Remove="PluralExpressions\**" />
       </ItemGroup>
     </When>
   </Choose>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Hime.Redist;
-using Karambolo.PO.PluralExpression;
+using Karambolo.PO.PluralExpressions;
 using Karambolo.PO.Test.Helpers;
 using Xunit;
 

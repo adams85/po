@@ -13,7 +13,7 @@ namespace Karambolo.PO
 #endif
 
 #if ENABLE_PLURALFORMS
-    using Karambolo.PO.PluralExpression;
+    using Karambolo.PO.PluralExpressions;
 #endif
 
     public class POCatalog : KeyedCollection<POKey, IPOEntry>, IReadOnlyDictionary<POKey, IPOEntry>

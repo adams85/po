@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using Hime.Redist;
-using Karambolo.PO.PluralExpression;
+using Karambolo.PO.PluralExpressions;
 
 namespace Karambolo.PO.Test.Helpers
 {
