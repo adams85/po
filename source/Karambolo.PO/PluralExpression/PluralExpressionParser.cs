@@ -42,12 +42,14 @@ namespace Karambolo.PO.PluralExpression
         private PluralExpressionTokenizer _tokenizer;
         private readonly ParameterExpression _param;
         private Token _lookahead;
+        private int _recursionDepth;
 
         private PluralExpressionParser(string input, ParameterExpression param)
         {
             _tokenizer = new PluralExpressionTokenizer(input);
             _param = param;
             _lookahead = default;
+            _recursionDepth = 0;
             NextToken();
         }
 
@@ -97,14 +99,12 @@ namespace Karambolo.PO.PluralExpression
         //                        ;
         private Expression ParseConditionalExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
+            EnterRecursion();
 
             Expression left = ParseLogicalOrExpression();
 
             if (_lookahead.Symbol != Symbol.OpConsequent)
-                return left;
+                return ExitRecursion(left);
 
             NextToken();
             Expression consequent = ParseConditionalExpression();
@@ -112,7 +112,7 @@ namespace Karambolo.PO.PluralExpression
             Expect(Symbol.OpAlternate);
             Expression alternate = ParseConditionalExpression();
 
-            return Expression.Condition(EnsureBoolean(left), consequent, alternate);
+            return ExitRecursion(Expression.Condition(EnsureBoolean(left), consequent, alternate));
         }
 
         // logical_or_expression = logical_and_expression
@@ -120,10 +120,6 @@ namespace Karambolo.PO.PluralExpression
         //                       ;
         private Expression ParseLogicalOrExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseLogicalAndExpression();
 
             for (; ; )
@@ -144,10 +140,6 @@ namespace Karambolo.PO.PluralExpression
         //                        ;
         private Expression ParseLogicalAndExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseEqualityExpression();
 
             for (; ; )
@@ -169,10 +161,6 @@ namespace Karambolo.PO.PluralExpression
         //                     ;
         private Expression ParseEqualityExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseRelationalExpression();
 
             for (; ; )
@@ -203,10 +191,6 @@ namespace Karambolo.PO.PluralExpression
         //                       ;
         private Expression ParseRelationalExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseAdditiveExpression();
 
             for (; ; )
@@ -241,10 +225,6 @@ namespace Karambolo.PO.PluralExpression
         //                     ;
         private Expression ParseAdditiveExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseMultiplicativeExpression();
 
             for (; ; )
@@ -274,10 +254,6 @@ namespace Karambolo.PO.PluralExpression
         //                           ;
         private Expression ParseMultiplicativeExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression left = ParseUnaryExpression();
 
             for (; ; )
@@ -310,10 +286,6 @@ namespace Karambolo.PO.PluralExpression
         //                  ;
         private Expression ParseUnaryExpression()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Expression operand;
 
             for (; ; )
@@ -322,14 +294,16 @@ namespace Karambolo.PO.PluralExpression
                 {
                     case Symbol.OpLogicalNot:
                         NextToken();
-                        operand = ParseUnaryExpression();
+                        EnterRecursion();
+                        operand = ExitRecursion(ParseUnaryExpression());
                         return EnsureInt32(Expression.MakeUnary(ExpressionType.Not, EnsureBoolean(operand), type: null));
                     case Symbol.OpPlus:
                         NextToken();
                         continue;
                     case Symbol.OpMinus:
                         NextToken();
-                        operand = ParseUnaryExpression();
+                        EnterRecursion();
+                        operand = ExitRecursion(ParseUnaryExpression());
                         if (operand.NodeType == ExpressionType.Constant)
                         {
                             var value = (int)((ConstantExpression)operand).Value;
@@ -355,10 +329,6 @@ namespace Karambolo.PO.PluralExpression
         //        ;
         private Expression ParseFactor()
         {
-#if !NETSTANDARD1_0
-            RuntimeHelpers.EnsureSufficientExecutionStack();
-#endif
-
             Token token;
             switch (_lookahead.Symbol)
             {
@@ -386,6 +356,24 @@ namespace Karambolo.PO.PluralExpression
                     HandleUnexpectedToken(_lookahead);
                     throw new InvalidOperationException();
             }
+        }
+
+#if !NET40
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private void EnterRecursion()
+        {
+            _recursionDepth++;
+            StackGuard.EnsureSufficientExecutionStack(_recursionDepth);
+        }
+
+#if !NET40
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private T ExitRecursion<T>(T expression) where T : Expression
+        {
+            _recursionDepth--;
+            return expression;
         }
     }
 }

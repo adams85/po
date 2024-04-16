@@ -243,6 +243,46 @@ namespace Karambolo.PO.Test
             Assert.True(parseResult.IsSuccess);
             return new TestPluralExpressionCompiler(parseResult.Root);
         }
+
+        [Fact]
+        public void ParserShouldThrowCatchableExceptionOnTooDeepRecursion_ParenthesizedExpressionNesting()
+        {
+            const int depth = 100_000;
+            var input = $"{new string('(', depth)}true{new string(')', depth)}";
+            Assert.Throws<InsufficientExecutionStackException>(() => PluralExpressionParser.Parse(input, out ParameterExpression param));
+        }
+
+        [Fact]
+        public void ParserShouldThrowCatchableExceptionOnTooDeepRecursion_ConditionalExpressionNesting_Consequent()
+        {
+            const int depth = 100_000;
+            var input = string.Join("", Enumerable.Range(0, depth).Select(_ => "n ? "));
+            Assert.Throws<InsufficientExecutionStackException>(() => PluralExpressionParser.Parse(input, out ParameterExpression param));
+        }
+
+        [Fact]
+        public void ParserShouldThrowCatchableExceptionOnTooDeepRecursion_ConditionalExpressionNesting_Alternate()
+        {
+            const int depth = 100_000;
+            var input = string.Join("", Enumerable.Range(0, depth).Select(_ => "n ? 0 : "));
+            Assert.Throws<InsufficientExecutionStackException>(() => PluralExpressionParser.Parse(input, out ParameterExpression param));
+        }
+
+        [Fact]
+        public void ParserShouldThrowCatchableExceptionOnTooDeepRecursion_UnaryExpression_LogicalNot()
+        {
+            const int depth = 100_000;
+            var input = $"{new string('!', depth)}n";
+            Assert.Throws<InsufficientExecutionStackException>(() => PluralExpressionParser.Parse(input, out ParameterExpression param));
+        }
+
+        [Fact]
+        public void ParserShouldThrowCatchableExceptionOnTooDeepRecursion_UnaryExpression_Negation()
+        {
+            const int depth = 100_000;
+            var input = string.Join("", Enumerable.Range(0, depth).Select(_ => "- "));
+            Assert.Throws<InsufficientExecutionStackException>(() => PluralExpressionParser.Parse(input, out ParameterExpression param));
+        }
     }
 }
 
