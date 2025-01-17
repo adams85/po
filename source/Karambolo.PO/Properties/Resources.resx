@@ -121,7 +121,7 @@
     <value>Header has multiple items with key '{0}'.</value>
   </data>
   <data name="DuplicatePluralForm" xml:space="preserve">
-    <value>Entry beginning at {0} has multiple plural form with index {0}.</value>
+    <value>Entry beginning at {0} has multiple plural form with index {1}.</value>
   </data>
   <data name="EncodingMismatch" xml:space="preserve">
     <value>Encoding of writer and catalog should match. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true.</value>
