@@ -11,8 +11,8 @@
 namespace Karambolo.PO.Properties {
     using System;
     using System.Reflection;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -20,7 +20,7 @@ namespace Karambolo.PO.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -62,7 +62,16 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Header has multiple items with key &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Catalog has multiple entries with key &apos;{0}&apos;. Entry beginning at {1} is ignored..
+        /// </summary>
+        internal static string DuplicateEntryKey {
+            get {
+                return ResourceManager.GetString("DuplicateEntryKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Header has multiple items with key &apos;{0}&apos;. Occurrence(s) after the first one are ignored..
         /// </summary>
         internal static string DuplicateHeaderKey {
             get {
@@ -71,7 +80,7 @@ namespace Karambolo.PO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Entry beginning at {0} has multiple plural form with index {0}..
+        ///   Looks up a localized string similar to Entry beginning at {0} has multiple plural form with index {1}. Occurrence(s) after the first one are ignored..
         /// </summary>
         internal static string DuplicatePluralForm {
             get {

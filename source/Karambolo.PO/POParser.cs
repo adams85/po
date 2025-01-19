@@ -528,7 +528,7 @@ namespace Karambolo.PO
 
                         if (entry == null && id.Length == 0)
                         {
-                            if (!(pluralId == null && contextId == null))
+                            if (pluralId != null || contextId != null)
                             {
                                 AddWarning(DiagnosticCodes.EntryHasEmptyId, entryLocation);
                             }
@@ -567,10 +567,14 @@ namespace Karambolo.PO
                                 translations = new Dictionary<int, string>();
                             }
 
-                            if (translations.ContainsKey(pluralIndex.Value))
+#if !(NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
+                            if (!translations.ContainsKey(pluralIndex.Value))
+                                translations.Add(pluralIndex.Value, value);
+                            else
+#else
+                            if (!translations.TryAdd(pluralIndex.Value, value))
+#endif
                                 AddWarning(DiagnosticCodes.DuplicatePluralForm, entryLocation, pluralIndex.Value);
-
-                            translations[pluralIndex.Value] = value;
 
                             expectedTokens = EntryTokens.Translation;
                         }
@@ -682,6 +686,8 @@ namespace Karambolo.PO
 
         private void ParseHeader(POSingularEntry entry)
         {
+            Dictionary<string, string> headerDictionary = null;
+
             if (!HasFlags(Flags.SkipInfoHeaders))
             {
 #if USE_COMMON
@@ -689,7 +695,7 @@ namespace Karambolo.PO
                     _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                _catalog.Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                _catalog.Headers = headerDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             }
 
             _catalog.HeaderComments = entry.Comments;
@@ -697,10 +703,13 @@ namespace Karambolo.PO
             if (string.IsNullOrEmpty(entry.Translation))
                 return;
 
-            foreach (var line in entry
-                .Translation.Split(new[] { _translationStringNewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim()))
+            bool contentTypeFound = false, languageFound = false, pluralFormsFound = false;
+
+            var lines = entry.Translation.Split(new[] { _translationStringNewLine }, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = 0; i < lines.Length; i++)
             {
+                var line = lines[i].Trim();
+
                 var index = line.IndexOf(':');
                 if (index <= 0)
                 {
@@ -711,29 +720,38 @@ namespace Karambolo.PO
                 var key = line.Substring(0, index).TrimEnd();
                 var value = line.Remove(0, index + 1).TrimStart();
 
-                if (HasFlags(Flags.ReadContentTypeHeaderOnly) &&
-                    !string.Equals(key, "content-type", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                switch (key.ToLowerInvariant())
+                if (!contentTypeFound && "content-type".Equals(key, StringComparison.OrdinalIgnoreCase))
                 {
-                    case "content-type":
-                        ParseEncoding(line, value);
-                        break;
-                    case "language":
-                        ParseLanguage(line, value);
-                        break;
-                    case "plural-forms":
-                        ParsePluralForms(line, value);
-                        break;
+                    contentTypeFound = true;
+                    ParseEncoding(line, value);
+                }
+                else if (HasFlags(Flags.ReadContentTypeHeaderOnly))
+                {
+                    continue;
+                }
+                else if (!languageFound && "language".Equals(key, StringComparison.OrdinalIgnoreCase))
+                {
+                    languageFound = true;
+                    ParseLanguage(line, value);
+                }
+                else if (!pluralFormsFound && "plural-forms".Equals(key, StringComparison.OrdinalIgnoreCase))
+                {
+                    pluralFormsFound = true;
+                    ParsePluralForms(line, value);
                 }
 
                 if (!HasFlags(Flags.SkipInfoHeaders))
                 {
-                    if (_catalog.Headers.TryGetValue(key, out string existingValue))
+#if !(NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
+                    if (!_catalog.Headers.ContainsKey(key))
+                        _catalog.Headers.Add(key, value);
+                    else
+#elif USE_COMMON
+                    if (!(headerDictionary != null ? headerDictionary.TryAdd(key, value) : _catalog.Headers.TryAdd(key, value)))
+#else
+                    if (!headerDictionary.TryAdd(key, value))
+#endif
                         AddWarning(DiagnosticCodes.DuplicateHeaderKey, key);
-
-                    _catalog.Headers[key] = value;
                 }
             }
         }

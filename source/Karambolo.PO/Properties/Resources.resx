@@ -118,10 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DuplicateHeaderKey" xml:space="preserve">
-    <value>Header has multiple items with key '{0}'.</value>
+    <value>Header has multiple items with key '{0}'. Occurrence(s) after the first one are ignored.</value>
+  </data>
+  <data name="DuplicateEntryKey" xml:space="preserve">
+    <value>Catalog has multiple entries with key '{0}'. Entry beginning at {1} is ignored.</value>
   </data>
   <data name="DuplicatePluralForm" xml:space="preserve">
-    <value>Entry beginning at {0} has multiple plural form with index {1}.</value>
+    <value>Entry beginning at {0} has multiple plural form with index {1}. Occurrence(s) after the first one are ignored.</value>
   </data>
   <data name="EncodingMismatch" xml:space="preserve">
     <value>Encoding of writer and catalog should match. However, you may disable this check by setting POGeneratorSettings.IgnoreEncoding to true.</value>
