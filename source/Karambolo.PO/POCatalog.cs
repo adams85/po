@@ -159,6 +159,11 @@ namespace Karambolo.PO
                 throw new ArgumentException(string.Format(Resources.InvalidCatalogEntryKey, nameof(POKey.Id),nameof(POKey.PluralId), nameof(POKey.ContextId)), nameof(item));
         }
 
+        protected override POKey GetKeyForItem(IPOEntry item)
+        {
+            return item.Key;
+        }
+
         protected override void InsertItem(int index, IPOEntry item)
         {
             CheckEntry(item);
@@ -171,12 +176,41 @@ namespace Karambolo.PO
             base.SetItem(index, item);
         }
 
-        protected override POKey GetKeyForItem(IPOEntry item)
+        protected virtual bool TryAddItem(IPOEntry item)
         {
-            return item.Key;
+            CheckEntry(item);
+
+            int index;
+
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            if (Dictionary is Dictionary<POKey, IPOEntry> dictionary)
+            {
+                index = Items.Count;
+                if (dictionary.TryAdd(GetKeyForItem(item), item))
+                {
+                    Items.Insert(index, item);
+                    return true;
+                }
+                return false;
+            }
+#endif
+
+            if (!Contains(GetKeyForItem(item)))
+            {
+                index = Items.Count;
+                base.InsertItem(index, item);
+                return true;
+            }
+
+            return false;
         }
 
-#if NET40 || NET45 || NETSTANDARD1_0 || NETSTANDARD2_0
+        public bool TryAdd(IPOEntry item)
+        {
+            return TryAddItem(item);
+        }
+
+#if !(NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
         public bool TryGetValue(POKey key, out IPOEntry value)
         {
             if (Dictionary != null)

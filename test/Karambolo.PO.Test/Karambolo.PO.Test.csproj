@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp2.1;netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net462;netcoreapp2.1;netcoreapp3.1;net6.0;net8.0</TargetFrameworks>
     <AssemblyName>Karambolo.PO.Test</AssemblyName>
     <RootNamespace>Karambolo.PO.Test</RootNamespace>
     <SignAssembly>true</SignAssembly>

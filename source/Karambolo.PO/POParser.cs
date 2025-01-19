@@ -57,6 +57,7 @@ namespace Karambolo.PO
     {
         internal static class DiagnosticCodes
         {
+            public const string DuplicateEntryKey = nameof(Resources.DuplicateEntryKey);
             public const string DuplicateHeaderKey = nameof(Resources.DuplicateHeaderKey);
             public const string DuplicatePluralForm = nameof(Resources.DuplicatePluralForm);
             public const string EntryHasEmptyId = nameof(Resources.EntryHasEmptyId);
@@ -224,7 +225,7 @@ namespace Karambolo.PO
 
             _commentBuffer?.Clear();
 
-            while (true)
+            for (; ; )
             {
                 _line = _reader.ReadLine();
                 _lineIndex++;
@@ -453,15 +454,15 @@ namespace Karambolo.PO
             return result;
         }
 
-        private bool TryReadEntry(bool allowHeaderEntry, out IPOEntry result)
+        private bool TryReadEntry(bool allowHeaderEntry, out TextLocation entryLocation, out IPOEntry result)
         {
+            entryLocation = new TextLocation(_lineIndex, _columnIndex);
+
             if (_line == null)
             {
                 result = null;
                 return false;
             }
-
-            var entryLocation = new TextLocation(_lineIndex, _columnIndex);
 
             List<POComment> comments = _commentBuffer != null ? ParseComments() : null;
             Dictionary<int, string> translations = null;
@@ -773,7 +774,7 @@ namespace Karambolo.PO
 
             try
             {
-                if (!TryReadEntry(allowHeaderEntry: true, result: out IPOEntry entry))
+                if (!TryReadEntry(allowHeaderEntry: true, out TextLocation entryLocation, out IPOEntry entry))
                     return new POParseResult(_catalog, _diagnostics);
 
                 var isHeader = CheckHeader(entry);
@@ -782,11 +783,16 @@ namespace Karambolo.PO
 
                 if (!HasFlags(Flags.ReadHeaderOnly))
                 {
-                    if (!isHeader)
-                        _catalog.Add(entry);
+                    if (isHeader)
+                        goto ReadNextEntry;
 
-                    while (TryReadEntry(allowHeaderEntry: false, result: out entry))
-                        _catalog.Add(entry);
+                AddEntry:
+                    if (!_catalog.TryAdd(entry))
+                        AddWarning(DiagnosticCodes.DuplicateEntryKey, entry.Key, entryLocation);
+
+                ReadNextEntry:
+                    if (TryReadEntry(allowHeaderEntry: false, out entryLocation, out entry))
+                        goto AddEntry;
                 }
 
                 return new POParseResult(_catalog, _diagnostics);

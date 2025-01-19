@@ -1,0 +1,38 @@
+﻿msgid ""
+msgstr ""
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.7.2\n"
+
+msgid "common.all"
+msgstr "msg0"
+
+msgid "msg1"
+msgstr "msg1"
+
+msgid "msg2"
+msgstr "msg2"
+
+msgid "msg3"
+msgstr "msg3"
+
+msgid "msg4"
+msgstr "msg4"
+
+msgid "common.all"
+msgstr "msg5"
+
+msgid "msg6"
+msgstr "msg6"
+
+msgid "msg7"
+msgstr "msg7"
+
+msgid "common.all"
+msgstr "msg8"
+
+msgid "msg9"
+msgstr "msg9"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Karambolo.PO.Test.Properties;
 using Xunit;
@@ -392,33 +393,52 @@ msgstr ""\\r\rLine Terminator""
             Assert.Equal($"\\r{Environment.NewLine}Line Terminator", catalog[key][0]);
         }
 
-
         [Fact]
         public void Issue24_DoubleQuoteEscaping()
         {
-            //var parser = new POParser(new POParserSettings
-            //{
-            //    SkipComments = true
-            //});
-
-            //// Encoding.GetString keeps BOM
-            //var input = new StreamReader(new MemoryStream(Resources.EscapedCharTestPO)).ReadToEnd();
-
-            //POParseResult result = parser.Parse(input);
-
-            //Assert.True(result.Success);
-
-            var catalog = new POCatalog
+            var parser = new POParser(new POParserSettings
             {
-                new POSingularEntry(new POKey("Do you want to remove \"House\" from the list?"))
-                {
-                    Translation = "Möchtest du \"Haus\" von der Liste löschen?"
-                },
-            };
+                SkipComments = true
+            });
 
-            var sb = new StringBuilder();
-            new POGenerator(new POGeneratorSettings { IgnoreEncoding = true }).Generate(sb, catalog);
-            var generated = sb.ToString();
+            // Encoding.GetString keeps BOM
+            var input = new StreamReader(new MemoryStream(Resources.EscapedCharTestPO)).ReadToEnd();
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.True(result.Success);
+        }
+
+        [Fact]
+        public void Issue26_DuplicateEntryKeys()
+        {
+            var parser = new POParser();
+
+            var input = Resources.GetEmbeddedResourceAsString("Resources/duplicateentrykeys.po");
+
+            POParseResult result = parser.Parse(input);
+
+            Assert.True(result.Success);
+            Assert.Equal(8, result.Catalog.Count);
+            Assert.Equal("msg0", result.Catalog[0].Single());
+            Assert.Equal("msg0", result.Catalog[new POKey("common.all")].Single());
+            Assert.Equal("msg9", result.Catalog[7].Single());
+            Assert.Equal("msg9", result.Catalog[new POKey("msg9")].Single());
+
+            Assert.True(result.Diagnostics.HasWarning);
+            Assert.Equal(2, result.Diagnostics.Count);
+
+            Assert.Equal(DiagnosticSeverity.Warning, result.Diagnostics[0].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.DuplicateEntryKey, result.Diagnostics[0].Code);
+            Assert.Equal(2, result.Diagnostics[0].Args.Length);
+            Assert.Equal(new POKey("common.all"), result.Diagnostics[0].Args[0]);
+            Assert.Equal(new TextLocation(24, 0), result.Diagnostics[0].Args[1]);
+
+            Assert.Equal(DiagnosticSeverity.Warning, result.Diagnostics[1].Severity);
+            Assert.Equal(POParser.DiagnosticCodes.DuplicateEntryKey, result.Diagnostics[1].Code);
+            Assert.Equal(2, result.Diagnostics[1].Args.Length);
+            Assert.Equal(new POKey("common.all"), result.Diagnostics[1].Args[0]);
+            Assert.Equal(new TextLocation(33, 0), result.Diagnostics[1].Args[1]);
         }
     }
 }
