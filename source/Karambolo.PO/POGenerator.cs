@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -25,6 +25,7 @@ namespace Karambolo.PO
         public bool SkipComments { get; set; }
         public bool IgnoreLineBreaks { get; set; }
         public bool IgnoreLongLines { get; set; }
+        public int MaxLineLength { get; set; } = 80;
     }
 
     public class POGenerator
@@ -43,7 +44,7 @@ namespace Karambolo.PO
             IgnoreLongLines = 0x20,
         }
 
-        private const int MaxLineLength = 80;
+        private readonly int _maxLineLength;
         private readonly Flags _flags;
         private readonly StringBuilder _builder;
         private TextWriter _writer;
@@ -57,6 +58,8 @@ namespace Karambolo.PO
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
+
+            _maxLineLength = settings.MaxLineLength;
 
             if (settings.IgnoreEncoding)
                 _flags |= Flags.IgnoreEncoding;
@@ -105,9 +108,9 @@ namespace Karambolo.PO
             var endIndex = _builder.Length;
             int index;
 
-            if (!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength)
+            if (!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > _maxLineLength)
             {
-                result = _lineStartIndex + MaxLineLength - 1;
+                result = _lineStartIndex + _maxLineLength - 1;
 
                 char c;
                 for (index = result - 1; index > _lineStartIndex; index--)
@@ -159,7 +162,7 @@ namespace Karambolo.PO
             _builder.Append('"');
             var endIndex = _builder.Length;
 
-            if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength ||
+            if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > _maxLineLength ||
                   !HasFlags(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0))
                 return;
 
@@ -304,7 +307,7 @@ namespace Karambolo.PO
                     headers = new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
+                    headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
             }
             else
                 headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -329,7 +332,7 @@ namespace Karambolo.PO
                 orderedHeaders = headers.AsEnumerable();
             else
 #endif
-            orderedHeaders = headers.OrderBy(kvp => kvp.Key, POHeaderDefaultOrderComparer.Instance);
+                orderedHeaders = headers.OrderBy(kvp => kvp.Key, POHeaderDefaultOrderComparer.Instance);
 
             var value =
                 headers.Count > 0 ?
