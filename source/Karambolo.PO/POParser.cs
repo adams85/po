@@ -297,43 +297,29 @@ namespace Karambolo.PO
                 return false;
             }
 
-            var startIndex = ++_columnIndex;
-            for (; _columnIndex < lineLength; _columnIndex++)
-                if (_line[_columnIndex] == '"' && !IsEscaped(startIndex))
-                {
-                    var endIndex = _columnIndex++;
-                    _columnIndex = FindNextTokenInLine();
-                    if (_columnIndex >= 0)
-                    {
-                        AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, _columnIndex));
-                        return false;
-                    }
-
-                    var index = POString.Decode(_builder, _line, startIndex, endIndex - startIndex, newLine);
-                    if (index >= 0)
-                    {
-                        AddError(DiagnosticCodes.InvalidEscapeSequence, new TextLocation(_lineIndex, index));
-                        return false;
-                    }
-
-                    _columnIndex = lineLength;
-                    return true;
-                }
-
-            AddError(DiagnosticCodes.ExpectedToken, new TextLocation(_lineIndex, lineLength), '"');
-            return false;
-
-            bool IsEscaped(int si)
+            var endIndex = _line.FindLastIndex(s_matchNonWhiteSpace);
+            if (endIndex == _columnIndex)
             {
-                bool result = false;
-                for (var i = _columnIndex - 1; i >= si; i--)
-                    if (_line[i] == '\\')
-                        result = !result;
-                    else
-                        break;
-
-                return result;
+                AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, endIndex));
+                return false;
             }
+            else if (_line[endIndex] != '"')
+            {
+                AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.ExpectedToken), new TextLocation(_lineIndex, endIndex), '"');
+                return false;
+            }
+
+            var startIndex = ++_columnIndex;
+
+            var index = POString.Decode(_builder, _line, startIndex, endIndex, newLine);
+            if (index >= 0)
+            {
+                AddError(DiagnosticCodes.InvalidEscapeSequence, new TextLocation(_lineIndex, index));
+                return false;
+            }
+
+            _columnIndex = lineLength;
+            return true;
         }
 
         private bool TryReadPOString(string newLine, out string result)

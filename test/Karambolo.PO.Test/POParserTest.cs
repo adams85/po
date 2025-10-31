@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Karambolo.PO.Test.Properties;
 using Xunit;
 
@@ -153,6 +152,49 @@ namespace Karambolo.PO.Test
             POCatalog catalog = result.Catalog;
             CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
             CheckItems(catalog, expectComments: true);
+        }
+
+        [Fact]
+        public void Parse_IgnoresTrailingWhitespace()
+        {
+            var parser = new POParser();
+
+            POParseResult result;
+            using (var ms = new MemoryStream(Resources.SamplePO_WithTrailingWhiteSpace))
+                result = parser.Parse(ms);
+
+            Assert.True(result.Success);
+
+            POCatalog catalog = result.Catalog;
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
+            CheckItems(catalog, expectComments: true);
+        }
+
+        [Fact]
+        public void Parse_StringEdgeCases()
+        {
+            var parser = new POParser();
+
+            POParseResult result;
+            using (var ms = new MemoryStream(Resources.StringEdgeCasesPO))
+                result = parser.Parse(ms);
+            Assert.True(result.Success);
+
+            POCatalog catalog = result.Catalog;
+            CheckHeader(catalog, expectComments: true, expectInfoHeaders: true, expectOrderedHeaders: false);
+
+            var key1 = new POKey("comment between string parts");
+            var key2 = new POKey($"Here is an example of how one might continue a very long string{Environment.NewLine}\"  \"for the common\"  \" case the string represents multi-line output.{Environment.NewLine}");
+
+            Assert.Equal(2, catalog.Count);
+            Assert.Contains(key1, catalog.Keys);
+            Assert.Contains(key2, catalog.Keys);
+
+            Assert.Equal(1, catalog[key1].Count);
+            Assert.Equal("\0\a\b\f\t\v\\\'\"?", catalog.GetTranslation(key1));
+
+            Assert.Equal(1, catalog[key2].Count);
+            Assert.Equal("Some translation of long text", catalog[key2][0]);
         }
 
         [Fact]

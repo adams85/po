@@ -220,7 +220,7 @@ namespace Karambolo.PO
             if (index < 0 ||
                 (length = value.Length) < 2 || value[0] != '"' || value[length - 1] != '"' ||
                 (idKind = POKey.GetIdKind(idKindToken)) == POIdKind.Unknown ||
-                POString.Decode(sb = new StringBuilder(), value, 1, length - 2, keyStringNewLine) >= 0)
+                POString.Decode(sb = new StringBuilder(), value, 1, length - 1, keyStringNewLine) >= 0)
             {
                 result = null;
                 return false;

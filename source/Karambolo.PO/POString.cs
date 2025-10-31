@@ -10,29 +10,31 @@ namespace Karambolo.PO
             return isPlatformIndependent ? "\n" : Environment.NewLine;
         }
 
-        public static int Decode(StringBuilder builder, string source, int startIndex, int count, string newLine)
+        public static int Decode(StringBuilder builder, string source, int startIndex, int endIndex, string newLine)
         {
-            for (var endIndex = startIndex + count; startIndex < endIndex; startIndex++)
+            var chunkStart = startIndex;
+            for (; startIndex < endIndex; startIndex++)
             {
                 var c = source[startIndex];
-                if (c != '\\')
+                if (c == '\\')
                 {
-                    builder.Append(c);
-                    continue;
-                }
-                
-                if (++startIndex < endIndex)
-                {
+                    builder.Append(source, chunkStart, startIndex - chunkStart);
+
+                    if (++startIndex >= endIndex)
+                    {
+                        // unterminated escape sequence
+                        return startIndex - 1;
+                    }
+
                     c = source[startIndex];
                     switch (c)
                     {
                         case '\\':
+                        case '\'':
                         case '"':
+                        case '?':
                             builder.Append(c);
-                            continue;
-                        case 't':
-                            builder.Append('\t');
-                            continue;
+                            break;
                         case 'r':
                             var index = startIndex;
                             if (++index + 1 < endIndex && source[index] == '\\' && source[++index] == 'n')
@@ -41,14 +43,35 @@ namespace Karambolo.PO
                             goto case 'n';
                         case 'n':
                             builder.Append(newLine);
-                            continue;
+                            break;
+                        case 't':
+                            builder.Append('\t');
+                            break;
+                        case 'v':
+                            builder.Append('\v');
+                            break;
+                        case 'f':
+                            builder.Append('\f');
+                            break;
+                        case 'a':
+                            builder.Append('\a');
+                            break;
+                        case 'b':
+                            builder.Append('\b');
+                            break;
+                        case '0':
+                            builder.Append('\0');
+                            break;
+                        default:
+                            // invalid escape sequence
+                            return startIndex - 1;
                     }
-                }
 
-                // invalid escape sequence
-                return startIndex - 1;
+                    chunkStart = startIndex + 1;
+                }
             }
 
+            builder.Append(source, chunkStart, startIndex - chunkStart);
             return -1;
         }
 
