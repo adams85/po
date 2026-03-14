@@ -267,9 +267,7 @@ namespace Karambolo.PO
             var sb = new StringBuilder();
             sb.Append(idKindToken);
             sb.Append(' ');
-            sb.Append('"');
-            POString.Encode(sb, value, 0, value.Length);
-            sb.Append('"');
+            POString.Encode(sb, value);
 
             return sb.ToString();
         }

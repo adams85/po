@@ -49,7 +49,6 @@ namespace Karambolo.PO
         private TextWriter _writer;
         private POCatalog _catalog;
         private string _stringBreak;
-        private int _lineStartIndex;
 
         public POGenerator() : this(POGeneratorSettings.Default) { }
 
@@ -86,94 +85,17 @@ namespace Karambolo.PO
             return (_flags & flags) == flags;
         }
 
-        private int IndexOfNewLine(int startIndex, int endIndex)
-        {
-            for (endIndex--; startIndex < endIndex; startIndex++)
-                if (_builder[startIndex] == '\\' && _builder[++startIndex] == 'n')
-                    if (++startIndex <= endIndex)
-                        return startIndex;
-                    else
-                        break;
-
-            return -1;
-        }
-
-        private int GetStringBreakIndex()
-        {
-            var result = -1;
-
-            var endIndex = _builder.Length;
-            int index;
-
-            if (!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength)
-            {
-                result = _lineStartIndex + MaxLineLength - 1;
-
-                char c;
-                for (index = result - 1; index > _lineStartIndex; index--)
-                    if ((c = _builder[index]) == '-' || char.IsWhiteSpace(c))
-                    {
-                        result = index + 1;
-                        break;
-                    }
-
-                // escape sequences are kept together
-                if (IsEscaped(_builder, result, _lineStartIndex))
-                    result--;
-            }
-
-            if (!HasFlags(Flags.IgnoreLineBreaks) && (index = IndexOfNewLine(_lineStartIndex + 1, endIndex - 1)) >= 0 &&
-                (result < 0 || index < result))
-                result = index;
-
-            return result;
-
-            bool IsEscaped(StringBuilder sb, int currentIndex, int startIndex)
-            {
-                bool isEscaped = false;
-
-                for (currentIndex--; currentIndex > startIndex; currentIndex--)
-                    if (sb[currentIndex] == '\\')
-                        isEscaped = !isEscaped;
-                    else
-                        break;
-
-                return isEscaped;
-            }
-        }
-
         private void ResetBuilder()
         {
             _builder.Clear();
-            _lineStartIndex = 0;
         }
 
         private void AppendPOString(string value)
         {
-            if (value == null)
-                value = string.Empty;
-
-            var startIndex = _builder.Length;
-            _builder.Append('"');
-            POString.Encode(_builder, value, 0, value.Length);
-            _builder.Append('"');
-            var endIndex = _builder.Length;
-
-            if (!(!HasFlags(Flags.IgnoreLongLines) && endIndex - _lineStartIndex > MaxLineLength ||
-                  !HasFlags(Flags.IgnoreLineBreaks) && IndexOfNewLine(startIndex + 1, endIndex - 1) >= 0))
-                return;
-
-            startIndex++;
-            _builder.Insert(startIndex, _stringBreak);
-            _lineStartIndex = startIndex + _stringBreak.Length;
-            _lineStartIndex--;
-
-            while ((startIndex = GetStringBreakIndex()) >= 0)
-            {
-                _builder.Insert(startIndex, _stringBreak);
-                _lineStartIndex = startIndex + _stringBreak.Length;
-                _lineStartIndex--;
-            }
+            POString.Encode(_builder, value ?? string.Empty,
+                !HasFlags(Flags.IgnoreLongLines) ? MaxLineLength : -1,
+                breakAfterNewLine: !HasFlags(Flags.IgnoreLineBreaks),
+                _stringBreak);
         }
 
         private void WriteComments(IList<POComment> comments)
@@ -363,8 +285,7 @@ namespace Karambolo.PO
             _writer = writer;
             _catalog = catalog;
 
-            _stringBreak = "\"" + _writer.NewLine + "\"";
-            _lineStartIndex = 0;
+            _stringBreak = POString.StringBreak(_writer.NewLine);
 
             try
             {
