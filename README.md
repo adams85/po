@@ -1,6 +1,6 @@
 # Karambolo.PO
 
-This class library enables parsing, building and generating GetText PO files on the .NET platform. (Target frameworks: .NET Framework 4 & 4.5, .NET Standard 1.0 & 2.0).
+This class library enables parsing, building and generating GetText PO files on the .NET platform. (Supported framework versions: .NET Framework 4+, .NET Standard 1.0+, .NET Core 1.0+, .NET 5+).
 
 [![NuGet Release](https://img.shields.io/nuget/v/Karambolo.PO.svg)](https://www.nuget.org/packages/Karambolo.PO/)
 [![Donate](https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/adams85)
@@ -22,13 +22,15 @@ As of version 1.3 three editions (builds) of the library are available with diff
 
 | Edition | NuGet Package ID | Missing Features | Dependencies |
 |--|--|--|--|
-| Full | Karambolo.PO | | [Karambolo.Common](https://github.com/adams85/common) |
+| Full | Karambolo.PO | | none for .NET 9+, [Karambolo.Common](https://github.com/adams85/common) for older .NET versions |
 | Compact | Karambolo.PO.Compact | <ul><li>PreserveHeadersOrder option (see below)</li></ul> | |
 | Minimal | Karambolo.PO.Minimal | <ul><li>PreserveHeadersOrder option (see below)</li><li>Plural expression parsing and evaluation</li></ul> |
 
-*Compact* provides almost all the features the *Full* package does but requires no 3rd party dependencies. **If your project doesn't make use of the Karambolo.Common library** (and you don't need the *PreserveHeadersOrder* feature either), **it's recommended to choose the *Compact* edition.**
-
 *Minimal* is the most lightweight edition. You may choose it if you don't need to lookup [plural form translations](https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html) in your application.
+
+*Compact* provides almost all the features the *Full* package does but doesn't require any 3rd party dependencies for any .NET version.
+- If your project targets .NET 9+, just choose the *Full* edition.
+- Otherwise, the *Compact* edition might be a better choice if your project doesn't need the *PreserveHeadersOrder* feature and/or the Karambolo.Common library.
 
 ### Code samples
 
@@ -65,11 +67,11 @@ else
 |  | **Description** | **Default value** |
 |---|---|---|
 | **PreserveHeadersOrder** | Retain the order of metadata headers. *POCatalog.Headers* property will be set to a dictionary instance which preserves insertion order. (Available in the *Full* build only.) | false |
-| **ReadHeaderOnly** | Parse only the metadata header item.  | false |
-| **SkipInfoHeaders** | Parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest.  | false |
-| **SkipComments** | Parse no comments at all, not even the ones containing metadata.  | false |
-| **StringDecodingOptions. KeepKeyStringsPlatformIndependent** | Keeps `msgctxt`, `msgid` and `msgid_plural` strings platform-independent: preserves `\n` escape sequences in key strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0)  | false |
-| **StringDecodingOptions. KeepTranslationStringsPlatformIndependent** | Keeps `msgstr` strings platform-independent: preserves `\n` escape sequences in translation strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0)  | false |
+| **ReadHeaderOnly** | Parse only the metadata header item. | false |
+| **SkipInfoHeaders** | Parse only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest. | false |
+| **SkipComments** | Parse no comments at all, not even the ones containing metadata. | false |
+| **StringDecodingOptions. KeepKeyStringsPlatformIndependent** | Keeps `msgctxt`, `msgid` and `msgid_plural` strings platform-independent: preserves `\n` escape sequences in key strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0) | false |
+| **StringDecodingOptions. KeepTranslationStringsPlatformIndependent** | Keeps `msgstr` strings platform-independent: preserves `\n` escape sequences in translation strings, that is, prevents them from being replaced with `Environment.NewLine`. (Available only since version 1.7.0) | false |
 
 #### Generating PO file content
 
@@ -98,6 +100,7 @@ writer.Flush();
 | **IgnoreEncoding** | Don't check whether the text encoding of the writer and the text encoding set for the catalog match. | false |
 | **IgnoreLineBreaks** |  Don't respect line breaks ("\n") when wrapping texts. | false |
 | **IgnoreLongLines** |  Don't wrap long lines (lines longer than 80 characters). | false |
+| **MaxLineLength** |  The maximum number of characters (more precisely, Unicode code points) allowed per line. Applies only when *IgnoreLongLines* is false. (Available only since version 1.13.0) | 80 |
 | **PreserveHeadersOrder** | Don't sort but retain the order of metadata headers. *POCatalog.Headers* property should be set to a dictionary instance which preserves insertion order. (Available in the *Full* build only.) | false |
 | **SkipInfoHeaders** | Generate only the relevant metadata headers (*Content-Transfer-Encoding*, *Content-Type*, *Language* and *Plural-Forms*) and ignore the rest. | false |
 | **SkipComments** | Generate no comments. | false |
