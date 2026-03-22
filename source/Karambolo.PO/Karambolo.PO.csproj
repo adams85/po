@@ -13,32 +13,34 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
+    <TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>
+    <DefineConstants>TRACE;DEBUG;ENABLE_ORDERED_HEADERS;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
     <Edition>Minimal</Edition>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
+    <TargetFrameworks>net9.0;$(TargetFrameworks)</TargetFrameworks>
+    <DefineConstants>TRACE;ENABLE_ORDERED_HEADERS;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
     <Edition>Minimal</Edition>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -75,11 +77,12 @@
     <EmbeddedResource Remove="obj\**" />
     <None Remove="bin\**" />
     <None Remove="obj\**" />
+    <Compile Remove="**\*.net*.cs" />
   </ItemGroup>
 
   <Choose>
     <When Condition="'$(Edition)' == 'Full'">
-      <ItemGroup>
+      <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))">
         <PackageReference Include="Karambolo.Common" Version="3.4.1" />
 
         <Compile Remove="Common\**" />
@@ -99,29 +102,8 @@
 
   <Choose>
     <When Condition="'$(TargetFramework)' == 'net40'">
-    </When>
-
-    <When Condition="'$(TargetFramework)' == 'net45'">
       <ItemGroup>
-        <Compile Remove="Compatibility.Net40.cs" />
-      </ItemGroup>
-    </When>
-
-    <When Condition="'$(TargetFramework)' == 'netstandard1.0'">
-      <ItemGroup>
-        <Compile Remove="Compatibility.Net40.cs" />
-      </ItemGroup>
-    </When>
-
-    <When Condition="'$(TargetFramework)' == 'netstandard2.0'">
-      <ItemGroup>
-        <Compile Remove="Compatibility.Net40.cs" />
-      </ItemGroup>
-    </When>
-
-    <When Condition="'$(TargetFramework)' == 'netstandard2.1'">
-      <ItemGroup>
-        <Compile Remove="Compatibility.Net40.cs" />
+        <Compile Include="Compatibility.Net40.cs" />
       </ItemGroup>
     </When>
   </Choose>

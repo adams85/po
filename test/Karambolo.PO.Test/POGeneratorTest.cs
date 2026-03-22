@@ -10,11 +10,12 @@ using Xunit;
 
 namespace Karambolo.PO.Test
 {
-#if USE_COMMON
-    using Karambolo.Common;
+#if !ENABLE_ORDERED_HEADERS
+    using HeaderDictionary = Dictionary<string, string>;
+#elif !NET9_0_OR_GREATER
     using HeaderDictionary = Common.Collections.OrderedDictionary<string, string>;
 #else
-    using HeaderDictionary = Dictionary<string, string>;
+    using HeaderDictionary = System.Collections.Generic.OrderedDictionary<string, string>;
 #endif
     public class POGeneratorTest
     {
@@ -96,7 +97,7 @@ namespace Karambolo.PO.Test
             Assert.Equal(expected, result);
         }
 
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
         [Fact]
         public void GeneratePreserveHeadersOrder()
         {
@@ -109,15 +110,15 @@ namespace Karambolo.PO.Test
             var lines = sb.ToString().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
             
             // sorting lines manually to match expected
-            GeneralUtils.Swap(ref lines[11], ref lines[3]);
-            GeneralUtils.Swap(ref lines[12], ref lines[4]);
-            GeneralUtils.Swap(ref lines[13], ref lines[5]);
-            GeneralUtils.Swap(ref lines[11], ref lines[6]);
-            GeneralUtils.Swap(ref lines[10], ref lines[7]);
-            GeneralUtils.Swap(ref lines[14], ref lines[9]);
-            GeneralUtils.Swap(ref lines[12], ref lines[10]);
-            GeneralUtils.Swap(ref lines[13], ref lines[11]);
-            GeneralUtils.Swap(ref lines[13], ref lines[12]);
+            Swap(ref lines[11], ref lines[3]);
+            Swap(ref lines[12], ref lines[4]);
+            Swap(ref lines[13], ref lines[5]);
+            Swap(ref lines[11], ref lines[6]);
+            Swap(ref lines[10], ref lines[7]);
+            Swap(ref lines[14], ref lines[9]);
+            Swap(ref lines[12], ref lines[10]);
+            Swap(ref lines[13], ref lines[11]);
+            Swap(ref lines[13], ref lines[12]);
 
             var result = string.Join(Environment.NewLine, lines);
 
@@ -127,6 +128,13 @@ namespace Karambolo.PO.Test
                 .Replace("# should be skipped too\r\n", "");
 
             Assert.Equal(expected, result);
+
+            static void Swap<T>(ref T value1, ref T value2)
+            {
+                T temp = value1;
+                value1 = value2;
+                value2 = temp;
+            }  
         }
 #endif
 

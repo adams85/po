@@ -8,12 +8,12 @@ using System.Text.RegularExpressions;
 using Karambolo.Common;
 using Karambolo.PO.Properties;
 
-namespace Karambolo.PO
-{
-#if USE_COMMON
-    using Karambolo.Common.Collections;
+#if ENABLE_ORDERED_HEADERS && !NET9_0_OR_GREATER
+using Karambolo.Common.Collections;
 #endif
 
+namespace Karambolo.PO
+{
     public class POStringDecodingOptions
     {
         public bool KeepKeyStringsPlatformIndependent { get; set; }
@@ -26,7 +26,7 @@ namespace Karambolo.PO
 
         internal bool ReadContentTypeHeaderOnly { get; set; }
         public bool ReadHeaderOnly { get; set; }
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
         public bool PreserveHeadersOrder { get; set; }
 #endif
         public bool SkipInfoHeaders { get; set; }
@@ -95,7 +95,7 @@ namespace Karambolo.PO
             None = 0,
             ReadContentTypeHeaderOnly = 0x1,
             ReadHeaderOnly = 0x2,
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
             PreserveHeadersOrder = 0x4,
 #endif
             SkipInfoHeaders = 0x8,
@@ -154,7 +154,7 @@ namespace Karambolo.PO
             if (settings.ReadHeaderOnly)
                 _flags |= Flags.ReadHeaderOnly;
 
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
             if (settings.PreserveHeadersOrder)
                 _flags |= Flags.PreserveHeadersOrder;
 #endif
@@ -208,7 +208,7 @@ namespace Karambolo.PO
 
         private int FindNextTokenInLine(bool requireWhiteSpace = false)
         {
-            var index = _line.FindIndex(_columnIndex, s_matchNonWhiteSpace);
+            var index = _line.FindIndex(_columnIndex, _line.Length - _columnIndex, s_matchNonWhiteSpace);
             if (requireWhiteSpace && index <= _columnIndex)
             {
                 AddError(GetUnexpectedCharDiagnosticCode(DiagnosticCodes.UnexpectedToken), new TextLocation(_lineIndex, _columnIndex));
@@ -681,12 +681,12 @@ namespace Karambolo.PO
 
             if (!HasFlags(Flags.SkipInfoHeaders))
             {
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
                 if (HasFlags(Flags.PreserveHeadersOrder))
                     _catalog.Headers = new OrderedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                _catalog.Headers = headerDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    _catalog.Headers = headerDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             }
 
             _catalog.HeaderComments = entry.Comments;
@@ -742,7 +742,7 @@ namespace Karambolo.PO
                     if (!_catalog.Headers.ContainsKey(key))
                         _catalog.Headers.Add(key, value);
                     else
-#elif USE_COMMON
+#elif ENABLE_ORDERED_HEADERS
                     if (!(headerDictionary != null ? headerDictionary.TryAdd(key, value) : _catalog.Headers.TryAdd(key, value)))
 #else
                     if (!headerDictionary.TryAdd(key, value))

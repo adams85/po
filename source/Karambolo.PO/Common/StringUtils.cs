@@ -13,14 +13,6 @@ namespace Karambolo.Common
             return @string.FindIndex(0, @string.Length, match);
         }
 
-        public static int FindIndex(this string @string, int startIndex, Predicate<char> match)
-        {
-            if (@string == null)
-                throw new ArgumentNullException(nameof(@string));
-
-            return @string.FindIndex(startIndex, @string.Length - startIndex, match);
-        }
-
         public static int FindIndex(this string @string, int startIndex, int count, Predicate<char> match)
         {
             if (@string == null)
@@ -38,6 +30,38 @@ namespace Karambolo.Common
                 throw new ArgumentNullException(nameof(match));
 
             for (; startIndex < endIndex; startIndex++)
+                if (match(@string[startIndex]))
+                    return startIndex;
+
+            return -1;
+        }
+
+        public static int FindLastIndex(this string @string, Predicate<char> match)
+        {
+            if (@string == null)
+                throw new ArgumentNullException(nameof(@string));
+
+            var length = @string.Length;
+            return @string.FindLastIndex(length - 1, length, match);
+        }
+
+        public static int FindLastIndex(this string @string, int startIndex, int count, Predicate<char> match)
+        {
+            if (@string == null)
+                throw new ArgumentNullException(nameof(@string));
+
+            var length = @string.Length;
+            if (startIndex < -1 || length <= startIndex)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            var endIndex = startIndex - count;
+            if (count < 0 || endIndex < -1)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            if (match == null)
+                throw new ArgumentNullException(nameof(match));
+
+            for (; startIndex > endIndex; startIndex--)
                 if (match(@string[startIndex]))
                     return startIndex;
 

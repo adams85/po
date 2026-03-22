@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp2.1;netcoreapp3.1;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net462;net481;netcoreapp2.1;netcoreapp3.1;net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <AssemblyName>Karambolo.PO.Test</AssemblyName>
     <RootNamespace>Karambolo.PO.Test</RootNamespace>
     <LangVersion>11</LangVersion>
@@ -18,7 +18,7 @@
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-3gp9-h8hw-pxpw" />
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-3w5p-jhp5-c29q" />
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-5633-f33j-c6f7" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-6px8-22w5-w334" />
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-5crp-9r3c-p9vr" />
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-6px8-22w5-w334" />
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-g5vf-38cp-4px9" />
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-vgwq-hfqc-58wv" />
@@ -27,32 +27,32 @@
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;DEBUG;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ENABLE_ORDERED_HEADERS;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_Minimal|AnyCPU' ">
     <Edition>Minimal</Edition>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Edition>Full</Edition>
-    <DefineConstants>TRACE;USE_COMMON;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;ENABLE_ORDERED_HEADERS;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Compact|AnyCPU' ">
     <Edition>Compact</Edition>
-    <DefineConstants>TRACE;ENABLE_PLURALFORMS</DefineConstants>
+    <DefineConstants>TRACE;ENABLE_PLURALFORMS;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_Minimal|AnyCPU' ">
     <Edition>Minimal</Edition>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

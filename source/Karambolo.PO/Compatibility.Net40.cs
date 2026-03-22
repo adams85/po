@@ -32,7 +32,7 @@ namespace Karambolo.PO
     }
 }
 
-#if !USE_COMMON
+#if !ENABLE_ORDERED_HEADERS
 namespace Karambolo.Common.Collections
 {
     using System.Collections;

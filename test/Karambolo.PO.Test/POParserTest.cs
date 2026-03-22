@@ -33,8 +33,12 @@ namespace Karambolo.PO.Test
 
             if (expectOrderedHeaders)
             {
-#if USE_COMMON
-                Assert.IsAssignableFrom<Karambolo.Common.Collections.IOrderedDictionary<string, string>>(catalog.Headers);
+#if ENABLE_ORDERED_HEADERS
+#if !NET9_0_OR_GREATER
+                Assert.IsAssignableFrom<Karambolo.Common.Collections.OrderedDictionary<string, string>>(catalog.Headers);
+#else
+                Assert.IsAssignableFrom<System.Collections.Generic.OrderedDictionary<string, string>>(catalog.Headers);
+#endif
 
                 Assert.Equal(new[] { "Content-Transfer-Encoding", "Content-Type", "Language", "Language-Team", "Last-Translator", "MIME-Version",
                     "Plural-Forms", "PO-Revision-Date", "POT-Creation-Date", "Project-Id-Version", "Report-Msgid-Bugs-To", "X-Generator" },
@@ -216,7 +220,7 @@ namespace Karambolo.PO.Test
             Assert.Empty(catalog);
         }
 
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
         [Fact]
         public void ParsePreserveHeadersOrder()
         {

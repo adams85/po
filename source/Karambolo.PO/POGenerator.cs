@@ -7,18 +7,18 @@ using System.Text;
 using Karambolo.Common;
 using Karambolo.PO.Properties;
 
-namespace Karambolo.PO
-{
-#if USE_COMMON
-    using Karambolo.Common.Collections;
+#if ENABLE_ORDERED_HEADERS && !NET9_0_OR_GREATER
+using Karambolo.Common.Collections;
 #endif
 
+namespace Karambolo.PO
+{
     public class POGeneratorSettings
     {
         public static readonly POGeneratorSettings Default = new POGeneratorSettings();
 
         public bool IgnoreEncoding { get; set; }
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
         public bool PreserveHeadersOrder { get; set; }
 #endif
         public bool SkipInfoHeaders { get; set; }
@@ -35,7 +35,7 @@ namespace Karambolo.PO
         {
             None = 0,
             IgnoreEncoding = 0x1,
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
             PreserveHeadersOrder = 0x2,
 #endif
             SkipInfoHeaders = 0x4,
@@ -63,7 +63,7 @@ namespace Karambolo.PO
             if (settings.IgnoreEncoding)
                 _flags |= Flags.IgnoreEncoding;
 
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
             if (settings.PreserveHeadersOrder)
                 _flags |= Flags.PreserveHeadersOrder;
 #endif
@@ -224,12 +224,12 @@ namespace Karambolo.PO
             IDictionary<string, string> headers;
             if (!HasFlags(Flags.SkipInfoHeaders) && _catalog.Headers != null)
             {
-#if USE_COMMON
+#if ENABLE_ORDERED_HEADERS
                 if (HasFlags(Flags.PreserveHeadersOrder))
                     headers = new OrderedDictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
                 else
 #endif
-                headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
+                    headers = new Dictionary<string, string>(_catalog.Headers, StringComparer.OrdinalIgnoreCase);
             }
             else
                 headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -249,12 +249,13 @@ namespace Karambolo.PO
                 headers["Plural-Forms"] = $"nplurals={_catalog.PluralFormCount.ToString(CultureInfo.InvariantCulture)}; plural={_catalog.PluralFormSelector};";
 
             IEnumerable<KeyValuePair<string, string>> orderedHeaders;
-#if USE_COMMON
-            if (headers is IOrderedDictionary<string, string>)
+#if ENABLE_ORDERED_HEADERS
+            if (headers is OrderedDictionary<string, string>)
                 orderedHeaders = headers.AsEnumerable();
+
             else
 #endif
-            orderedHeaders = headers.OrderBy(kvp => kvp.Key, POHeaderDefaultOrderComparer.Instance);
+                orderedHeaders = headers.OrderBy(kvp => kvp.Key, POHeaderDefaultOrderComparer.Instance);
 
             var value =
                 headers.Count > 0 ?
