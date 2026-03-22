@@ -25,6 +25,7 @@ namespace Karambolo.PO
         public bool SkipComments { get; set; }
         public bool IgnoreLineBreaks { get; set; }
         public bool IgnoreLongLines { get; set; }
+        public int MaxLineLength { get; set; } = 80;
     }
 
     public class POGenerator
@@ -43,7 +44,7 @@ namespace Karambolo.PO
             IgnoreLongLines = 0x20,
         }
 
-        private const int MaxLineLength = 80;
+        private readonly int _maxLineLength;
         private readonly Flags _flags;
         private readonly StringBuilder _builder;
         private TextWriter _writer;
@@ -56,6 +57,8 @@ namespace Karambolo.PO
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
+
+            _maxLineLength = settings.MaxLineLength;
 
             if (settings.IgnoreEncoding)
                 _flags |= Flags.IgnoreEncoding;
@@ -93,7 +96,7 @@ namespace Karambolo.PO
         private void AppendPOString(string value)
         {
             POString.Encode(_builder, value ?? string.Empty,
-                !HasFlags(Flags.IgnoreLongLines) ? MaxLineLength : -1,
+                !HasFlags(Flags.IgnoreLongLines) ? _maxLineLength : -1,
                 breakAfterNewLine: !HasFlags(Flags.IgnoreLineBreaks),
                 _stringBreak);
         }
