@@ -3,6 +3,7 @@
     <AssemblyName>Karambolo.PO</AssemblyName>
     <RootNamespace>Karambolo.PO</RootNamespace>
     <TargetFrameworks>net40;net45;netstandard1.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <LangVersion>10</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Karambolo.Public.snk</AssemblyOriginatorKeyFile>
     <DebugType>full</DebugType>

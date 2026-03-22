@@ -7,10 +7,11 @@ namespace Karambolo.PO
     {
         public static StringBuilder Append(this StringBuilder builder, int value, IFormatProvider provider)
         {
-            // TODO: .NET 6 will provide a more efficient solution:
-            // https://github.com/dotnet/runtime/issues/50674#issuecomment-812782309
-
+#if NET6_0_OR_GREATER
+            return builder.Append(provider, $"{value}");
+#else
             return builder.Append(value.ToString(provider));
+#endif
         }
     }
 }

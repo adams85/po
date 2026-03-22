@@ -67,8 +67,15 @@ namespace Karambolo.PO
                 throw new ArgumentNullException(nameof(value));
 
             var index = value.LastIndexOf(':');
-            if (index >= 0 && int.TryParse(value.Substring(index + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out int line))
+            if (index >= 0 &&
+#if NETSTANDARD2_1_OR_GREATER
+                int.TryParse(value.AsSpan(index + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out int line))
+#else
+                int.TryParse(value.Substring(index + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out int line))
+#endif
+            {
                 value = value.Remove(index);
+            }
             else
                 line = default(int);
 
@@ -211,7 +218,11 @@ namespace Karambolo.PO
             if (index >= 0)
             {
                 idKindToken = value.Remove(index);
+#if NETSTANDARD2_1_OR_GREATER
+                value = value.AsSpan(index + 1).TrimStart().ToString();
+#else
                 value = value.Substring(index + 1).TrimStart();
+#endif
             }
 
             int length;

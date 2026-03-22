@@ -355,7 +355,11 @@ namespace Karambolo.PO
                 if ((c = _line[_columnIndex]) == ']')
                 {
                     var endIndex = _columnIndex++;
+#if NETSTANDARD2_1_OR_GREATER
+                    if (!int.TryParse(_line.AsSpan(startIndex, endIndex - startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture, out int indexValue))
+#else
                     if (!int.TryParse(_line.Substring(startIndex, endIndex - startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture, out int indexValue))
+#endif
                     {
                         AddError(DiagnosticCodes.InvalidPluralIndex, new TextLocation(_lineIndex, startIndex - 1));
                         result = null;
@@ -364,7 +368,7 @@ namespace Karambolo.PO
                     result = indexValue;
                     return true;
                 }
-                else if (!char.IsDigit(c))
+                else if (c < '0' || '9' < c)
                 {
                     var diagnosticCode = GetUnexpectedCharDiagnosticCode(DiagnosticCodes.InvalidPluralIndex);
                     AddError(diagnosticCode, new TextLocation(_lineIndex, diagnosticCode == DiagnosticCodes.InvalidPluralIndex ? startIndex - 1 : _columnIndex));
@@ -704,8 +708,13 @@ namespace Karambolo.PO
                     continue;
                 }
 
+#if NETSTANDARD2_1_OR_GREATER
+                var key = line.AsSpan(0, index).TrimEnd().ToString();
+                var value = line.AsSpan(index + 1).TrimStart().ToString();
+#else
                 var key = line.Substring(0, index).TrimEnd();
-                var value = line.Remove(0, index + 1).TrimStart();
+                var value = line.Substring(index + 1).TrimStart();
+#endif
 
                 if (!contentTypeFound && "content-type".Equals(key, StringComparison.OrdinalIgnoreCase))
                 {
